@@ -33,6 +33,7 @@
             "postgres",
             "singlestore",
             "sqlserver",
+            "starrocks",
             "umbra",
             "umbradev"
           ]

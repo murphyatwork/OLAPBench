@@ -1,0 +1,27 @@
+{
+  "title": "StarRocks StackOverflow Math Scale Test (scale=12)",
+  "repetitions": 1,
+  "warmup": 0,
+  "timeout": 60,
+  "fetch_result": false,
+  "global_timeout": 7200,
+  "query_seed": 42,
+  "output": "results/starrocks_stackoverflow_math_test",
+  "systems": [
+    {
+      "title": "StarRocks",
+      "dbms": "starrocks",
+      "disabled": false,
+      "settings": {}
+    }
+  ],
+  "benchmarks": [
+    {
+      "name": "stackoverflow",
+      "scale": 12,
+      "math": true,
+      "query_dir": "sqlstorm_v1.0"
+    }
+  ]
+}
+

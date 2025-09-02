@@ -62,12 +62,18 @@ def parse_yaml(path: str, env: dict = None) -> dict:
 
 def parse_json(path: str):
     with open(path) as file:
-        return json.load(file, allow_nan=True)
+        try:
+            return json.load(file, allow_nan=True)
+        except TypeError:
+            # Fallback for older simplejson versions
+            return json.load(file)
 
 
 def load(path: str, schema: str) -> dict:
-    schema = parse_json(os.path.join(pathlib.Path(__file__).parent.resolve(), "..", "schemas", schema))
+    schema_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "..", "schemas", schema)
+    schema_path = os.path.abspath(schema_path)
+    schema_data = parse_json(schema_path)
     instance = parse_yaml(path=path) if path.endswith(".yaml") else parse_json(path=path)
 
-    jsonschema.validate(instance=instance, schema=schema)
+    jsonschema.validate(instance=instance, schema=schema_data)
     return instance

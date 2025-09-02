@@ -23,6 +23,9 @@ pymonetdb
 # SQLServer
 pyodbc
 
+# StarRocks
+pymysql
+
 
 # CPU Configuration
 psutil

@@ -1,0 +1,26 @@
+{
+  "title": "StarRocks TPC-DS Full Test",
+  "repetitions": 1,
+  "warmup": 0,
+  "timeout": 30,
+  "fetch_result": false,
+  "global_timeout": 7200,
+  "query_seed": 42,
+  "output": "results/starrocks_tpcds_test",
+  "systems": [
+    {
+      "title": "StarRocks",
+      "dbms": "starrocks",
+      "disabled": false,
+      "settings": {}
+    }
+  ],
+  "benchmarks": [
+    {
+      "name": "tpcds",
+      "scale": 1,
+      "query_dir": "sqlstorm_v1.0"
+    }
+  ]
+}
+

@@ -1,0 +1,27 @@
+{
+  "title": "StarRocks Small Test",
+  "repetitions": 1,
+  "warmup": 0,
+  "timeout": 30,
+  "fetch_result": false,
+  "global_timeout": 300,
+  "query_seed": 42,
+  "output": "results/starrocks_test_small",
+  "systems": [
+    {
+      "title": "StarRocks",
+      "dbms": "starrocks",
+      "disabled": false,
+      "settings": {}
+    }
+  ],
+  "benchmarks": [
+    {
+      "name": "stackoverflow",
+      "scale": 12,
+      "math": true,
+      "query_dir": "sqlstorm_v1.0",
+      "query_count": 10
+    }
+  ]
+}
