@@ -1,8 +1,8 @@
 {
-  "title": "StarRocks TPC-H Benchmark",
+  "title": "StarRocks TPC-H Benchmark (sample 100)",
   "output": "results/starrocks_tpch",
   "repetitions": 1,
-  "warmup": 1,
+  "warmup": 0,
   "systems": [
     {
       "title": "StarRocks",
@@ -19,10 +19,12 @@
     "scale": 1
   },
   "settings": {
-    "timeout": 300,
+    "timeout": 5,
     "global_timeout": 3600,
     "fetch_result": true,
-    "fetch_result_limit": 1000
+    "fetch_result_limit": 1000,
+    "query_seed": 12345,
+    "query_limit": 200
   },
   "benchmarks": [
     {
@@ -32,3 +34,5 @@
     }
   ]
 }
+
+

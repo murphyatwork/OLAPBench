@@ -53,11 +53,12 @@ def run_benchmark(benchmark: Benchmark, systems: List[System], definition: dict,
     logger.log_driver(f"Preparing {benchmark.description}")
     dbms_descriptions = database_systems()
 
-    timeout = definition.get("timeout", 0)
-    global_timeout = definition.get("global_timeout", 0) * 1000
-    fetch_result = definition.get("fetch_result", True)
-    fetch_result_limit = definition.get("fetch_result_limit", 0)
-    query_seed = definition.get("query_seed", None)
+    timeout = definition.get("timeout", definition.get("settings", {}).get("timeout", 0))
+    global_timeout = definition.get("global_timeout", definition.get("settings", {}).get("global_timeout", 0)) * 1000
+    fetch_result = definition.get("fetch_result", definition.get("settings", {}).get("fetch_result", True))
+    fetch_result_limit = definition.get("fetch_result_limit", definition.get("settings", {}).get("fetch_result_limit", 0))
+    query_seed = definition.get("query_seed", definition.get("settings", {}).get("query_seed", None))
+    query_limit = definition.get("query_limit", definition.get("settings", {}).get("query_limit", 0))
 
     benchmark.dbgen()
 
@@ -92,24 +93,35 @@ def run_benchmark(benchmark: Benchmark, systems: List[System], definition: dict,
                 executed_queries[title].append(query)
 
                 runtimes[title].queries += 1
-                if state not in [Result.FATAL, Result.GLOBAL_TIMEOUT]:
-                    assert len(times) > 0
-                    runtimes[title].global_time += median(times)
-                    runtimes[title].times.append(median(times))
+                try:
+                    if state not in [Result.FATAL, Result.GLOBAL_TIMEOUT]:
+                        assert len(times) > 0
+                        med_time = median(times)
+                        runtimes[title].global_time += med_time
+                        # Only add positive times for geometric mean calculation
+                        if med_time > 0:
+                            runtimes[title].times.append(med_time)
+                        else:
+                            logger.log_warn_verbose(f"Skipping non-positive median runtime {med_time} for {title}, query {query}")
+                except Exception as e:
+                    logger.log_warn_verbose(f"Exception while processing times for {title}, query {query}: {e}")
 
-                match state:
-                    case Result.SUCCESS:
-                        runtimes[title].success += 1
-                    case Result.ERROR:
-                        runtimes[title].error += 1
-                    case Result.FATAL:
-                        runtimes[title].fatal += 1
-                    case Result.OOM:
-                        runtimes[title].oom += 1
-                    case Result.TIMEOUT:
-                        runtimes[title].timeout += 1
-                    case Result.GLOBAL_TIMEOUT:
-                        runtimes[title].global_timeout += 1
+                try:
+                    match state:
+                        case Result.SUCCESS:
+                            runtimes[title].success += 1
+                        case Result.ERROR:
+                            runtimes[title].error += 1
+                        case Result.FATAL:
+                            runtimes[title].fatal += 1
+                        case Result.OOM:
+                            runtimes[title].oom += 1
+                        case Result.TIMEOUT:
+                            runtimes[title].timeout += 1
+                        case Result.GLOBAL_TIMEOUT:
+                            runtimes[title].global_timeout += 1
+                except Exception as e:
+                    logger.log_warn_verbose(f"Exception while updating result counters for {title}, query {query}: {e}")
 
     if os.path.exists(result_csv + "_current") and benchmark_type == "queries":
         with open(result_csv + "_current", 'r') as file:
@@ -128,8 +140,35 @@ def run_benchmark(benchmark: Benchmark, systems: List[System], definition: dict,
                     umbra_planner = system.params.get("umbra_planner", False)
                     queries = benchmark.queries("umbra" if umbra_planner else system.dbms)
 
-                    # Shuffle the queries
-                    if query_seed is not None:
+                    # Determine a global sample of query names (consistent across systems)
+                    selected_names = None
+                    if query_limit and query_limit > 0:
+                        try:
+                            all_names = [f for f in os.listdir(benchmark.queries_path) if f.endswith(".sql")]
+                            all_names.sort()
+                            if query_seed is not None:
+                                random.seed(query_seed)
+                                random.shuffle(all_names)
+                            selected_names = all_names[:query_limit]
+                        except Exception as e:
+                            logger.log_warn_verbose(f"Failed to determine sampled queries: {e}")
+
+                        # Persist sample manifest for reproducibility
+                        try:
+                            with open(result_name + ".sample.txt", 'w') as sample_file:
+                                if query_seed is not None:
+                                    sample_file.write(f"# seed={query_seed}\n")
+                                sample_file.write(f"# limit={query_limit}\n")
+                                for n in (selected_names or []):
+                                    sample_file.write(n + "\n")
+                        except Exception as e:
+                            logger.log_warn_verbose(f"Failed to write sample manifest: {e}")
+
+                    # Apply sampling (preserve selected_names order), otherwise optionally shuffle
+                    if selected_names is not None:
+                        query_map = {name: query for (name, query) in queries}
+                        queries = [(name, query_map[name]) for name in selected_names if name in query_map]
+                    elif query_seed is not None:
                         random.seed(query_seed)
                         random.shuffle(queries)
 
@@ -160,7 +199,9 @@ def run_benchmark(benchmark: Benchmark, systems: List[System], definition: dict,
                     if len(queries) == 0:
                         runtime = runtimes[system.title]
                         rsum = formatter.format_time(sum(runtime.times))
-                        rgeomean = formatter.format_time(math.nan if len(runtime.times) == 0 else geometric_mean(runtime.times))
+                        # Filter out non-positive values for geometric mean calculation
+                        positive_times = [t for t in runtime.times if t > 0]
+                        rgeomean = formatter.format_time(math.nan if len(positive_times) == 0 else geometric_mean(positive_times))
                         rmedian = formatter.format_time(math.nan if len(runtime.times) == 0 else median(runtime.times))
 
                         logger.log_driver(
@@ -244,13 +285,19 @@ def run_benchmark(benchmark: Benchmark, systems: List[System], definition: dict,
                             runtimes[system.title].queries += 1
                             if result.state not in [Result.ERROR, Result.FATAL, Result.GLOBAL_TIMEOUT]:
                                 assert not math.isnan(med)
-                                runtimes[system.title].times.append(med)
+                                # Only add positive times for geometric mean calculation
+                                if med > 0:
+                                    runtimes[system.title].times.append(med)
+                                else:
+                                    logger.log_warn_verbose(f"Skipping non-positive runtime {med} for query {name} on {system.title}")
 
                             logger.log_verbose_dbms(f'{lname} {formatter.format_time(med)} {lmessage}', dbms)
 
                     runtime = runtimes[system.title]
                     rsum = formatter.format_time(sum(runtime.times))
-                    rgeomean = formatter.format_time(math.nan if len(runtime.times) == 0 else geometric_mean(runtime.times))
+                    # Filter out non-positive values for geometric mean calculation
+                    positive_times = [t for t in runtime.times if t > 0]
+                    rgeomean = formatter.format_time(math.nan if len(positive_times) == 0 else geometric_mean(positive_times))
                     rmedian = formatter.format_time(math.nan if len(runtime.times) == 0 else median(runtime.times))
 
                     logger.log_driver(
@@ -370,15 +417,31 @@ def run_benchmarks(args):
                 benchmark = benchmark_descriptions[b["name"]].instantiate(data_dir, b, included_queries=queries, excluded_queries=excluded_queries)
                 run_benchmark(benchmark, systems, definition, result_dir, db_dir, data_dir)
     else:
-        benchmark = benchmark_descriptions[args.benchmark].instantiate(data_dir, vars(args))
+        # Get benchmark configuration from definition
+        benchmark_config = None
+        for bs in definition["benchmarks"]:
+            if bs["name"] == args.benchmark:
+                benchmark_config = bs
+                break
+        
+        if benchmark_config is None:
+            # Fallback to default configuration
+            benchmark_config = {"name": args.benchmark}
+        
+        benchmark = benchmark_descriptions[args.benchmark].instantiate(data_dir, benchmark_config)
         run_benchmark(benchmark, systems, definition, result_dir, db_dir, data_dir)
 
 
 def main():
     logger.log_header("OLAPBench")
-
+    
+    # Check if virtual environment is activated
     if not os.getenv("VIRTUAL_ENV"):
-        logger.log_warn(f"Activate the venv first:\n   source {os.path.dirname(os.path.realpath(__file__))}/.venv/bin/activate")
+        venv_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), ".venv")
+        if os.path.exists(venv_path):
+            logger.log_driver(f"Virtual environment detected but not activated. To activate it, run:\n   source {venv_path}/bin/activate\n   python3 benchmark.py [options]")
+        else:
+            logger.log_warn(f"Virtual environment not found at {venv_path}. Please ensure the virtual environment is properly set up.")
 
     parser = argparse.ArgumentParser(description="Run a benchmark")
     parser.add_argument("-j", "--json", dest="json", required=True, type=str, help="path to the benchmark's json definition")

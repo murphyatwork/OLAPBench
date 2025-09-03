@@ -64,8 +64,9 @@ class ResultCSV:
             "rows": result.rows,
             "message": result.message.replace("\n", " "),
             "extra": json.dumps(result.extra, allow_nan=True),
-            "result": "" if result.result is None else json.dumps(result.result, use_decimal=True, default=sql_encoder, allow_nan=True),
-            "plan":  "" if result.plan is None else encode_query_plan(result.plan),
+            # Do not write potentially huge result/plan payloads to keep CSVs small
+            "result": "",
+            "plan":  "",
         }
 
         for metric in self.metrics:

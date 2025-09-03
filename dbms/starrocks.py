@@ -20,7 +20,8 @@ class StarRocks(DBMS):
         self._port = 8033
         self._user = "root"
         self._password = ""
-        self._database = "benchmark"
+        self._database = "tpch"
+        self._http_port = 8030  # will be detected dynamically
 
     @property
     def name(self) -> str:
@@ -37,17 +38,32 @@ class StarRocks(DBMS):
             autocommit=True
         )
         self.cursor = self.connection.cursor()
+
+        # Detect FE http port dynamically
+        try:
+            self.cursor.execute("SHOW FRONTENDS")
+            colnames = [c[0].lower() for c in self.cursor.description]
+            rows = self.cursor.fetchall()
+            if rows and colnames:
+                # find column named like http_port
+                http_idx = None
+                for i, n in enumerate(colnames):
+                    if 'http' in n and 'port' in n:
+                        http_idx = i
+                        break
+                # choose first row (leader generally first) if found
+                if http_idx is not None:
+                    hp = str(rows[0][http_idx])
+                    if hp.isdigit():
+                        self._http_port = int(hp)
+        except Exception:
+            # keep default 8030
+            pass
         
-        # Create and use benchmark database
-        self.cursor.execute("CREATE DATABASE IF NOT EXISTS benchmark")
-        self.cursor.execute("USE benchmark")
-        
-        # Drop existing tables to start fresh
-        self.cursor.execute("SHOW TABLES")
-        tables = self.cursor.fetchall()
-        for (table,) in tables:
-            self.cursor.execute(f"DROP TABLE IF EXISTS {table}")
-        
+        # Create and use tpch database
+        self.cursor.execute("CREATE DATABASE IF NOT EXISTS tpch")
+        self.cursor.execute("USE tpch")
+
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -112,18 +128,33 @@ class StarRocks(DBMS):
                 if col.get("_eval", True) and col["name"] not in pk_cols_set:
                     ordered_columns.append(col)
             
-            # Handle reserved keywords by adding backticks
+            # Handle reserved keywords by adding backticks and remove quotes
             reserved_words = ['text', 'comment', 'date', 'time', 'timestamp', 'order', 'group', 'by']
             columns = []
             for col in ordered_columns:
-                col_name = col["name"]
+                col_name = col["name"].replace(chr(34), "")  # Remove quotes
                 if col_name.lower() in reserved_words:
                     col_name = f"`{col_name}`"
                 columns.append(f'{col_name} {col["type"]}')
             columns = ', '.join(columns)
-            
-            # Simple CREATE TABLE for StarRocks
-            create_sql = f'CREATE TABLE {table["name"]} ({columns})'
+
+            # Choose key columns for StarRocks (sanitize quotes, wrap with backticks)
+            key_cols_raw = pk_cols if pk_cols else [ordered_columns[0]["name"].lower()] if ordered_columns else []
+            key_cols_sanitized = [c.replace('"', '') for c in key_cols_raw]
+            key_cols_sql = ", ".join(f"`{c}`" for c in key_cols_sanitized)
+            hash_base = (key_cols_sanitized[0] if key_cols_sanitized else (ordered_columns[0]['name'].lower() if ordered_columns else 'id'))
+            hash_base_clean = hash_base.replace('"', '')
+            hash_col_sql = f"`{hash_base_clean}`"
+
+            # Create StarRocks OLAP table with DUPLICATE KEY for broad compatibility
+            create_sql = (
+                f'CREATE TABLE IF NOT EXISTS {table["name"].replace(chr(34), "")} '
+                f'({columns}) '
+                f'ENGINE=OLAP '
+                f'DUPLICATE KEY({key_cols_sql}) '
+                f'DISTRIBUTED BY HASH({hash_col_sql}) BUCKETS 10 '
+                f'PROPERTIES ("replication_num" = "1")'
+            )
 
             statements.append(create_sql)
 
@@ -156,84 +187,167 @@ class StarRocks(DBMS):
                 raise Exception(f'Error while creating table: {output.message}')
         
         # Load data using StarRocks STREAM LOAD
-
+        
         self._load_data(schema)
         
         # Analyze tables for statistics
-        for table in schema["tables"]:
-            if not table.get("initially empty", False):
-                table_name = table['name'].lower()
-                try:
-                    self.cursor.execute(f"ANALYZE TABLE {table_name}")
-                except Exception as e:
-                    logger.log_error_verbose(f"Error analyzing table {table_name}: {e}")
+        # for table in schema["tables"]:
+        #     if not table.get("initially empty", False):
+        #         table_name = table['name'].lower()
+        #         try:
+        #             self.cursor.execute(f"ANALYZE TABLE {table_name.replace(chr(34), '')}")
+        #         except Exception as e:
+        #             logger.log_error_verbose(f"Error analyzing table {table_name}: {e}")
+                    
+        # After data loading, output table row counts
+        print("=== TPC-H 表数据行数检查 ===")
+        tables = ['part', 'supplier', 'partsupp', 'customer', 'orders', 'lineitem', 'nation', 'region']
+        for table in tables:
+            try:
+                self.cursor.execute(f'SELECT COUNT(*) FROM {table}')
+                count = self.cursor.fetchone()[0]
+                print(f'{table:12}: {count:>8} 行')
+            except Exception as e:
+                print(f'{table:12}: 错误 - {e}')
+        print()
+
+
 
     def _load_data(self, schema: dict):
-        """Load data using StarRocks STREAM LOAD"""
+        """Load data using StarRocks STREAM LOAD.
+
+        This implementation is dataset-agnostic. It relies on the schema-provided
+        relative file path (table["file"]) which is constructed by the active
+        benchmark. This avoids hardcoding dataset-specific paths or filename
+        conventions (e.g., StackOverflow vs. TPC-H vs. TPC-DS).
+        """
 
         for table in schema["tables"]:
 
             if table.get("initially empty", False):
                 continue
-            
-            table_name = table['name'].lower()
-            
-            # Find CSV file with different naming conventions
-            # Map table names to actual CSV file names
-            table_name_mapping = {
-                'posthistorytypes': 'PostHistoryTypes',
-                'linktypes': 'LinkTypes', 
-                'posttypes': 'PostTypes',
-                'closereasontypes': 'CloseReasonTypes',
-                'votetypes': 'VoteTypes',
-                'users': 'Users',
-                'badges': 'Badges',
-                'posts': 'Posts', 
-                'comments': 'Comments',
-                'posthistory': 'PostHistory',
-                'postlinks': 'PostLinks',
-                'tags': 'Tags',
-                'votes': 'Votes'
-            }
-            
-            possible_names = [
-                f"{table_name}.csv",                                    # posthistorytypes.csv
-                f"{table_name.capitalize()}.csv",                       # Posthistorytypes.csv  
-                f"{table_name.upper()}.csv",                            # POSTHISTORYTYPES.csv
-                f"{table_name_mapping.get(table_name, table_name)}.csv" # PostHistoryTypes.csv
-            ]
-            
-            # The data files are in stackoverflow_math subdirectory
-            data_dir = f"{self._data_dir}/stackoverflow_math"
-            
-            data_file = None
-            for name in possible_names:
-                path = f"{data_dir}/{name}"
-                if os.path.exists(path):
-                    data_file = path
-                    break
-            
-            if not data_file:
-                logger.log_verbose_dbms(f"No data file found for {table_name}", self)
-                continue
-            
+
+            table_name = table["name"].lower().replace('"','')
+
+            # Skip load if table already has rows
+            try:
+                self.cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
+                existing = int(self.cursor.fetchone()[0])
+                if existing > 0:
+                    logger.log_verbose_dbms(f"Skip load for {table_name}: {existing} rows present", self)
+                    continue
+            except Exception:
+                # ignore; will attempt to load
+                pass
+
+            # Resolve the data file path from the benchmark schema
+            relative_file = table.get("file")
+            data_file = os.path.join(self._data_dir, relative_file) if relative_file else None
+
+            is_compressed = False
+
+            # Fallback: if the exact file is not present, try a .zstd variant
+            if not data_file or not os.path.exists(data_file):
+                zstd_candidate = os.path.join(self._data_dir, f"{relative_file}.zstd") if relative_file else None
+                if zstd_candidate and os.path.exists(zstd_candidate):
+                    data_file = zstd_candidate
+                    is_compressed = True
+                else:
+                    # Additional fallback for TPCH: try sf1 if requested scale missing
+                    if relative_file and ('/tpch/' in relative_file or relative_file.startswith('tpch/')):
+                        # replace sf<...> with sf1
+                        parts = relative_file.split('/')
+                        for i, p in enumerate(parts):
+                            if p.startswith('sf'):
+                                parts[i] = 'sf1'
+                                break
+                        fallback_rel = '/'.join(parts)
+                        fallback_path = os.path.join(self._data_dir, fallback_rel)
+                        if os.path.exists(fallback_path):
+                            data_file = fallback_path
+                            is_compressed = False
+                        else:
+                            zstd_fallback = fallback_path + '.zstd'
+                            if os.path.exists(zstd_fallback):
+                                data_file = zstd_fallback
+                                is_compressed = True
+                    if not data_file or not os.path.exists(data_file):
+                        logger.log_verbose_dbms(f"No data file found for {table_name}", self)
+                        continue
+
+            # Choose separator and header handling based on file ending
+            source_name = relative_file or os.path.basename(data_file)
+            base_name = source_name[:-5] if source_name.endswith('.zstd') else source_name
+            if base_name.endswith('.tbl') or base_name.endswith('.dat'):
+                column_separator = '|'
+                skip_header = '0'
+            else:
+                column_separator = ','
+                skip_header = '1'
+
             # Try STREAM LOAD
-            success = self._stream_load_table(table_name, data_file)
-            
+            success = self._stream_load_table(
+                table_name=table_name,
+                data_file=data_file,
+                is_compressed=is_compressed,
+                column_separator=column_separator,
+                skip_header=skip_header,
+            )
+
             if not success:
                 logger.log_error_verbose(f"Failed to load data for {table_name}")
 
-    def _stream_load_table(self, table_name: str, data_file: str) -> bool:
+    def _stream_load_table(self, table_name: str, data_file: str, is_compressed: bool, column_separator: str, skip_header: str) -> bool:
         """Load data using StarRocks HTTP STREAM LOAD"""
+        temp_file = None
         try:
+            # If file is zstd compressed, decompress to temporary file
+            if is_compressed:
+                logger.log_verbose_dbms(f"Decompressing zstd file: {data_file}", self)
+                temp_file = self._decompress_zstd_file(data_file)
+                if not temp_file:
+                    logger.log_error_verbose(f"Failed to decompress zstd file: {data_file}")
+                    return False
+                data_file = temp_file
+
+            # For TPCH .tbl files, strip trailing '|' to avoid extra empty column
+            try:
+                base = os.path.basename(data_file)
+                if base.endswith('.tbl') or base.endswith('.tbl.tmp'):
+                    # sanitize
+                    import tempfile
+                    fd, cleaned_path = tempfile.mkstemp(suffix='.tbl')
+                    os.close(fd)
+                    with open(data_file, 'r', encoding='utf-8', errors='ignore') as fin, open(cleaned_path, 'w', encoding='utf-8') as fout:
+                        for line in fin:
+                            # remove trailing CR/LF first, then one trailing '|', then add '\n'
+                            s = line.rstrip('\n').rstrip('\r')
+                            if s.endswith('|'):
+                                s = s[:-1]
+                            fout.write(s + '\n')
+                    # swap to cleaned file
+                    if temp_file is None:
+                        temp_file = cleaned_path
+                    else:
+                        # remove previous temp and replace
+                        try:
+                            os.unlink(temp_file)
+                        except Exception:
+                            pass
+                        temp_file = cleaned_path
+                    data_file = temp_file
+            except Exception as e:
+                logger.log_error_verbose(f"Sanitize .tbl failed for {table_name}: {e}")
+            
             label = f"load_{table_name}_{int(time.time())}"
-            url = f"http://127.0.0.1:8031/api/benchmark/{table_name}/_stream_load"
+            # Use detected FE HTTP port and the configured database name
+            url = f"http://{self._host}:{self._http_port}/api/{self._database}/{table_name}/_stream_load"
             
             headers = {
                 'label': label,
-                'column_separator': ',',
+                'column_separator': column_separator,
                 'line_delimiter': '\\n',
-                'skip_header': '1',
+                'skip_header': skip_header,
                 'format': 'csv',
                 'timeout': '3600',
                 'max_filter_ratio': '0.1',
@@ -256,19 +370,23 @@ class StarRocks(DBMS):
             
             try:
                 result = subprocess.run(curl_cmd, capture_output=True, text=True, timeout=3600)
-                
                 if result.returncode == 0 and result.stdout:
                     import json
-                    response_data = json.loads(result.stdout)
-                    
-                    if response_data.get('Status') == 'Success':
-                        rows = response_data.get('NumberLoadedRows', 0)
-                        logger.log_verbose_dbms(f"Successfully loaded {rows:,} rows into {table_name}", self)
+                    try:
+                        response_data = json.loads(result.stdout)
+                    except Exception:
+                        logger.log_error_verbose(f"STREAM LOAD non-JSON response for {table_name}: {result.stdout[:200]}...")
+                        return False
+
+                    status = response_data.get('Status') or response_data.get('status')
+                    loaded = response_data.get('NumberLoadedRows', 0)
+                    if (isinstance(status, str) and status.lower() == 'success') and loaded > 0:
+                        logger.log_verbose_dbms(f"Successfully loaded {loaded:,} rows into {table_name}", self)
                         return True
                     else:
-                        logger.log_error_verbose(f"STREAM LOAD failed for {table_name}: {response_data.get('Message')}")
+                        logger.log_error_verbose(f"STREAM LOAD failed/empty for {table_name}: {response_data}")
                 else:
-                    logger.log_error_verbose(f"Curl command failed for {table_name}")
+                    logger.log_error_verbose(f"Curl command failed for {table_name}: rc={result.returncode}, stderr={result.stderr[:200]}...")
                     
             except subprocess.TimeoutExpired:
                 logger.log_error_verbose(f"Curl command timed out for {table_name}")
@@ -278,7 +396,79 @@ class StarRocks(DBMS):
         except Exception as e:
             logger.log_error_verbose(f"Error loading {table_name}: {e}")
             
+        finally:
+            # Clean up temporary file if it was created
+            if temp_file and os.path.exists(temp_file):
+                try:
+                    os.unlink(temp_file)
+                    logger.log_verbose_dbms(f"Cleaned up temporary file: {temp_file}", self)
+                except Exception as e:
+                    logger.log_error_verbose(f"Failed to clean up temporary file {temp_file}: {e}")
+            
         return False
+
+    def _decompress_zstd_file(self, zstd_file: str) -> str:
+        """Decompress a zstd file to a temporary file and return the path"""
+        try:
+            import tempfile
+            import subprocess
+            
+            # Create a temporary file
+            temp_fd, temp_path = tempfile.mkstemp(suffix='.csv')
+            os.close(temp_fd)  # Close the file descriptor, we'll use subprocess
+            
+            # Use zstd command to decompress
+            # Check if zstd command is available
+            try:
+                result = subprocess.run(['zstd', '--version'], capture_output=True, text=True, timeout=10)
+                if result.returncode != 0:
+                    # Try alternative command names
+                    for cmd in ['zstd', 'zstdcat']:
+                        try:
+                            result = subprocess.run([cmd, '--version'], capture_output=True, text=True, timeout=10)
+                            if result.returncode == 0:
+                                break
+                        except FileNotFoundError:
+                            continue
+                    else:
+                        logger.log_error_verbose("zstd command not found. Please install zstd.")
+                        return None
+            except FileNotFoundError:
+                logger.log_error_verbose("zstd command not found. Please install zstd.")
+                return None
+            
+            # Decompress the file
+            try:
+                # Use zstd -d to decompress to output file
+                result = subprocess.run(['zstd', '-d', zstd_file, '-o', temp_path], 
+                                      capture_output=True, text=True, timeout=300)
+                
+                if result.returncode == 0:
+                    logger.log_verbose_dbms(f"Successfully decompressed {zstd_file} to {temp_path}", self)
+                    return temp_path
+                else:
+                    logger.log_error_verbose(f"Failed to decompress {zstd_file}: {result.stderr}")
+                    # Clean up temp file
+                    if os.path.exists(temp_path):
+                        os.unlink(temp_path)
+                    return None
+                    
+            except subprocess.TimeoutExpired:
+                logger.log_error_verbose(f"Decompression timed out for {zstd_file}")
+                # Clean up temp file
+                if os.path.exists(temp_path):
+                    os.unlink(temp_path)
+                return None
+                
+        except Exception as e:
+            logger.log_error_verbose(f"Error decompressing {zstd_file}: {e}")
+            # Clean up temp file if it exists
+            if 'temp_path' in locals() and os.path.exists(temp_path):
+                try:
+                    os.unlink(temp_path)
+                except:
+                    pass
+            return None
 
     def _rewrite_query(self, query: str) -> str:
         """Rewrite SQL queries for StarRocks compatibility"""

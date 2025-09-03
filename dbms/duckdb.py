@@ -147,33 +147,33 @@ class DuckDB(DBMS):
 
     def _execute(self, query: str, fetch_result: bool, timeout: int = 0, fetch_result_limit: int = 0) -> Result:
         output = Result()
-        
-        # 执行查询
+
+        # 测量整个查询执行的客户端耗时
+        import time
+        start_time = time.perf_counter()
         result = self._execute_query(query, timeout)
-        
+        duration_ms = (time.perf_counter() - start_time) * 1000.0
+
         if result['status'] == 'success':
             output.state = Result.SUCCESS
             output.rows = len(result['result']) if result['result'] else 0
-            
-            # 记录执行时间（这里简化处理，实际应该测量时间）
-            import time
-            start_time = time.time()
-            execution_time = (time.time() - start_time) * 1000  # 转换为毫秒
-            output.client_total.append(execution_time)
-            
+            output.client_total.append(duration_ms)
+
             if fetch_result:
                 output.result = result['result']
-                
+
         elif result['status'] == 'timeout':
             output.state = Result.TIMEOUT
             output.message = result['error']
+            # 采用设定的超时值（毫秒）作为记录，贴合其他后端的约定
             output.client_total.append(timeout * 1000)
-            
+
         else:
             output.state = Result.ERROR
             output.message = result['error']
-            output.client_total.append(0)
-        
+            # 记录到返回前的实际耗时，便于排查
+            output.client_total.append(duration_ms)
+
         return output
 
     def retrieve_query_plan(self, query: str, include_system_representation: bool = False) -> QueryPlan:

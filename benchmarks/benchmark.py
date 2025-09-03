@@ -48,7 +48,15 @@ class Benchmark(ABC):
 
     @property
     def queries_path(self) -> str:
-        return os.path.join(self.path, "queries" + ("" if self.query_dir is None else f"_{self.query_dir}"))
+        if self.query_dir is None:
+            return os.path.join(self.path, "queries")
+        else:
+            # If query_dir already contains "queries_", use it directly
+            if self.query_dir.startswith("queries_"):
+                return os.path.join(self.path, self.query_dir)
+            else:
+                # Otherwise, construct the path as before
+                return os.path.join(self.path, "queries" + f"_{self.query_dir}")
 
     def _load_with_command(self, command):
         if not os.path.isdir(os.path.join("data", self.data_dir)):
