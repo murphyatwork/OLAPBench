@@ -79,6 +79,12 @@ def format_ms(v: float) -> str:
     return f"{v:.2f}"
 
 
+def format_ratio(v: float) -> str:
+    if math.isnan(v):
+        return "nan"
+    return f"{v:.2f}"
+
+
 def _infer_sample_path(csv_path: str) -> str:
     # try replacing .csv with .sample.txt
     if csv_path.endswith('.csv'):
@@ -157,7 +163,7 @@ def main():
     sr_times: List[float] = []
     dd_times: List[float] = []
 
-    per_query: List[Tuple[str, str, float, str, float]] = []  # (name, left_state, left_ms, right_state, right_ms)
+    per_query: List[Tuple[str, str, float, str, float, float]] = []  # (name, left_state, left_ms, right_state, right_ms, ratio)
 
     for name in sample:
         if name not in left or name not in right:
@@ -166,7 +172,19 @@ def main():
         s = left[name]
         d = right[name]
 
-        per_query.append((name, s["state"], s["median_ms"], d["state"], d["median_ms"]))
+        s_ms = s["median_ms"]
+        d_ms = d["median_ms"]
+        ratio = math.nan
+        if (
+            s["state"] == 'success' and d["state"] == 'success' and
+            not math.isnan(s_ms) and not math.isnan(d_ms) and d_ms > 0
+        ):
+            try:
+                ratio = s_ms / d_ms
+            except Exception:
+                ratio = math.nan
+
+        per_query.append((name, s["state"], s_ms, d["state"], d_ms, ratio))
 
         if s["state"] == 'success' and not math.isnan(s["median_ms"]):
             sr_ok += 1
@@ -199,6 +217,15 @@ def main():
     dd_sum, dd_geo, dd_med = stats(dd_times)
 
     out_path = args.output or os.path.join(base, 'results', f'comparison_{left_label}_vs_{right_label}.md')
+    # Sort per-query by ratio descending, invalid ratios at the bottom
+    def _per_query_sort_key(item: Tuple[str, str, float, str, float, float]):
+        r = item[5]
+        if math.isnan(r):
+            return (1, 0.0)
+        return (0, -r)
+
+    per_query_sorted = sorted(per_query, key=_per_query_sort_key)
+
     with open(out_path, 'w') as out:
         out.write(f"## Comparison ({left_label} vs {right_label})\n\n")
         out.write(f"Sample size: {total}, matched rows: {matched}\n\n")
@@ -210,11 +237,11 @@ def main():
         out.write(f"success={dd_ok}, error={dd_err}, timeout={dd_timeout}, other={dd_other}, ")
         out.write(f"sum={format_ms(dd_sum)} ms, geomean={format_ms(dd_geo)} ms, median={format_ms(dd_med)} ms\n\n")
 
-        out.write("### Per-query (name, state/median_ms)\n\n")
-        out.write(f"| name | {left_label} state | {left_label} median_ms | {right_label} state | {right_label} median_ms |\n")
-        out.write("|---|---|---:|---|---:|\n")
-        for name, s_state, s_ms, d_state, d_ms in per_query:
-            out.write(f"| {name} | {s_state} | {format_ms(s_ms)} | {d_state} | {format_ms(d_ms)} |\n")
+        out.write("### Per-query (name, state/median_ms/ratio)\n\n")
+        out.write(f"| name | {left_label} state | {left_label} median_ms | {right_label} state | {right_label} median_ms | ratio({left_label}/{right_label}) |\n")
+        out.write("|---|---|---:|---|---:|---:|\n")
+        for name, s_state, s_ms, d_state, d_ms, ratio in per_query_sorted:
+            out.write(f"| {name} | {s_state} | {format_ms(s_ms)} | {d_state} | {format_ms(d_ms)} | {format_ratio(ratio)} |\n")
 
     print(f"Wrote report: {out_path}")
 

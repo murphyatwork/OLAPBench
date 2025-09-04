@@ -1,4 +1,5 @@
 import re
+from typing import Optional
 import tempfile
 import threading
 import time
@@ -16,8 +17,8 @@ from util import logger
 class StarRocks(DBMS):
     def __init__(self, benchmark: Benchmark, index: DBMS.Index, data_dir: str, params: dict = None, settings: dict = None):
         super().__init__(benchmark, index, data_dir, params or {}, settings or {})
-        self._host = "127.0.0.1"
-        self._port = 8033
+        self._host = "172.26.95.145"
+        self._port = 9030
         self._user = "root"
         self._password = ""
         self._database = "tpch"
@@ -63,6 +64,11 @@ class StarRocks(DBMS):
         # Create and use tpch database
         self.cursor.execute("CREATE DATABASE IF NOT EXISTS tpch")
         self.cursor.execute("USE tpch")
+        # Ensure query profiles are collected for this session
+        try:
+            self.cursor.execute("SET enable_profile = true")
+        except Exception:
+            pass
 
         return self
 
@@ -152,7 +158,7 @@ class StarRocks(DBMS):
                 f'({columns}) '
                 f'ENGINE=OLAP '
                 f'DUPLICATE KEY({key_cols_sql}) '
-                f'DISTRIBUTED BY HASH({hash_col_sql}) BUCKETS 10 '
+                f'DISTRIBUTED BY HASH({hash_col_sql}) BUCKETS 64 '
                 f'PROPERTIES ("replication_num" = "1")'
             )
 
@@ -289,7 +295,6 @@ class StarRocks(DBMS):
             success = self._stream_load_table(
                 table_name=table_name,
                 data_file=data_file,
-                is_compressed=is_compressed,
                 column_separator=column_separator,
                 skip_header=skip_header,
             )
@@ -297,48 +302,10 @@ class StarRocks(DBMS):
             if not success:
                 logger.log_error_verbose(f"Failed to load data for {table_name}")
 
-    def _stream_load_table(self, table_name: str, data_file: str, is_compressed: bool, column_separator: str, skip_header: str) -> bool:
+    def _stream_load_table(self, table_name: str, data_file: str, column_separator: str, skip_header: str) -> bool:
         """Load data using StarRocks HTTP STREAM LOAD"""
         temp_file = None
         try:
-            # If file is zstd compressed, decompress to temporary file
-            if is_compressed:
-                logger.log_verbose_dbms(f"Decompressing zstd file: {data_file}", self)
-                temp_file = self._decompress_zstd_file(data_file)
-                if not temp_file:
-                    logger.log_error_verbose(f"Failed to decompress zstd file: {data_file}")
-                    return False
-                data_file = temp_file
-
-            # For TPCH .tbl files, strip trailing '|' to avoid extra empty column
-            try:
-                base = os.path.basename(data_file)
-                if base.endswith('.tbl') or base.endswith('.tbl.tmp'):
-                    # sanitize
-                    import tempfile
-                    fd, cleaned_path = tempfile.mkstemp(suffix='.tbl')
-                    os.close(fd)
-                    with open(data_file, 'r', encoding='utf-8', errors='ignore') as fin, open(cleaned_path, 'w', encoding='utf-8') as fout:
-                        for line in fin:
-                            # remove trailing CR/LF first, then one trailing '|', then add '\n'
-                            s = line.rstrip('\n').rstrip('\r')
-                            if s.endswith('|'):
-                                s = s[:-1]
-                            fout.write(s + '\n')
-                    # swap to cleaned file
-                    if temp_file is None:
-                        temp_file = cleaned_path
-                    else:
-                        # remove previous temp and replace
-                        try:
-                            os.unlink(temp_file)
-                        except Exception:
-                            pass
-                        temp_file = cleaned_path
-                    data_file = temp_file
-            except Exception as e:
-                logger.log_error_verbose(f"Sanitize .tbl failed for {table_name}: {e}")
-            
             label = f"load_{table_name}_{int(time.time())}"
             # Use detected FE HTTP port and the configured database name
             url = f"http://{self._host}:{self._http_port}/api/{self._database}/{table_name}/_stream_load"
@@ -351,7 +318,8 @@ class StarRocks(DBMS):
                 'format': 'csv',
                 'timeout': '3600',
                 'max_filter_ratio': '0.1',
-                'Expect': '100-continue'
+                'Expect': '100-continue',
+                'Content-Encoding': 'zstd'
             }
             
             # Use subprocess to call curl (more reliable for StarRocks)
@@ -364,6 +332,7 @@ class StarRocks(DBMS):
                 '-H', f"line_delimiter:\\n",
                 '-H', f"skip_header:{headers['skip_header']}",
                 '-H', f"Expect:{headers['Expect']}",
+                '-H', f"Content-Encoding:{headers['Content-Encoding']}",
                 '-T', data_file,
                 url
             ]
@@ -396,79 +365,7 @@ class StarRocks(DBMS):
         except Exception as e:
             logger.log_error_verbose(f"Error loading {table_name}: {e}")
             
-        finally:
-            # Clean up temporary file if it was created
-            if temp_file and os.path.exists(temp_file):
-                try:
-                    os.unlink(temp_file)
-                    logger.log_verbose_dbms(f"Cleaned up temporary file: {temp_file}", self)
-                except Exception as e:
-                    logger.log_error_verbose(f"Failed to clean up temporary file {temp_file}: {e}")
-            
         return False
-
-    def _decompress_zstd_file(self, zstd_file: str) -> str:
-        """Decompress a zstd file to a temporary file and return the path"""
-        try:
-            import tempfile
-            import subprocess
-            
-            # Create a temporary file
-            temp_fd, temp_path = tempfile.mkstemp(suffix='.csv')
-            os.close(temp_fd)  # Close the file descriptor, we'll use subprocess
-            
-            # Use zstd command to decompress
-            # Check if zstd command is available
-            try:
-                result = subprocess.run(['zstd', '--version'], capture_output=True, text=True, timeout=10)
-                if result.returncode != 0:
-                    # Try alternative command names
-                    for cmd in ['zstd', 'zstdcat']:
-                        try:
-                            result = subprocess.run([cmd, '--version'], capture_output=True, text=True, timeout=10)
-                            if result.returncode == 0:
-                                break
-                        except FileNotFoundError:
-                            continue
-                    else:
-                        logger.log_error_verbose("zstd command not found. Please install zstd.")
-                        return None
-            except FileNotFoundError:
-                logger.log_error_verbose("zstd command not found. Please install zstd.")
-                return None
-            
-            # Decompress the file
-            try:
-                # Use zstd -d to decompress to output file
-                result = subprocess.run(['zstd', '-d', zstd_file, '-o', temp_path], 
-                                      capture_output=True, text=True, timeout=300)
-                
-                if result.returncode == 0:
-                    logger.log_verbose_dbms(f"Successfully decompressed {zstd_file} to {temp_path}", self)
-                    return temp_path
-                else:
-                    logger.log_error_verbose(f"Failed to decompress {zstd_file}: {result.stderr}")
-                    # Clean up temp file
-                    if os.path.exists(temp_path):
-                        os.unlink(temp_path)
-                    return None
-                    
-            except subprocess.TimeoutExpired:
-                logger.log_error_verbose(f"Decompression timed out for {zstd_file}")
-                # Clean up temp file
-                if os.path.exists(temp_path):
-                    os.unlink(temp_path)
-                return None
-                
-        except Exception as e:
-            logger.log_error_verbose(f"Error decompressing {zstd_file}: {e}")
-            # Clean up temp file if it exists
-            if 'temp_path' in locals() and os.path.exists(temp_path):
-                try:
-                    os.unlink(temp_path)
-                except:
-                    pass
-            return None
 
     def _rewrite_query(self, query: str) -> str:
         """Rewrite SQL queries for StarRocks compatibility"""
@@ -539,8 +436,8 @@ class StarRocks(DBMS):
         processed_query = re.sub(r'\s+FETCH\s+(FIRST|NEXT)\s+\d+\s+(ROW|ROWS)\s+(ONLY)?', '', processed_query, flags=re.IGNORECASE)
         
         # Convert ARRAY_AGG to group_concat
-        processed_query = re.sub(r'\bARRAY_AGG\s*\(\s*DISTINCT\s+([^)]+)\)', r'group_concat(DISTINCT \1)', processed_query, flags=re.IGNORECASE)
-        processed_query = re.sub(r'\bARRAY_AGG\s*\(([^)]+)\)', r'group_concat(\1)', processed_query, flags=re.IGNORECASE)
+        # processed_query = re.sub(r'\bARRAY_AGG\s*\(\s*DISTINCT\s+([^)]+)\)', r'group_concat(DISTINCT \1)', processed_query, flags=re.IGNORECASE)
+        # processed_query = re.sub(r'\bARRAY_AGG\s*\(([^)]+)\)', r'group_concat(\1)', processed_query, flags=re.IGNORECASE)
         
         # Remove UNNEST and string_to_array functions (not supported)
         # Convert UNNEST(string_to_array(...)) patterns to simpler alternatives
@@ -571,6 +468,19 @@ class StarRocks(DBMS):
             timer = threading.Timer(timeout, timeout_handler)
             timer.start()
 
+        # Capture previous last_query_id to detect whether a new query id is generated
+        prev_query_id = None
+        try:
+            if not re.search(r"\\b(get_query_profile|last_query_id)\\b", processed_query, re.IGNORECASE):
+                try:
+                    self.cursor.execute("SELECT last_query_id()")
+                    _row_prev = self.cursor.fetchone()
+                    prev_query_id = _row_prev[0] if _row_prev else None
+                except Exception:
+                    prev_query_id = None
+        except Exception:
+            prev_query_id = None
+
         try:
             start_time = time.time()
             self.cursor.execute(processed_query)
@@ -586,9 +496,42 @@ class StarRocks(DBMS):
             result.client_total = [int((end_time - start_time) * 1000)]
             result.state = Result.SUCCESS
             
+            # After executing the query, fetch and persist the query profile using the same session
+            try:
+                if not re.search(r"\\b(get_query_profile|last_query_id)\\b", processed_query, re.IGNORECASE):
+                    curr_query_id = None
+                    try:
+                        self.cursor.execute("SELECT last_query_id()")
+                        row = self.cursor.fetchone()
+                        curr_query_id = row[0] if row else None
+                    except Exception:
+                        curr_query_id = None
+
+                    if curr_query_id and curr_query_id != prev_query_id:
+                        # Reuse retrieve_query_plan to fetch and persist the profile
+                        self.retrieve_query_plan(processed_query, include_system_representation=False, query_id=curr_query_id)
+            except Exception as e:
+                # Do not fail the original query on profiling errors
+                logger.log_error_verbose(f"Failed to fetch/save query profile: {e}")
+            
         except Exception as e:
             result.state = Result.ERROR
             result.message = str(e)
+            # Attempt to capture profile for failed queries as well (if a query id was assigned)
+            try:
+                if not re.search(r"\\b(get_query_profile|last_query_id)\\b", processed_query, re.IGNORECASE):
+                    curr_query_id = None
+                    try:
+                        self.cursor.execute("SELECT last_query_id()")
+                        row = self.cursor.fetchone()
+                        curr_query_id = row[0] if row else None
+                    except Exception:
+                        curr_query_id = None
+                    if curr_query_id and curr_query_id != prev_query_id:
+                        # Reuse retrieve_query_plan to fetch and persist the profile for failed queries
+                        self.retrieve_query_plan(processed_query, include_system_representation=False, query_id=curr_query_id)
+            except Exception as ex:
+                logger.log_error_verbose(f"Failed to fetch/save error query profile: {ex}")
             
         if timer is not None:
             timer.cancel()
@@ -596,6 +539,87 @@ class StarRocks(DBMS):
 
         return result
 
+
+    def retrieve_query_plan(self, query: str, include_system_representation: bool = False, query_id: Optional[str] = None):
+        """Fetch StarRocks query profile for the last executed query and persist it.
+
+        This implementation focuses on collecting the textual query profile via
+        get_query_profile(query_id). StarRocks JSON plan parsing is not supported
+        here, so the function returns None to remain compatible with the framework
+        interface.
+        """
+
+        try:
+            # Skip if the statement itself is a profile/introspection query
+            if re.search(r"\\b(get_query_profile|last_query_id)\\b", query or "", re.IGNORECASE):
+                return None
+
+            curr_query_id = query_id
+            if not curr_query_id:
+                try:
+                    self.cursor.execute("SELECT last_query_id()")
+                    row = self.cursor.fetchone()
+                    curr_query_id = row[0] if row else None
+                except Exception:
+                    curr_query_id = None
+
+            if not curr_query_id:
+                return None
+
+            # Retry to obtain the profile since it may not be ready immediately
+            profile_text = None
+            for _ in range(10):
+                try:
+                    self.cursor.execute(f"SELECT get_query_profile('{curr_query_id}')")
+                    prof_row = self.cursor.fetchone()
+                    profile_text = prof_row[0] if prof_row and len(prof_row) > 0 else None
+                    if profile_text:
+                        break
+                except Exception:
+                    pass
+                time.sleep(0.1)
+
+            if not profile_text:
+                return None
+
+            # Persist the profile text
+            base_dir = os.path.dirname(os.path.dirname(__file__))
+            profile_dir = os.path.join(base_dir, 'results', 'starrocks_profiles')
+            try:
+                os.makedirs(profile_dir, exist_ok=True)
+            except Exception:
+                pass
+
+            ts_ms = int(time.time() * 1000)
+            safe_qid = re.sub(r"[^A-Za-z0-9_.-]+", "_", str(curr_query_id))
+            query_prefix = None
+            try:
+                qn = getattr(self, "_current_query_name", None)
+                if qn:
+                    qn_base = os.path.basename(str(qn))
+                    if not qn_base.lower().endswith(".sql"):
+                        qn_base = qn_base + ".sql"
+                    query_prefix = re.sub(r"[^A-Za-z0-9_.-]+", "_", qn_base)
+            except Exception:
+                query_prefix = None
+
+            if query_prefix:
+                file_name = f"{query_prefix}.{ts_ms}_{safe_qid}.profile"
+            else:
+                file_name = f"{ts_ms}_{safe_qid}.profile"
+            file_path = os.path.join(profile_dir, file_name)
+
+            try:
+                with open(file_path, 'w', encoding='utf-8') as fout:
+                    fout.write(profile_text)
+            except Exception as e:
+                logger.log_error_verbose(f"Failed to write query profile to {file_path}: {e}")
+
+        except Exception as e:
+            logger.log_error_verbose(f"Failed to retrieve StarRocks query profile: {e}")
+
+        # No structured plan support yet
+        return None
 
 class StarRocksDescription(DBMSDescription):
     def __init__(self):

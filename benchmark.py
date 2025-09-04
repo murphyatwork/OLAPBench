@@ -233,6 +233,11 @@ def run_benchmark(benchmark: Benchmark, systems: List[System], definition: dict,
                             result_csv_file.start_olap(system.title, name)
 
                             progress.next(f'Running {name}...')
+                            # Expose current SQL filename to DBMS for profiling file naming
+                            try:
+                                setattr(dbms, "_current_query_name", name)
+                            except Exception:
+                                pass
                             if result.state == Result.SUCCESS:
                                 for i in range(warmup):
                                     dbms._execute(query, fetch_result, timeout=timeout, fetch_result_limit=fetch_result_limit)

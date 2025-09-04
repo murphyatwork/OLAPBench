@@ -20,7 +20,10 @@
     "fetch_result": true,
     "fetch_result_limit": 1000,
     "query_seed": 12345,
-    "query_limit": 200
+    "query_limit": 100,
+    "query_plan": {
+      "retrieve": true
+    }
   },
   "benchmarks": [
     {
