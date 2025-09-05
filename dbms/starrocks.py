@@ -250,41 +250,18 @@ class StarRocks(DBMS):
             relative_file = table.get("file")
             data_file = os.path.join(self._data_dir, relative_file) if relative_file else None
 
-            is_compressed = False
-
-            # Fallback: if the exact file is not present, try a .zstd variant
+            # Fallback: if the exact file is not present, try a `.zst` variant
             if not data_file or not os.path.exists(data_file):
-                zstd_candidate = os.path.join(self._data_dir, f"{relative_file}.zstd") if relative_file else None
-                if zstd_candidate and os.path.exists(zstd_candidate):
-                    data_file = zstd_candidate
-                    is_compressed = True
+                zst_candidate = os.path.join(self._data_dir, f"{relative_file}.zst") if relative_file else None
+                if zst_candidate and os.path.exists(zst_candidate):
+                    data_file = zst_candidate
                 else:
-                    # Additional fallback for TPCH: try sf1 if requested scale missing
-                    if relative_file and ('/tpch/' in relative_file or relative_file.startswith('tpch/')):
-                        # replace sf<...> with sf1
-                        parts = relative_file.split('/')
-                        for i, p in enumerate(parts):
-                            if p.startswith('sf'):
-                                parts[i] = 'sf1'
-                                break
-                        fallback_rel = '/'.join(parts)
-                        fallback_path = os.path.join(self._data_dir, fallback_rel)
-                        if os.path.exists(fallback_path):
-                            data_file = fallback_path
-                            is_compressed = False
-                        else:
-                            zstd_fallback = fallback_path + '.zstd'
-                            if os.path.exists(zstd_fallback):
-                                data_file = zstd_fallback
-                                is_compressed = True
-                    if not data_file or not os.path.exists(data_file):
-                        logger.log_verbose_dbms(f"No data file found for {table_name}", self)
-                        continue
+                    logger.log_verbose_dbms(f"No data file found for {table_name}", self)
+                    continue
 
             # Choose separator and header handling based on file ending
             source_name = relative_file or os.path.basename(data_file)
-            base_name = source_name[:-5] if source_name.endswith('.zstd') else source_name
-            if base_name.endswith('.tbl') or base_name.endswith('.dat'):
+            if '.tbl' in source_name or '.dat' in source_name:
                 column_separator = '|'
                 skip_header = '0'
             else:
@@ -310,34 +287,26 @@ class StarRocks(DBMS):
             # Use detected FE HTTP port and the configured database name
             url = f"http://{self._host}:{self._http_port}/api/{self._database}/{table_name}/_stream_load"
             
-            headers = {
-                'label': label,
-                'column_separator': column_separator,
-                'line_delimiter': '\\n',
-                'skip_header': skip_header,
-                'format': 'csv',
-                'timeout': '3600',
-                'max_filter_ratio': '0.1',
-                'Expect': '100-continue',
-                'Content-Encoding': 'zstd'
-            }
-            
-            # Use subprocess to call curl (more reliable for StarRocks)
+            # Merge the headers dictionary directly into the curl command construction, eliminating the separate headers dict.
             import subprocess
-            
+
             curl_cmd = [
                 'curl', '-L', '--location-trusted', '-u', 'root:',
-                '-H', f"label:{headers['label']}",
-                '-H', f"column_separator:{headers['column_separator']}",
+                '-H', f"label:{label}",
+                '-H', f"column_separator:{column_separator}",
                 '-H', f"line_delimiter:\\n",
-                '-H', f"skip_header:{headers['skip_header']}",
-                '-H', f"Expect:{headers['Expect']}",
-                '-H', f"Content-Encoding:{headers['Content-Encoding']}",
+                '-H', f"skip_header:{skip_header}",
+                '-H', f"format:csv",
+                '-H', f"timeout:3600",
+                '-H', f"max_filter_ratio:0.1",
+                '-H', "Expect:100-continue",
+                # '-H', "compression:zstd",
                 '-T', data_file,
                 url
             ]
             
             try:
+                logger.log_verbose_benchmark(f"Running curl command: {' '.join(curl_cmd)}", self)
                 result = subprocess.run(curl_cmd, capture_output=True, text=True, timeout=3600)
                 if result.returncode == 0 and result.stdout:
                     import json

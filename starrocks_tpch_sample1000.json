@@ -1,6 +1,6 @@
 {
   "title": "StarRocks TPC-H Benchmark (sample 1000)",
-  "output": "results/starrocks_tpch",
+  "output": "results/starrocks_tpch1000",
   "repetitions": 1,
   "warmup": 0,
   "systems": [
