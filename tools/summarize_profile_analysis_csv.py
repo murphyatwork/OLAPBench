@@ -72,7 +72,43 @@ def metric_columns_and_rows(paths: List[str], value_kind: str) -> Tuple[List[str
         if isinstance(data, list):
             for entry in data:
                 operator = entry.get('Operator') or entry.get('operator') or 'UNKNOWN'
+                # Only synthesize default metric for operators lacking TopMetrics
+                op_total_ms_val = entry.get('OperatorTotalTimeMs')
+                op_total_pct_val = entry.get('TimePercent')
+                # Contribute operator-level ms/percent to total time estimator if available
+                if op_total_ms_val is not None and op_total_pct_val is not None:
+                    try:
+                        msf = float(op_total_ms_val)
+                        pf = float(op_total_pct_val)
+                        if msf > 0 and pf > 0:
+                            total_ms_candidates.append(msf / pf)
+                    except (TypeError, ValueError):
+                        pass
+
                 top_metrics = entry.get('TopMetrics') or []
+                if len(top_metrics) == 0:
+                    if value_kind == 'both':
+                        if op_total_ms_val is not None:
+                            try:
+                                row_acc[f"{operator}:OperatorTotalTime_ms"] = row_acc.get(f"{operator}:OperatorTotalTime_ms", 0.0) + float(op_total_ms_val)
+                            except (TypeError, ValueError):
+                                pass
+                        if op_total_pct_val is not None:
+                            try:
+                                row_acc[f"{operator}:OperatorTotalTime_percent"] = row_acc.get(f"{operator}:OperatorTotalTime_percent", 0.0) + float(op_total_pct_val)
+                            except (TypeError, ValueError):
+                                pass
+                    else:
+                        if value_kind == 'ms' and op_total_ms_val is not None:
+                            try:
+                                row_acc[f"{operator}:OperatorTotalTime"] = row_acc.get(f"{operator}:OperatorTotalTime", 0.0) + float(op_total_ms_val)
+                            except (TypeError, ValueError):
+                                pass
+                        if value_kind == 'percent' and op_total_pct_val is not None:
+                            try:
+                                row_acc[f"{operator}:OperatorTotalTime"] = row_acc.get(f"{operator}:OperatorTotalTime", 0.0) + float(op_total_pct_val)
+                            except (TypeError, ValueError):
+                                pass
                 for m in top_metrics:
                     metric_name = m.get('metric') or 'UNKNOWN_METRIC'
                     if value_kind == 'both':
@@ -385,12 +421,17 @@ def write_html(columns: List[str], rows: List[Tuple[str, Dict[str, str]]], outpu
     html_parts.append(f'<title>{html_escape(title)}</title>')
     html_parts.append('<style>')
     html_parts.append('body{font-family:Arial,Helvetica,sans-serif;margin:16px;}')
-    # Fix table width to a reasonable size; use container scroll when overflowing (doubled)
-    html_parts.append('table{border-collapse:collapse;width:3200px;table-layout:fixed;}')
-    html_parts.append('th,td{border:1px solid #ddd;padding:4px 6px;font-size:12px;white-space:nowrap;}')
+    # Do not fix overall table width; fix per-cell width and allow horizontal scroll
+    html_parts.append('table{border-collapse:collapse;width:auto;table-layout:auto;}')
+    html_parts.append('th,td{border:1px solid #ddd;padding:4px 6px;font-size:12px;white-space:nowrap;width:220px;}')
     html_parts.append('th{position:sticky;top:0;background:#fafafa;cursor:pointer;}')
+    html_parts.append('.sticky-top-0{position:sticky;top:0;background:#fafafa;z-index:6;}')
+    html_parts.append('.sticky-top-1{position:sticky;top:28px;background:#fafafa;z-index:5;}')
+    html_parts.append('.sticky-left-0{position:sticky;left:0;background:#fafafa;z-index:4;border-right:2px solid #ccc;box-shadow:2px 0 5px rgba(0,0,0,0.1);}')
+    html_parts.append('.table-container{margin-left:0;padding-left:0;}')
+    html_parts.append('table{margin-left:0;}')
     html_parts.append('tr:nth-child(even){background:#fcfcfc;}')
-    html_parts.append('.right{text-align:right;} .left{text-align:left;}')
+    html_parts.append('.right{text-align:right;} .left{text-align:left;} .center{text-align:center;}')
     html_parts.append('.desc{font-size:18px;color:#374151;margin:28px 0 12px;}')
     html_parts.append('.desc code{background:#f3f4f6;padding:0 3px;border-radius:3px;}')
     html_parts.append('.active-col-header{outline:2px solid #f97316; outline-offset:-2px;}')
@@ -412,16 +453,17 @@ def write_html(columns: List[str], rows: List[Tuple[str, Dict[str, str]]], outpu
     html_parts.append('<thead>')
     # Group header row
     html_parts.append('<tr>')
-    html_parts.append('<th data-col="-1" class="left" rowspan="2" title="file">file</th>')
+    html_parts.append('<th data-col="-1" class="left sticky-top-0 sticky-left-0" rowspan="2" title="file">file</th>')
     for op, span in operator_spans:
         if span > 0:
-            html_parts.append(f'<th colspan="{span}" class="right" title="{html_escape(op)}">{html_escape(op)}</th>')
+            html_parts.append(f'<th colspan="{span}" class="center" title="{html_escape(op)}">{html_escape(op)}</th>')
     html_parts.append('</tr>')
     # Subheader row (metrics)
     html_parts.append('<tr>')
     for i, label in enumerate(flat_col_labels):
         op = flat_col_ops[i]
-        html_parts.append(f'<th class="right" data-op="{html_escape(op)}" data-subcol="{i}" title="{html_escape(label)}">{html_escape(label)}</th>')
+        extra = ' sticky-top-1' if i == 0 else ''
+        html_parts.append(f'<th class="right{extra}" data-op="{html_escape(op)}" data-subcol="{i}" title="{html_escape(label)}">{html_escape(label)}</th>')
     html_parts.append('</tr>')
     html_parts.append('</thead>')
     # Body
@@ -429,7 +471,7 @@ def write_html(columns: List[str], rows: List[Tuple[str, Dict[str, str]]], outpu
     # Render summary rows first (fixed, not sortable), then data rows
     for label, row_vals in summary_rows + data_rows:
         html_parts.append('<tr>')
-        html_parts.append(f'<td class="left">{html_escape(str(label))}</td>')
+        html_parts.append(f'<td class="left sticky-left-0">{html_escape(str(label))}</td>')
         is_summary_row = str(label) in ('count', 'sum', 'geomean', 'mean')
         for new_idx, orig_idx in enumerate(flat_col_indices):
             sval = row_vals[orig_idx]
