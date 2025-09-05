@@ -1,0 +1,65 @@
+[
+  {
+    "Operator": "EXCHANGE_SINK",
+    "PlanNodeId": 33,
+    "OperatorTotalTime": "433.726 ms",
+    "OperatorTotalTimeMs": 433.726,
+    "TimePercent": 0.374,
+    "TopMetrics": [
+      {
+        "metric": "OverallTime",
+        "value": "521.452ms",
+        "ms": 521.452,
+        "TimePercent": 0.449
+      },
+      {
+        "metric": "NetworkTime",
+        "value": "161.819ms",
+        "ms": 161.819,
+        "TimePercent": 0.139
+      }
+    ]
+  },
+  {
+    "Operator": "EXCHANGE_SINK",
+    "PlanNodeId": 51,
+    "OperatorTotalTime": "417.815 ms",
+    "OperatorTotalTimeMs": 417.815,
+    "TimePercent": 0.36,
+    "TopMetrics": [
+      {
+        "metric": "OverallTime",
+        "value": "561.414ms",
+        "ms": 561.414,
+        "TimePercent": 0.484
+      },
+      {
+        "metric": "NetworkTime",
+        "value": "209.745ms",
+        "ms": 209.745,
+        "TimePercent": 0.181
+      }
+    ]
+  },
+  {
+    "Operator": "EXCHANGE_SINK",
+    "PlanNodeId": 28,
+    "OperatorTotalTime": "381.127 ms",
+    "OperatorTotalTimeMs": 381.127,
+    "TimePercent": 0.328,
+    "TopMetrics": [
+      {
+        "metric": "OverallTime",
+        "value": "521.457ms",
+        "ms": 521.457,
+        "TimePercent": 0.449
+      },
+      {
+        "metric": "NetworkTime",
+        "value": "381.654ms",
+        "ms": 381.654,
+        "TimePercent": 0.329
+      }
+    ]
+  }
+]

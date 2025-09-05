@@ -1,0 +1,33 @@
+[
+  {
+    "Operator": "AGGREGATE_STREAMING_SINK",
+    "PlanNodeId": 34,
+    "OperatorTotalTime": "6222.000 ms",
+    "OperatorTotalTimeMs": 6222.0,
+    "TimePercent": 0.908,
+    "TopMetrics": [
+      {
+        "metric": "AggComputeTime",
+        "value": "5s581ms",
+        "ms": 5581.0,
+        "TimePercent": 0.814
+      }
+    ]
+  },
+  {
+    "Operator": "NESTLOOP_JOIN_PROBE",
+    "PlanNodeId": 33,
+    "OperatorTotalTime": "5855.000 ms",
+    "OperatorTotalTimeMs": 5855.0,
+    "TimePercent": 0.854,
+    "TopMetrics": []
+  },
+  {
+    "Operator": "LOCAL_EXCHANGE_SOURCE",
+    "PlanNodeId": 34,
+    "OperatorTotalTime": "119.870 ms",
+    "OperatorTotalTimeMs": 119.87,
+    "TimePercent": 0.017,
+    "TopMetrics": []
+  }
+]

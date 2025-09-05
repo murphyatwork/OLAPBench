@@ -1,0 +1,47 @@
+[
+  {
+    "Operator": "LOCAL_PARALLEL_MERGE_SOURCE",
+    "PlanNodeId": 31,
+    "OperatorTotalTime": "1174.000 ms",
+    "OperatorTotalTimeMs": 1174.0,
+    "TimePercent": 0.117,
+    "TopMetrics": [
+      {
+        "metric": "OverallStageTime",
+        "value": "1s170ms",
+        "ms": 1170.0,
+        "TimePercent": 0.117
+      }
+    ]
+  },
+  {
+    "Operator": "RESULT_SINK",
+    "PlanNodeId": -1,
+    "OperatorTotalTime": "785.856 ms",
+    "OperatorTotalTimeMs": 785.856,
+    "TimePercent": 0.079,
+    "TopMetrics": [
+      {
+        "metric": "AppendChunkTime",
+        "value": "686.073ms",
+        "ms": 686.073,
+        "TimePercent": 0.069
+      }
+    ]
+  },
+  {
+    "Operator": "EXCHANGE_SINK",
+    "PlanNodeId": 32,
+    "OperatorTotalTime": "275.958 ms",
+    "OperatorTotalTimeMs": 275.958,
+    "TimePercent": 0.028,
+    "TopMetrics": [
+      {
+        "metric": "OverallTime",
+        "value": "1s420ms",
+        "ms": 1420.0,
+        "TimePercent": 0.142
+      }
+    ]
+  }
+]

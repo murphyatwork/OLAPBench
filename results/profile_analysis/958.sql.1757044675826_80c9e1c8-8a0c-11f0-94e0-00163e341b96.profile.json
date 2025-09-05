@@ -1,0 +1,39 @@
+[
+  {
+    "Operator": "BUCKET_PROCESS_SINK",
+    "PlanNodeId": 2,
+    "OperatorTotalTime": "192.449 ms",
+    "OperatorTotalTimeMs": 192.449,
+    "TimePercent": 0.54,
+    "TopMetrics": []
+  },
+  {
+    "Operator": "HASH_JOIN_PROBE",
+    "PlanNodeId": 18,
+    "OperatorTotalTime": "65.297 ms",
+    "OperatorTotalTimeMs": 65.297,
+    "TimePercent": 0.183,
+    "TopMetrics": [
+      {
+        "metric": "SearchHashTableTime",
+        "value": "36.819ms",
+        "ms": 36.819,
+        "TimePercent": 0.103
+      },
+      {
+        "metric": "OutputBuildColumnTime",
+        "value": "24.846ms",
+        "ms": 24.846,
+        "TimePercent": 0.07
+      }
+    ]
+  },
+  {
+    "Operator": "BUCKET_PROCESS_SOURCE",
+    "PlanNodeId": 2,
+    "OperatorTotalTime": "24.747 ms",
+    "OperatorTotalTimeMs": 24.747,
+    "TimePercent": 0.069,
+    "TopMetrics": []
+  }
+]

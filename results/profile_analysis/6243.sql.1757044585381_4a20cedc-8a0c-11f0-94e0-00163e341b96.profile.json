@@ -1,0 +1,65 @@
+[
+  {
+    "Operator": "AGGREGATE_STREAMING_SINK",
+    "PlanNodeId": 28,
+    "OperatorTotalTime": "510.641 ms",
+    "OperatorTotalTimeMs": 510.641,
+    "TimePercent": 0.32,
+    "TopMetrics": [
+      {
+        "metric": "AggComputeTime",
+        "value": "504.332ms",
+        "ms": 504.332,
+        "TimePercent": 0.316
+      },
+      {
+        "metric": "AggFuncComputeTime",
+        "value": "427.848ms",
+        "ms": 427.848,
+        "TimePercent": 0.268
+      }
+    ]
+  },
+  {
+    "Operator": "HASH_JOIN_PROBE",
+    "PlanNodeId": 26,
+    "OperatorTotalTime": "346.317 ms",
+    "OperatorTotalTimeMs": 346.317,
+    "TimePercent": 0.217,
+    "TopMetrics": [
+      {
+        "metric": "OutputBuildColumnTime",
+        "value": "228.954ms",
+        "ms": 228.954,
+        "TimePercent": 0.144
+      },
+      {
+        "metric": "SearchHashTableTime",
+        "value": "90.542ms",
+        "ms": 90.542,
+        "TimePercent": 0.057
+      }
+    ]
+  },
+  {
+    "Operator": "AGGREGATE_BLOCKING_SINK",
+    "PlanNodeId": 30,
+    "OperatorTotalTime": "110.331 ms",
+    "OperatorTotalTimeMs": 110.331,
+    "TimePercent": 0.069,
+    "TopMetrics": [
+      {
+        "metric": "AggComputeTime",
+        "value": "110.165ms",
+        "ms": 110.165,
+        "TimePercent": 0.069
+      },
+      {
+        "metric": "AggFuncComputeTime",
+        "value": "110.052ms",
+        "ms": 110.052,
+        "TimePercent": 0.069
+      }
+    ]
+  }
+]

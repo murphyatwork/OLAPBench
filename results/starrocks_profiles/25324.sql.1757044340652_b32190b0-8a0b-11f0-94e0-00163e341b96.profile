@@ -1,0 +1,9773 @@
+Query:
+  Summary:
+     - Query ID: b32190b0-8a0b-11f0-94e0-00163e341b96
+     - Start Time: 2025-09-05 11:52:10
+     - End Time: 2025-09-05 11:52:20
+     - Total: 10s232ms
+     - Query Type: Query
+     - Query State: Error
+     - StarRocks Version: 3.5.4-1ce07c8
+     - User: root
+     - Default Db: tpch
+     - Sql Statement: SELECT 
+    p.p_name AS part_name,
+    s.s_name AS supplier_name,
+    c.c_name AS customer_name,
+    o.o_orderkey AS order_id,
+    COUNT(l.l_orderkey) AS line_item_count,
+    SUM(l.l_extendedprice) AS total_extended_price,
+    AVG(l.l_discount) AS average_discount,
+    MAX(l.l_shipdate) AS latest_ship_date,
+    group_concat(DISTINCT r.r_name SEPARATOR ', ') AS regions_supplied,
+    group_concat(DISTINCT p.p_comment SEPARATOR '|') AS part_comments
+FROM 
+    part p
+JOIN 
+    partsupp ps ON p.p_partkey = ps.ps_partkey
+JOIN 
+    supplier s ON ps.ps_suppkey = s.s_suppkey
+JOIN 
+    lineitem l ON l.l_partkey = p.p_partkey
+JOIN 
+    orders o ON o.o_orderkey = l.l_orderkey
+JOIN 
+    customer c ON o.o_custkey = c.c_custkey
+JOIN 
+    nation n ON s.s_nationkey = n.n_nationkey
+JOIN 
+    region r ON n.n_regionkey = r.r_regionkey
+WHERE 
+    p.p_size > 10 AND
+    s.s_acctbal > 500 AND
+    o.o_orderdate >= DATE '1997-01-01' AND
+    o.o_orderstatus = 'O'
+GROUP BY 
+    p.p_name, s.s_name, c.c_name, o.o_orderkey
+ORDER BY 
+    total_extended_price DESC, line_item_count ASC
+LIMIT 50;
+     - Variables: parallel_fragment_exec_instance_num=1,max_parallel_scan_instance_num=-1,pipeline_dop=0,enable_adaptive_sink_dop=true,enable_runtime_adaptive_dop=false,runtime_profile_report_interval=10,resource_group=default_wg
+     - NonDefaultSessionVariables: {"sql_mode_v2":{"defaultValue":32,"actualValue":34},"query_timeout":{"defaultValue":300,"actualValue":10},"prefer_compute_node":{"defaultValue":false,"actualValue":true},"enable_adaptive_sink_dop":{"defaultValue":false,"actualValue":true},"enable_profile":{"defaultValue":false,"actualValue":true}}
+     - Collect Profile Time: 127ms
+     - IsProfileAsync: true
+  Planner:
+     - -- Parser[1] 0
+     - -- Total[1] 80ms
+     -     -- Analyzer[1] 0
+     -         -- Lock[1] 0
+     -         -- AnalyzeDatabase[8] 0
+     -         -- AnalyzeTemporaryTable[8] 0
+     -         -- AnalyzeTable[8] 0
+     -     -- Transformer[1] 0
+     -     -- Optimizer[1] 76ms
+     -         -- MVPreprocess[1] 0
+     -         -- MVTextRewrite[1] 0
+     -         -- RuleBaseOptimize[1] 34ms
+     -         -- CostBaseOptimize[1] 40ms
+     -         -- PhysicalRewrite[1] 0
+     -         -- DynamicRewrite[1] 0
+     -         -- PlanValidate[1] 0
+     -             -- InputDependenciesChecker[1] 0
+     -             -- TypeChecker[1] 0
+     -             -- CTEUniqueChecker[1] 0
+     -             -- ColumnReuseChecker[1] 0
+     -     -- ExecPlanBuild[1] 2ms
+     - -- Pending[1] 0
+     - -- Prepare[1] 0
+     - -- Deploy[1] 63ms
+     -     -- DeployLockInternalTime[1] 63ms
+     -         -- DeploySerializeConcurrencyTime[7] 3ms
+     -         -- DeployStageByStageTime[21] 0
+     -             -- DeployAsyncSendTime[16] 0
+     -         -- DeployWaitTime[21] 59ms
+     - DeployDataSize: 242363
+    Reason:
+  Execution:
+     - Topology: {"rootId":65,"nodes":[{"id":65,"name":"MERGE_EXCHANGE","properties":{"sinkIds":[],"displayMem":true},"children":[64]},{"id":64,"name":"TOP_N","properties":{"sinkIds":[65],"displayMem":true},"children":[63]},{"id":63,"name":"PROJECT","properties":{"displayMem":false},"children":[62]},{"id":62,"name":"HASH_JOIN","properties":{"displayMem":true},"children":[56,61]},{"id":56,"name":"HASH_JOIN","properties":{"displayMem":true},"children":[50,55]},{"id":61,"name":"AGGREGATION","properties":{"displayMem":true},"children":[60]},{"id":50,"name":"HASH_JOIN","properties":{"displayMem":true},"children":[44,49]},{"id":55,"name":"AGGREGATION","properties":{"displayMem":true},"children":[54]},{"id":60,"name":"EXCHANGE","properties":{"displayMem":true},"children":[59]},{"id":44,"name":"HASH_JOIN","properties":{"displayMem":true},"children":[37,43]},{"id":49,"name":"AGGREGATION","properties":{"displayMem":true},"children":[48]},{"id":54,"name":"EXCHANGE","properties":{"displayMem":true},"children":[53]},{"id":59,"name":"AGGREGATION","properties":{"sinkIds":[60],"displayMem":true},"children":[58]},{"id":37,"name":"AGGREGATION","properties":{"displayMem":true},"children":[36]},{"id":43,"name":"AGGREGATION","properties":{"displayMem":true},"children":[42]},{"id":48,"name":"EXCHANGE","properties":{"displayMem":true},"children":[47]},{"id":53,"name":"AGGREGATION","properties":{"sinkIds":[54],"displayMem":true},"children":[52]},{"id":58,"name":"PROJECT","properties":{"displayMem":false},"children":[57]},{"id":36,"name":"AGGREGATION","properties":{"displayMem":true},"children":[35]},{"id":42,"name":"AGGREGATION","properties":{"displayMem":true},"children":[41]},{"id":47,"name":"AGGREGATION","properties":{"sinkIds":[48],"displayMem":true},"children":[46]},{"id":52,"name":"PROJECT","properties":{"displayMem":false},"children":[51]},{"id":57,"name":"EXCHANGE","properties":{"displayMem":true},"children":[31]},{"id":35,"name":"EXCHANGE","properties":{"displayMem":true},"children":[34]},{"id":41,"name":"EXCHANGE","properties":{"displayMem":true},"children":[40]},{"id":46,"name":"PROJECT","properties":{"displayMem":false},"children":[45]},{"id":51,"name":"EXCHANGE","properties":{"displayMem":true},"children":[31]},{"id":31,"name":"PROJECT","properties":{"sinkIds":[32,38,45,51,57],"displayMem":false},"children":[30]},{"id":34,"name":"AGGREGATION","properties":{"sinkIds":[35],"displayMem":true},"children":[33]},{"id":40,"name":"AGGREGATION","properties":{"sinkIds":[41],"displayMem":true},"children":[39]},{"id":45,"name":"EXCHANGE","properties":{"displayMem":true},"children":[31]},{"id":30,"name":"HASH_JOIN","properties":{"displayMem":true},"children":[19,29]},{"id":33,"name":"PROJECT","properties":{"displayMem":false},"children":[32]},{"id":39,"name":"PROJECT","properties":{"displayMem":false},"children":[38]},{"id":19,"name":"PROJECT","properties":{"displayMem":false},"children":[18]},{"id":29,"name":"EXCHANGE","properties":{"displayMem":true},"children":[28]},{"id":32,"name":"EXCHANGE","properties":{"displayMem":true},"children":[31]},{"id":38,"name":"EXCHANGE","properties":{"displayMem":true},"children":[31]},{"id":18,"name":"HASH_JOIN","properties":{"displayMem":true},"children":[5,17]},{"id":28,"name":"HASH_JOIN","properties":{"sinkIds":[29],"displayMem":true},"children":[20,27]},{"id":5,"name":"PROJECT","properties":{"displayMem":false},"children":[4]},{"id":17,"name":"EXCHANGE","properties":{"displayMem":true},"children":[16]},{"id":20,"name":"OLAP_SCAN","properties":{"displayMem":false},"children":[]},{"id":27,"name":"EXCHANGE","properties":{"displayMem":true},"children":[26]},{"id":4,"name":"HASH_JOIN","properties":{"displayMem":true},"children":[0,3]},{"id":16,"name":"PROJECT","properties":{"sinkIds":[17],"displayMem":false},"children":[15]},{"id":26,"name":"PROJECT","properties":{"sinkIds":[27],"displayMem":false},"children":[25]},{"id":0,"name":"OLAP_SCAN","properties":{"displayMem":false},"children":[]},{"id":3,"name":"EXCHANGE","properties":{"displayMem":true},"children":[2]},{"id":15,"name":"HASH_JOIN","properties":{"displayMem":true},"children":[7,14]},{"id":25,"name":"HASH_JOIN","properties":{"displayMem":true},"children":[21,24]},{"id":2,"name":"PROJECT","properties":{"sinkIds":[3],"displayMem":false},"children":[1]},{"id":7,"name":"PROJECT","properties":{"displayMem":false},"children":[6]},{"id":14,"name":"EXCHANGE","properties":{"displayMem":true},"children":[13]},{"id":21,"name":"OLAP_SCAN","properties":{"displayMem":false},"children":[]},{"id":24,"name":"EXCHANGE","properties":{"displayMem":true},"children":[23]},{"id":1,"name":"OLAP_SCAN","properties":{"displayMem":false},"children":[]},{"id":6,"name":"OLAP_SCAN","properties":{"displayMem":false},"children":[]},{"id":13,"name":"PROJECT","properties":{"sinkIds":[14],"displayMem":false},"children":[12]},{"id":23,"name":"PROJECT","properties":{"sinkIds":[24],"displayMem":false},"children":[22]},{"id":12,"name":"HASH_JOIN","properties":{"displayMem":true},"children":[9,11]},{"id":22,"name":"OLAP_SCAN","properties":{"displayMem":false},"children":[]},{"id":9,"name":"EXCHANGE","properties":{"displayMem":true},"children":[8]},{"id":11,"name":"EXCHANGE","properties":{"displayMem":true},"children":[10]},{"id":8,"name":"OLAP_SCAN","properties":{"sinkIds":[9],"displayMem":false},"children":[]},{"id":10,"name":"OLAP_SCAN","properties":{"sinkIds":[11],"displayMem":false},"children":[]}]}
+     - FrontendProfileMergeTime: 16.422ms
+     - QueryAllocatedMemoryUsage: 161.272 GB
+     - QueryCumulativeCpuTime: 36m19s
+     - QueryCumulativeNetworkTime: 3s612ms
+     - QueryCumulativeOperatorTime: 43s889ms
+     - QueryCumulativeScanTime: 146.624ms
+     - QueryDeallocatedMemoryUsage: 159.817 GB
+     - QueryExecutionWallTime: 10s125ms
+     - QueryPeakMemoryUsagePerNode: 40.688 GB
+     - QueryPeakScheduleTime: 10s14ms
+     - QuerySpillBytes: 0.000 B
+     - QuerySumMemoryUsage: 40.688 GB
+     - ResultDeliverTime: 0ns
+    Fragment 0:
+       - BackendAddresses: 172.26.95.146:9060
+       - InstanceIds: b32190b0-8a0b-11f0-94e0-00163e341b97
+       - EnableEventScheduler: true
+       - BackendNum: 1
+       - BackendProfileMergeTime: 1.998ms
+       - InitialProcessDriverCount: 0
+       - InitialProcessMem: 9.360 GB
+       - InstanceAllocatedMemoryUsage: 317.461 KB
+       - InstanceDeallocatedMemoryUsage: 65.563 KB
+       - InstanceNum: 1
+       - InstancePeakMemoryUsage: 251.898 KB
+       - JITCounter: 0
+       - JITTotalCostTime: 0ns
+       - QueryMemoryLimit: -1.000 B
+      Pipeline (id=1):
+         - IsGroupExecution: false
+         - ActiveTime: 0ns
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 1
+         - DriverTotalTime: 10s4ms
+         - PeakDriverQueueSize: 45
+         - PendingTime: 0ns
+           - InputEmptyTime: 10s4ms
+             - FirstInputEmptyTime: 10s4ms
+         - ScheduleCount: 0
+         - ScheduleTime: 10s4ms
+         - TotalDegreeOfParallelism: 1
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        RESULT_SINK (plan_node_id=-1):
+          CommonMetrics:
+             - IsFinalSink
+             - CloseTime: 4.191ms
+             - OperatorTotalTime: 4.191ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+             - SinkType: MYSQL_PROTOCAL
+             - AppendChunkTime: 0ns
+               - ResultRendTime: 0ns
+               - TupleConvertTime: 0ns
+             - NumSentRows: 0
+        CHUNK_ACCUMULATE (plan_node_id=-1):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 1.245us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+        LIMIT (plan_node_id=65) (operator id=3):
+          CommonMetrics:
+             - OperatorTotalTime: 808ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+        LOCAL_EXCHANGE_SOURCE (plan_node_id=65):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 14.039us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+      Pipeline (id=0):
+         - IsGroupExecution: false
+         - ActiveTime: 33.084us
+           - __MAX_OF_ActiveTime: 386.913us
+           - __MIN_OF_ActiveTime: 4.329us
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 10s4ms
+           - __MAX_OF_DriverTotalTime: 10s4ms
+           - __MIN_OF_DriverTotalTime: 10s4ms
+         - PeakDriverQueueSize: 584
+           - __MAX_OF_PeakDriverQueueSize: 44
+           - __MIN_OF_PeakDriverQueueSize: 29
+         - PendingTime: 0ns
+           - InputEmptyTime: 10s3ms
+             - __MAX_OF_InputEmptyTime: 10s3ms
+             - __MIN_OF_InputEmptyTime: 10s3ms
+             - FirstInputEmptyTime: 625.376ms
+               - __MAX_OF_FirstInputEmptyTime: 10s3ms
+               - __MIN_OF_FirstInputEmptyTime: 84.078us
+             - FollowupInputEmptyTime: 9s377ms
+               - __MAX_OF_FollowupInputEmptyTime: 10s3ms
+               - __MIN_OF_FollowupInputEmptyTime: 0ns
+         - ScheduleCount: 31
+           - __MAX_OF_ScheduleCount: 2
+           - __MIN_OF_ScheduleCount: 1
+         - ScheduleTime: 10s4ms
+           - __MAX_OF_ScheduleTime: 10s4ms
+           - __MIN_OF_ScheduleTime: 10s4ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 31
+           - __MAX_OF_YieldByLocalWait: 2
+           - __MIN_OF_YieldByLocalWait: 1
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        LOCAL_EXCHANGE_SINK (plan_node_id=65):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 916ns
+               - __MAX_OF_OperatorTotalTime: 2.235us
+               - __MIN_OF_OperatorTotalTime: 398ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+             - ShuffleNum: 1
+             - Type: Passthrough
+             - LocalExchangePeakMemoryUsage: 0.000 B
+        GLOBAL_PARALLEL_MERGE_SOURCE (plan_node_id=65):
+          CommonMetrics:
+             - OperatorTotalTime: 28.900us
+               - __MAX_OF_OperatorTotalTime: 376.463us
+               - __MIN_OF_OperatorTotalTime: 1.915us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 27.309us
+               - __MAX_OF_PullTotalTime: 375.261us
+               - __MIN_OF_PullTotalTime: 1.466us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+             - LateMaterialization: False
+             - Limit: 50
+             - Offset: 0
+             - StreamingBatchSize: 262144
+             - BufferUnplugCount: 0
+             - BytesPassThrough: 0.000 B
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 0
+             - ClosureBlockTime: 0ns
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - LateMaterializationMaxBufferChunkNum: 0
+             - OverallStageCount: 36
+               - __MAX_OF_OverallStageCount: 6
+               - __MIN_OF_OverallStageCount: 2
+               - 1-InitStageCount: 1
+                 - __MAX_OF_1-InitStageCount: 1
+                 - __MIN_OF_1-InitStageCount: 0
+               - 2-PrepareStageCount: 2
+                 - __MAX_OF_2-PrepareStageCount: 2
+                 - __MIN_OF_2-PrepareStageCount: 0
+               - 3-ProcessStageCount: 1
+                 - __MAX_OF_3-ProcessStageCount: 1
+                 - __MIN_OF_3-ProcessStageCount: 0
+               - 4-SplitChunkStageCount: 16
+                 - __MAX_OF_4-SplitChunkStageCount: 1
+                 - __MIN_OF_4-SplitChunkStageCount: 1
+               - 5-FetchChunkStageCount: 16
+                 - __MAX_OF_5-FetchChunkStageCount: 1
+                 - __MIN_OF_5-FetchChunkStageCount: 1
+               - 6-PendingStageCount: 0
+               - 7-FinishedStageCount: 0
+             - OverallStageTime: 25.161us
+               - __MAX_OF_OverallStageTime: 371.773us
+               - __MIN_OF_OverallStageTime: 557ns
+               - 1-InitStageTime: 2.107us
+                 - __MAX_OF_1-InitStageTime: 33.727us
+                 - __MIN_OF_1-InitStageTime: 0ns
+               - 2-PrepareStageTime: 20.827us
+                 - __MAX_OF_2-PrepareStageTime: 333.244us
+                 - __MIN_OF_2-PrepareStageTime: 0ns
+               - 3-ProcessStageTime: 213ns
+                 - __MAX_OF_3-ProcessStageTime: 3.415us
+                 - __MIN_OF_3-ProcessStageTime: 0ns
+                 - LateMaterializationGenerateOrdinalTime: 0ns
+                 - SortedRunProviderTime: 59ns
+                   - __MAX_OF_SortedRunProviderTime: 950ns
+                   - __MIN_OF_SortedRunProviderTime: 0ns
+               - 4-SplitChunkStageTime: 771ns
+                 - __MAX_OF_4-SplitChunkStageTime: 3.525us
+                 - __MIN_OF_4-SplitChunkStageTime: 135ns
+                 - LateMaterializationRestoreAccordingToOrdinalTime: 0ns
+               - 5-FetchChunkStageTime: 777ns
+                 - __MAX_OF_5-FetchChunkStageTime: 5.019us
+                 - __MIN_OF_5-FetchChunkStageTime: 127ns
+               - 6-PendingStageTime: 0ns
+               - 7-FinishedStageTime: 0ns
+             - PeakBufferMemoryBytes: 0.000 B
+             - ReceiverProcessTotalTime: 0ns
+             - RequestReceived: 0
+             - WaitLockTime: 0ns
+    Fragment 1:
+       - BackendAddresses: 172.26.95.146:9060
+       - InstanceIds: b32190b0-8a0b-11f0-94e0-00163e341b98
+       - EnableEventScheduler: true
+       - BackendNum: 1
+       - BackendProfileMergeTime: 16.384ms
+       - FragmentInstancePrepareTime: 20.787ms
+         - prepare-pipeline-driver: 17.839ms
+       - InitialProcessDriverCount: 17
+       - InitialProcessMem: 9.361 GB
+       - InstanceAllocatedMemoryUsage: 82.327 GB
+       - InstanceDeallocatedMemoryUsage: 82.169 GB
+       - InstanceNum: 1
+       - InstancePeakMemoryUsage: 34.357 GB
+       - JITCounter: 0
+       - JITTotalCostTime: 0ns
+       - QueryMemoryLimit: -1.000 B
+      Pipeline (id=13):
+         - IsGroupExecution: false
+         - ActiveTime: 0ns
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 1
+         - DriverTotalTime: 10s14ms
+         - PeakDriverQueueSize: 196
+         - PendingTime: 0ns
+           - InputEmptyTime: 10s14ms
+             - FirstInputEmptyTime: 10s14ms
+         - ScheduleCount: 0
+         - ScheduleTime: 10s14ms
+         - TotalDegreeOfParallelism: 1
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        EXCHANGE_SINK (plan_node_id=65):
+          CommonMetrics:
+             - OperatorTotalTime: 27.874us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+             - ChannelNum: 1
+             - DestFragments: b32190b08a0b11f0-94e000163e341b97
+             - DestID: 65
+             - PartType: UNPARTITIONED
+             - BytesPassThrough: 0.000 B
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 0ns
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 0ns
+             - PassThroughBufferPeakMemoryUsage: 0.000 B
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 0ns
+             - RpcCount: 0
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 0
+             - ShuffleChunkAppendTime: 0ns
+             - ShuffleHashTime: 0ns
+             - WaitTime: 46.724us
+        LIMIT (plan_node_id=64) (operator id=37):
+          CommonMetrics:
+             - OperatorTotalTime: 811ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+        LOCAL_EXCHANGE_SOURCE (plan_node_id=64):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 6.991us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+      Pipeline (id=12):
+         - IsGroupExecution: false
+         - ActiveTime: 0ns
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 10s13ms
+           - __MAX_OF_DriverTotalTime: 10s14ms
+           - __MIN_OF_DriverTotalTime: 10s13ms
+         - PeakDriverQueueSize: 3.000K (3000)
+           - __MAX_OF_PeakDriverQueueSize: 195
+           - __MIN_OF_PeakDriverQueueSize: 180
+         - PendingTime: 0ns
+           - InputEmptyTime: 10s13ms
+             - __MAX_OF_InputEmptyTime: 10s14ms
+             - __MIN_OF_InputEmptyTime: 10s13ms
+             - FirstInputEmptyTime: 10s13ms
+               - __MAX_OF_FirstInputEmptyTime: 10s14ms
+               - __MIN_OF_FirstInputEmptyTime: 10s13ms
+         - ScheduleCount: 0
+         - ScheduleTime: 10s13ms
+           - __MAX_OF_ScheduleTime: 10s14ms
+           - __MIN_OF_ScheduleTime: 10s13ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        LOCAL_EXCHANGE_SINK (plan_node_id=64):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 833ns
+               - __MAX_OF_OperatorTotalTime: 1.873us
+               - __MIN_OF_OperatorTotalTime: 470ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+             - ShuffleNum: 1
+             - Type: Passthrough
+             - LocalExchangePeakMemoryUsage: 0.000 B
+        LOCAL_PARALLEL_MERGE_SOURCE (plan_node_id=64):
+          CommonMetrics:
+             - OperatorTotalTime: 2.155us
+               - __MAX_OF_OperatorTotalTime: 21.340us
+               - __MIN_OF_OperatorTotalTime: 367ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+             - Limit: 50
+             - Offset: 0
+             - StreamingBatchSize: 262144
+             - LateMaterializationMaxBufferChunkNum: 0
+             - OverallStageCount: 0
+               - 1-InitStageCount: 0
+               - 2-PrepareStageCount: 0
+               - 3-ProcessStageCount: 0
+               - 4-SplitChunkStageCount: 0
+               - 5-FetchChunkStageCount: 0
+               - 6-PendingStageCount: 0
+               - 7-FinishedStageCount: 0
+             - OverallStageTime: 0ns
+               - 1-InitStageTime: 0ns
+               - 2-PrepareStageTime: 0ns
+               - 3-ProcessStageTime: 0ns
+                 - LateMaterializationGenerateOrdinalTime: 0ns
+                 - SortedRunProviderTime: 0ns
+               - 4-SplitChunkStageTime: 0ns
+                 - LateMaterializationRestoreAccordingToOrdinalTime: 0ns
+               - 5-FetchChunkStageTime: 0ns
+               - 6-PendingStageTime: 0ns
+               - 7-FinishedStageTime: 0ns
+      Pipeline (id=11):
+         - IsGroupExecution: false
+         - ActiveTime: 0ns
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 10s1ms
+           - __MAX_OF_DriverTotalTime: 10s13ms
+           - __MIN_OF_DriverTotalTime: 9s993ms
+         - PeakDriverQueueSize: 2.744K (2744)
+           - __MAX_OF_PeakDriverQueueSize: 179
+           - __MIN_OF_PeakDriverQueueSize: 164
+         - PendingTime: 0ns
+           - PreconditionBlockTime: 10s1ms
+             - __MAX_OF_PreconditionBlockTime: 10s13ms
+             - __MIN_OF_PreconditionBlockTime: 9s993ms
+         - ScheduleCount: 0
+         - ScheduleTime: 10s1ms
+           - __MAX_OF_ScheduleTime: 10s13ms
+           - __MIN_OF_ScheduleTime: 9s993ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        LOCAL_SORT_SINK (plan_node_id=64):
+          CommonMetrics:
+             - OperatorTotalTime: 30.846us
+               - __MAX_OF_OperatorTotalTime: 309.534us
+               - __MIN_OF_OperatorTotalTime: 8.296us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - SortKeys: 63: sum DESC, 62: count ASC
+             - SortType: TopN
+             - BuildingTime: 0ns
+             - MergingTime: 0ns
+             - OutputTime: 0ns
+             - SortFilterCost: 0ns
+             - SortFilterRows: 0
+             - SortingCnt: 0
+             - SortingTime: 0ns
+        PROJECT (plan_node_id=63):
+          CommonMetrics:
+             - OperatorTotalTime: 5.376us
+               - __MAX_OF_OperatorTotalTime: 10.435us
+               - __MIN_OF_OperatorTotalTime: 3.948us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CommonSubExprComputeTime: 0ns
+             - ExprComputeTime: 0ns
+        CHUNK_ACCUMULATE (plan_node_id=62):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 384ns
+               - __MAX_OF_OperatorTotalTime: 499ns
+               - __MIN_OF_OperatorTotalTime: 323ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+        HASH_JOIN_PROBE (plan_node_id=62):
+          CommonMetrics:
+             - OperatorTotalTime: 47.833us
+               - __MAX_OF_OperatorTotalTime: 555.790us
+               - __MIN_OF_OperatorTotalTime: 11.139us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: SHUFFLE_HASH_BUCKET
+             - JoinType: INNER_JOIN
+             - OtherJoinConjunctEvaluateTime: 0ns
+             - OutputBuildColumnTime: 0ns
+             - OutputProbeColumnTime: 0ns
+             - PartitionProbeOverhead: 0ns
+             - ProbeConjunctEvaluateTime: 0ns
+             - SearchHashTableTime: 0ns
+             - WhereConjunctEvaluateTime: 0ns
+             - probeCount: 0
+        CHUNK_ACCUMULATE (plan_node_id=56):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 464ns
+               - __MAX_OF_OperatorTotalTime: 846ns
+               - __MIN_OF_OperatorTotalTime: 302ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+        HASH_JOIN_PROBE (plan_node_id=56):
+          CommonMetrics:
+             - OperatorTotalTime: 123.881us
+               - __MAX_OF_OperatorTotalTime: 650.837us
+               - __MIN_OF_OperatorTotalTime: 4.527us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: SHUFFLE_HASH_BUCKET
+             - JoinType: INNER_JOIN
+             - OtherJoinConjunctEvaluateTime: 0ns
+             - OutputBuildColumnTime: 0ns
+             - OutputProbeColumnTime: 0ns
+             - PartitionProbeOverhead: 0ns
+             - ProbeConjunctEvaluateTime: 0ns
+             - SearchHashTableTime: 0ns
+             - WhereConjunctEvaluateTime: 0ns
+             - probeCount: 0
+        CHUNK_ACCUMULATE (plan_node_id=50):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 421ns
+               - __MAX_OF_OperatorTotalTime: 668ns
+               - __MIN_OF_OperatorTotalTime: 339ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+        HASH_JOIN_PROBE (plan_node_id=50):
+          CommonMetrics:
+             - CloseTime: 1.304ms
+               - __MAX_OF_CloseTime: 7.698ms
+               - __MIN_OF_CloseTime: 3.973us
+             - OperatorTotalTime: 1.305ms
+               - __MAX_OF_OperatorTotalTime: 7.699ms
+               - __MIN_OF_OperatorTotalTime: 5.254us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: SHUFFLE_HASH_BUCKET
+             - JoinType: INNER_JOIN
+             - OtherJoinConjunctEvaluateTime: 0ns
+             - OutputBuildColumnTime: 0ns
+             - OutputProbeColumnTime: 0ns
+             - PartitionProbeOverhead: 0ns
+             - ProbeConjunctEvaluateTime: 0ns
+             - SearchHashTableTime: 0ns
+             - WhereConjunctEvaluateTime: 0ns
+             - probeCount: 0
+        CHUNK_ACCUMULATE (plan_node_id=44):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 710ns
+               - __MAX_OF_OperatorTotalTime: 941ns
+               - __MIN_OF_OperatorTotalTime: 344ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+        HASH_JOIN_PROBE (plan_node_id=44):
+          CommonMetrics:
+             - OperatorTotalTime: 29.473us
+               - __MAX_OF_OperatorTotalTime: 83.575us
+               - __MIN_OF_OperatorTotalTime: 4.990us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: SHUFFLE_HASH_BUCKET
+             - JoinType: INNER_JOIN
+             - OtherJoinConjunctEvaluateTime: 0ns
+             - OutputBuildColumnTime: 0ns
+             - OutputProbeColumnTime: 0ns
+             - PartitionProbeOverhead: 0ns
+             - ProbeConjunctEvaluateTime: 0ns
+             - SearchHashTableTime: 0ns
+             - WhereConjunctEvaluateTime: 0ns
+             - probeCount: 0
+        AGGREGATE_BLOCKING_SOURCE (plan_node_id=37):
+          CommonMetrics:
+             - OperatorTotalTime: 19.104us
+               - __MAX_OF_OperatorTotalTime: 27.575us
+               - __MIN_OF_OperatorTotalTime: 14.189us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+      Pipeline (id=10):
+         - IsGroupExecution: false
+         - ActiveTime: 0ns
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 9s993ms
+           - __MAX_OF_DriverTotalTime: 9s993ms
+           - __MIN_OF_DriverTotalTime: 9s993ms
+         - PeakDriverQueueSize: 2.488K (2488)
+           - __MAX_OF_PeakDriverQueueSize: 163
+           - __MIN_OF_PeakDriverQueueSize: 148
+         - PendingTime: 0ns
+           - InputEmptyTime: 9s993ms
+             - __MAX_OF_InputEmptyTime: 9s993ms
+             - __MIN_OF_InputEmptyTime: 9s993ms
+             - FirstInputEmptyTime: 9s993ms
+               - __MAX_OF_FirstInputEmptyTime: 9s993ms
+               - __MIN_OF_FirstInputEmptyTime: 9s993ms
+         - ScheduleCount: 0
+         - ScheduleTime: 9s993ms
+           - __MAX_OF_ScheduleTime: 9s993ms
+           - __MIN_OF_ScheduleTime: 9s993ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        AGGREGATE_BLOCKING_SINK (plan_node_id=37):
+          CommonMetrics:
+             - OperatorTotalTime: 13.624us
+               - __MAX_OF_OperatorTotalTime: 53.694us
+               - __MIN_OF_OperatorTotalTime: 7.726us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - AggregateFunctions: group_concat(72: r_name, ', ')
+             - GroupingKeys: 68: p_name, 69: s_name, 71: c_name, 70: o_orderkey
+             - AggComputeTime: 0ns
+             - AggFuncComputeTime: 0ns
+             - ChunkBufferPeakMem: 0.000 B
+             - ChunkBufferPeakSize: 0
+             - ExprComputeTime: 0ns
+             - ExprReleaseTime: 0ns
+             - GetResultsTime: 0ns
+             - HashTableMemoryUsage: 384.000 B
+               - __MAX_OF_HashTableMemoryUsage: 24.000 B
+               - __MIN_OF_HashTableMemoryUsage: 24.000 B
+             - HashTableSize: 0
+             - InputRowCount: 0
+             - PassThroughRowCount: 0
+             - ResultAggAppendTime: 0ns
+             - ResultGroupByAppendTime: 0ns
+             - ResultIteratorTime: 0ns
+             - RowsReturned: 0
+             - StateAllocate: 0ns
+             - StateDestroy: 0ns
+             - StreamingTime: 0ns
+        AGGREGATE_DISTINCT_BLOCKING_SOURCE (plan_node_id=36):
+          CommonMetrics:
+             - OperatorTotalTime: 13.586us
+               - __MAX_OF_OperatorTotalTime: 27.018us
+               - __MIN_OF_OperatorTotalTime: 5.315us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+      Pipeline (id=9):
+         - LocalRfWaitingSet: 4
+         - IsGroupExecution: false
+         - ActiveTime: 0ns
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 9s992ms
+           - __MAX_OF_DriverTotalTime: 9s993ms
+           - __MIN_OF_DriverTotalTime: 9s991ms
+         - PeakDriverQueueSize: 2.232K (2232)
+           - __MAX_OF_PeakDriverQueueSize: 147
+           - __MIN_OF_PeakDriverQueueSize: 132
+         - PendingTime: 0ns
+           - PreconditionBlockTime: 9s992ms
+             - __MAX_OF_PreconditionBlockTime: 9s993ms
+             - __MIN_OF_PreconditionBlockTime: 9s991ms
+         - ScheduleCount: 0
+         - ScheduleTime: 9s992ms
+           - __MAX_OF_ScheduleTime: 9s993ms
+           - __MIN_OF_ScheduleTime: 9s991ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        AGGREGATE_DISTINCT_BLOCKING_SINK (plan_node_id=36):
+          CommonMetrics:
+             - OperatorTotalTime: 14.434us
+               - __MAX_OF_OperatorTotalTime: 23.166us
+               - __MIN_OF_OperatorTotalTime: 8.577us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - GroupingKeys: 68: p_name, 69: s_name, 70: o_orderkey, 71: c_name, 72: r_name
+             - AggComputeTime: 0ns
+             - AggFuncComputeTime: 0ns
+             - ChunkBufferPeakMem: 0.000 B
+             - ChunkBufferPeakSize: 0
+             - ExprComputeTime: 0ns
+             - ExprReleaseTime: 0ns
+             - GetResultsTime: 0ns
+             - HashTableMemoryUsage: 384.000 B
+               - __MAX_OF_HashTableMemoryUsage: 24.000 B
+               - __MIN_OF_HashTableMemoryUsage: 24.000 B
+             - HashTableSize: 0
+             - InputRowCount: 0
+             - PassThroughRowCount: 0
+             - ResultAggAppendTime: 0ns
+             - ResultGroupByAppendTime: 0ns
+             - ResultIteratorTime: 0ns
+             - RowsReturned: 0
+             - StateAllocate: 0ns
+             - StateDestroy: 0ns
+             - StreamingTime: 0ns
+        CHUNK_ACCUMULATE (plan_node_id=35):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 1.082us
+               - __MAX_OF_OperatorTotalTime: 5.774us
+               - __MIN_OF_OperatorTotalTime: 493ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+        EXCHANGE_SOURCE (plan_node_id=35):
+          CommonMetrics:
+             - RuntimeFilterDesc: <7: NULL> <8: NULL> <9: NULL> <10: NULL> <11: NULL> <12: NULL> <13: NULL> <14: NULL> <15: NULL> <16: NULL> <17: NULL> <18: NULL> <19: NULL> <20: NULL> <21: NULL> <22: NULL> 
+             - OperatorTotalTime: 571.819us
+               - __MAX_OF_OperatorTotalTime: 889.835us
+               - __MIN_OF_OperatorTotalTime: 305.146us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 16
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 0
+             - BytesPassThrough: 57.951 MB
+               - __MAX_OF_BytesPassThrough: 6.090 MB
+               - __MIN_OF_BytesPassThrough: 390.019 KB
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 64
+               - __MAX_OF_ClosureBlockCount: 7
+               - __MIN_OF_ClosureBlockCount: 1
+             - ClosureBlockTime: 35s823ms
+               - __MAX_OF_ClosureBlockTime: 1m2s
+               - __MIN_OF_ClosureBlockTime: 8s955ms
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 115.902 MB
+               - __MAX_OF_PeakBufferMemoryBytes: 10.308 MB
+               - __MIN_OF_PeakBufferMemoryBytes: 3.802 MB
+             - ReceiverProcessTotalTime: 67.851us
+               - __MAX_OF_ReceiverProcessTotalTime: 130.904us
+               - __MIN_OF_ReceiverProcessTotalTime: 40.263us
+             - RequestReceived: 146
+               - __MAX_OF_RequestReceived: 10
+               - __MIN_OF_RequestReceived: 9
+             - WaitLockTime: 0ns
+      Pipeline (id=8):
+         - IsGroupExecution: false
+         - ActiveTime: 0ns
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 9s988ms
+           - __MAX_OF_DriverTotalTime: 9s990ms
+           - __MIN_OF_DriverTotalTime: 9s986ms
+         - PeakDriverQueueSize: 1.971K (1971)
+           - __MAX_OF_PeakDriverQueueSize: 131
+           - __MIN_OF_PeakDriverQueueSize: 111
+         - PendingTime: 0ns
+           - InputEmptyTime: 9s988ms
+             - __MAX_OF_InputEmptyTime: 9s990ms
+             - __MIN_OF_InputEmptyTime: 9s986ms
+             - FirstInputEmptyTime: 9s988ms
+               - __MAX_OF_FirstInputEmptyTime: 9s990ms
+               - __MIN_OF_FirstInputEmptyTime: 9s986ms
+         - ScheduleCount: 0
+         - ScheduleTime: 9s988ms
+           - __MAX_OF_ScheduleTime: 9s990ms
+           - __MIN_OF_ScheduleTime: 9s986ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        HASH_JOIN_BUILD (plan_node_id=44):
+          CommonMetrics:
+             - OperatorTotalTime: 49.831us
+               - __MAX_OF_OperatorTotalTime: 82.229us
+               - __MIN_OF_OperatorTotalTime: 20.211us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: SHUFFLE_HASH_BUCKET
+             - JoinPredicates: 68: p_name <=> 73: p_name, 69: s_name <=> 75: s_name, 71: c_name <=> 77: c_name, 70: o_orderkey <=> 76: o_orderkey
+             - JoinType: INNER_JOIN
+             - BuildBuckets: 0
+             - BuildConjunctEvaluateTime: 0ns
+             - BuildHashTableTime: 0ns
+             - BuildKeysPerBucket%: 0
+             - CopyRightTableChunkTime: 0ns
+             - HashTableMemoryUsage: 11.500 KB
+               - __MAX_OF_HashTableMemoryUsage: 736.000 B
+               - __MIN_OF_HashTableMemoryUsage: 736.000 B
+             - PartialRuntimeMembershipFilterBytes: 0.000 B
+             - PartitionNums: 256
+               - __MAX_OF_PartitionNums: 16
+               - __MIN_OF_PartitionNums: 16
+             - RuntimeFilterBuildTime: 0ns
+             - RuntimeFilterNum: 0
+        AGGREGATE_BLOCKING_SOURCE (plan_node_id=43):
+          CommonMetrics:
+             - CloseTime: 47.154ms
+               - __MAX_OF_CloseTime: 78.606ms
+               - __MIN_OF_CloseTime: 4.235us
+             - OperatorTotalTime: 47.155ms
+               - __MAX_OF_OperatorTotalTime: 78.607ms
+               - __MIN_OF_OperatorTotalTime: 5.846us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+      Pipeline (id=7):
+         - IsGroupExecution: false
+         - ActiveTime: 324.698ms
+           - __MAX_OF_ActiveTime: 371.740ms
+           - __MIN_OF_ActiveTime: 287.146ms
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 9s984ms
+           - __MAX_OF_DriverTotalTime: 9s992ms
+           - __MIN_OF_DriverTotalTime: 9s979ms
+         - PeakDriverQueueSize: 1.132K (1132)
+           - __MAX_OF_PeakDriverQueueSize: 90
+           - __MIN_OF_PeakDriverQueueSize: 38
+         - PendingTime: 0ns
+           - InputEmptyTime: 7s668ms
+             - __MAX_OF_InputEmptyTime: 7s669ms
+             - __MIN_OF_InputEmptyTime: 7s668ms
+             - FirstInputEmptyTime: 7s668ms
+               - __MAX_OF_FirstInputEmptyTime: 7s669ms
+               - __MIN_OF_FirstInputEmptyTime: 7s668ms
+         - ScheduleCount: 54
+           - __MAX_OF_ScheduleCount: 4
+           - __MIN_OF_ScheduleCount: 3
+         - ScheduleTime: 9s659ms
+           - __MAX_OF_ScheduleTime: 9s695ms
+           - __MIN_OF_ScheduleTime: 9s610ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 38
+           - __MAX_OF_YieldByTimeLimit: 3
+           - __MIN_OF_YieldByTimeLimit: 2
+        AGGREGATE_BLOCKING_SINK (plan_node_id=43):
+          CommonMetrics:
+             - CloseTime: 22.789ms
+               - __MAX_OF_CloseTime: 95.804ms
+               - __MIN_OF_CloseTime: 12.099us
+             - OperatorTotalTime: 279.076ms
+               - __MAX_OF_OperatorTotalTime: 390.283ms
+               - __MIN_OF_OperatorTotalTime: 220.243ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 332
+               - __MAX_OF_PushChunkNum: 25
+               - __MIN_OF_PushChunkNum: 16
+             - PushRowNum: 1.360M (1359872)
+               - __MAX_OF_PushRowNum: 102.400K (102400)
+               - __MIN_OF_PushRowNum: 65.536K (65536)
+             - PushTotalTime: 256.285ms
+               - __MAX_OF_PushTotalTime: 297.388ms
+               - __MIN_OF_PushTotalTime: 220.221ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - AggregateFunctions: group_concat(74: p_comment, '|')
+             - GroupingKeys: 73: p_name, 75: s_name, 77: c_name, 76: o_orderkey
+             - AggComputeTime: 255.872ms
+               - __MAX_OF_AggComputeTime: 296.919ms
+               - __MIN_OF_AggComputeTime: 219.883ms
+             - AggFuncComputeTime: 197.583ms
+               - __MAX_OF_AggFuncComputeTime: 233.184ms
+               - __MIN_OF_AggFuncComputeTime: 169.020ms
+             - ChunkBufferPeakMem: 0.000 B
+             - ChunkBufferPeakSize: 0
+             - ExprComputeTime: 206.898us
+               - __MAX_OF_ExprComputeTime: 263.462us
+               - __MIN_OF_ExprComputeTime: 159.974us
+             - ExprReleaseTime: 305.891us
+               - __MAX_OF_ExprReleaseTime: 364.128us
+               - __MIN_OF_ExprReleaseTime: 251.532us
+             - GetResultsTime: 0ns
+             - HashTableMemoryUsage: 223.563 MB
+               - __MAX_OF_HashTableMemoryUsage: 16.098 MB
+               - __MIN_OF_HashTableMemoryUsage: 11.598 MB
+             - HashTableSize: 0
+             - InputRowCount: 1.360M (1359872)
+               - __MAX_OF_InputRowCount: 102.400K (102400)
+               - __MIN_OF_InputRowCount: 65.536K (65536)
+             - PassThroughRowCount: 0
+             - ResultAggAppendTime: 0ns
+             - ResultGroupByAppendTime: 0ns
+             - ResultIteratorTime: 0ns
+             - RowsReturned: 0
+             - StateAllocate: 0ns
+             - StateDestroy: 0ns
+             - StreamingTime: 0ns
+        AGGREGATE_DISTINCT_BLOCKING_SOURCE (plan_node_id=42):
+          CommonMetrics:
+             - CloseTime: 2.801ms
+               - __MAX_OF_CloseTime: 14.720ms
+               - __MIN_OF_CloseTime: 1.170ms
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 71.006ms
+               - __MAX_OF_OperatorTotalTime: 90.818ms
+               - __MIN_OF_OperatorTotalTime: 58.786ms
+             - OutputChunkBytes: 139.094 MB
+               - __MAX_OF_OutputChunkBytes: 10.471 MB
+               - __MIN_OF_OutputChunkBytes: 6.702 MB
+             - PullChunkNum: 332
+               - __MAX_OF_PullChunkNum: 25
+               - __MIN_OF_PullChunkNum: 16
+             - PullRowNum: 1.360M (1359872)
+               - __MAX_OF_PullRowNum: 102.400K (102400)
+               - __MIN_OF_PullRowNum: 65.536K (65536)
+             - PullTotalTime: 68.204ms
+               - __MAX_OF_PullTotalTime: 79.354ms
+               - __MIN_OF_PullTotalTime: 57.107ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+      Pipeline (id=6):
+         - IsGroupExecution: false
+         - ActiveTime: 1s382ms
+           - __MAX_OF_ActiveTime: 1s456ms
+           - __MIN_OF_ActiveTime: 1s321ms
+         - BlockByInputEmpty: 5.125K (5125)
+           - __MAX_OF_BlockByInputEmpty: 354
+           - __MIN_OF_BlockByInputEmpty: 241
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 7s668ms
+           - __MAX_OF_DriverTotalTime: 7s669ms
+           - __MIN_OF_DriverTotalTime: 7s668ms
+         - OverheadTime: 14.828ms
+           - __MAX_OF_OverheadTime: 15.666ms
+           - __MIN_OF_OverheadTime: 13.970ms
+         - PeakDriverQueueSize: 3.672K (3672)
+           - __MAX_OF_PeakDriverQueueSize: 235
+           - __MIN_OF_PeakDriverQueueSize: 222
+         - PendingTime: 0ns
+           - InputEmptyTime: 5s395ms
+             - __MAX_OF_InputEmptyTime: 5s591ms
+             - __MIN_OF_InputEmptyTime: 5s71ms
+             - FirstInputEmptyTime: 1s35ms
+               - __MAX_OF_FirstInputEmptyTime: 1s38ms
+               - __MIN_OF_FirstInputEmptyTime: 1s35ms
+             - FollowupInputEmptyTime: 4s360ms
+               - __MAX_OF_FollowupInputEmptyTime: 4s556ms
+               - __MIN_OF_FollowupInputEmptyTime: 4s32ms
+         - ScheduleCount: 5.319K (5319)
+           - __MAX_OF_ScheduleCount: 366
+           - __MIN_OF_ScheduleCount: 254
+         - ScheduleTime: 6s286ms
+           - __MAX_OF_ScheduleTime: 6s347ms
+           - __MIN_OF_ScheduleTime: 6s212ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 267
+           - __MAX_OF_YieldByTimeLimit: 24
+           - __MIN_OF_YieldByTimeLimit: 12
+        AGGREGATE_DISTINCT_BLOCKING_SINK (plan_node_id=42):
+          CommonMetrics:
+             - OperatorTotalTime: 1s342ms
+               - __MAX_OF_OperatorTotalTime: 1s417ms
+               - __MIN_OF_OperatorTotalTime: 1s278ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 10.211K (10211)
+               - __MAX_OF_PushChunkNum: 642
+               - __MIN_OF_PushChunkNum: 634
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 2.511M (2510582)
+               - __MIN_OF_PushRowNum: 2.478M (2478404)
+             - PushTotalTime: 1s342ms
+               - __MAX_OF_PushTotalTime: 1s417ms
+               - __MIN_OF_PushTotalTime: 1s278ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - GroupingKeys: 73: p_name, 74: p_comment, 75: s_name, 76: o_orderkey, 77: c_name
+             - AggComputeTime: 1s341ms
+               - __MAX_OF_AggComputeTime: 1s416ms
+               - __MIN_OF_AggComputeTime: 1s277ms
+             - AggFuncComputeTime: 0ns
+             - ChunkBufferPeakMem: 0.000 B
+             - ChunkBufferPeakSize: 0
+             - ExprComputeTime: 2.291ms
+               - __MAX_OF_ExprComputeTime: 2.558ms
+               - __MIN_OF_ExprComputeTime: 1.904ms
+             - ExprReleaseTime: 19.757ms
+               - __MAX_OF_ExprReleaseTime: 25.980ms
+               - __MIN_OF_ExprReleaseTime: 17.230ms
+             - GetResultsTime: 68.101ms
+               - __MAX_OF_GetResultsTime: 79.281ms
+               - __MIN_OF_GetResultsTime: 57.025ms
+             - HashTableMemoryUsage: 5.840 GB
+               - __MAX_OF_HashTableMemoryUsage: 375.496 MB
+               - __MIN_OF_HashTableMemoryUsage: 371.996 MB
+             - HashTableSize: 39.934M (39933556)
+               - __MAX_OF_HashTableSize: 2.511M (2510578)
+               - __MIN_OF_HashTableSize: 2.478M (2478404)
+             - InputRowCount: 39.934M (39933567)
+               - __MAX_OF_InputRowCount: 2.511M (2510582)
+               - __MIN_OF_InputRowCount: 2.478M (2478404)
+             - PassThroughRowCount: 0
+             - ResultAggAppendTime: 0ns
+             - ResultGroupByAppendTime: 66.702ms
+               - __MAX_OF_ResultGroupByAppendTime: 78.067ms
+               - __MIN_OF_ResultGroupByAppendTime: 55.855ms
+             - ResultIteratorTime: 0ns
+             - RowsReturned: 0
+             - StateAllocate: 0ns
+             - StateDestroy: 0ns
+             - StreamingTime: 0ns
+        EXCHANGE_SOURCE (plan_node_id=41):
+          CommonMetrics:
+             - ConjunctsInputRows: 39.934M (39933567)
+               - __MAX_OF_ConjunctsInputRows: 2.511M (2510582)
+               - __MIN_OF_ConjunctsInputRows: 2.478M (2478404)
+             - ConjunctsOutputRows: 39.934M (39933567)
+               - __MAX_OF_ConjunctsOutputRows: 2.511M (2510582)
+               - __MIN_OF_ConjunctsOutputRows: 2.478M (2478404)
+             - ConjunctsTime: 2.304ms
+               - __MAX_OF_ConjunctsTime: 2.677ms
+               - __MIN_OF_ConjunctsTime: 1.925ms
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 25.080ms
+               - __MAX_OF_OperatorTotalTime: 27.365ms
+               - __MIN_OF_OperatorTotalTime: 23.518ms
+             - OutputChunkBytes: 3.989 GB
+               - __MAX_OF_OutputChunkBytes: 256.858 MB
+               - __MIN_OF_OutputChunkBytes: 253.538 MB
+             - PullChunkNum: 10.211K (10211)
+               - __MAX_OF_PullChunkNum: 642
+               - __MIN_OF_PullChunkNum: 634
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 2.511M (2510582)
+               - __MIN_OF_PullRowNum: 2.478M (2478404)
+             - PullTotalTime: 25.068ms
+               - __MAX_OF_PullTotalTime: 27.358ms
+               - __MIN_OF_PullTotalTime: 23.510ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 9
+               - __MAX_OF_BufferUnplugCount: 2
+               - __MIN_OF_BufferUnplugCount: 0
+             - BytesPassThrough: 3.990 GB
+               - __MAX_OF_BytesPassThrough: 288.185 MB
+               - __MIN_OF_BytesPassThrough: 213.241 MB
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 4.301K (4301)
+               - __MAX_OF_ClosureBlockCount: 296
+               - __MIN_OF_ClosureBlockCount: 246
+             - ClosureBlockTime: 3s856ms
+               - __MAX_OF_ClosureBlockTime: 4s999ms
+               - __MIN_OF_ClosureBlockTime: 3s142ms
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 266.412 MB
+               - __MAX_OF_PeakBufferMemoryBytes: 38.152 MB
+               - __MIN_OF_PeakBufferMemoryBytes: 2.855 MB
+             - ReceiverProcessTotalTime: 3.512ms
+               - __MAX_OF_ReceiverProcessTotalTime: 3.788ms
+               - __MIN_OF_ReceiverProcessTotalTime: 3.236ms
+             - RequestReceived: 10.098K (10098)
+               - __MAX_OF_RequestReceived: 632
+               - __MIN_OF_RequestReceived: 631
+             - WaitLockTime: 0ns
+      Pipeline (id=5):
+         - IsGroupExecution: false
+         - ActiveTime: 2s102ms
+           - __MAX_OF_ActiveTime: 2s160ms
+           - __MIN_OF_ActiveTime: 2s67ms
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 9s997ms
+           - __MAX_OF_DriverTotalTime: 10s24ms
+           - __MIN_OF_DriverTotalTime: 9s979ms
+         - OverheadTime: 4.642ms
+           - __MAX_OF_OverheadTime: 6.867ms
+           - __MIN_OF_OverheadTime: 1.008ms
+         - PeakDriverQueueSize: 691
+           - __MAX_OF_PeakDriverQueueSize: 67
+           - __MIN_OF_PeakDriverQueueSize: 41
+         - PendingTime: 0ns
+           - InputEmptyTime: 7s625ms
+             - __MAX_OF_InputEmptyTime: 7s626ms
+             - __MIN_OF_InputEmptyTime: 7s625ms
+             - FirstInputEmptyTime: 7s625ms
+               - __MAX_OF_FirstInputEmptyTime: 7s626ms
+               - __MIN_OF_FirstInputEmptyTime: 7s625ms
+         - ScheduleCount: 332
+           - __MAX_OF_ScheduleCount: 21
+           - __MIN_OF_ScheduleCount: 20
+         - ScheduleTime: 7s895ms
+           - __MAX_OF_ScheduleTime: 7s956ms
+           - __MIN_OF_ScheduleTime: 7s859ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 322
+           - __MAX_OF_YieldByTimeLimit: 21
+           - __MIN_OF_YieldByTimeLimit: 20
+        HASH_JOIN_BUILD (plan_node_id=50):
+          CommonMetrics:
+             - OperatorTotalTime: 934.550ms
+               - __MAX_OF_OperatorTotalTime: 971.332ms
+               - __MIN_OF_OperatorTotalTime: 845.453ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 7.026K (7026)
+               - __MAX_OF_PushChunkNum: 469
+               - __MIN_OF_PushChunkNum: 403
+             - PushRowNum: 28.778M (28778496)
+               - __MAX_OF_PushRowNum: 1.921M (1921024)
+               - __MIN_OF_PushRowNum: 1.651M (1650688)
+             - PushTotalTime: 934.255ms
+               - __MAX_OF_PushTotalTime: 970.592ms
+               - __MIN_OF_PushTotalTime: 844.705ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: SHUFFLE_HASH_BUCKET
+             - JoinPredicates: 68: p_name <=> 79: p_name, 69: s_name <=> 80: s_name, 71: c_name <=> 83: c_name, 70: o_orderkey <=> 82: o_orderkey
+             - JoinType: INNER_JOIN
+             - BuildBuckets: 0
+             - BuildConjunctEvaluateTime: 46.289ms
+               - __MAX_OF_BuildConjunctEvaluateTime: 54.013ms
+               - __MIN_OF_BuildConjunctEvaluateTime: 39.954ms
+             - BuildHashTableTime: 0ns
+             - BuildKeysPerBucket%: 0
+             - CopyRightTableChunkTime: 526.151ms
+               - __MAX_OF_CopyRightTableChunkTime: 554.143ms
+               - __MIN_OF_CopyRightTableChunkTime: 467.872ms
+             - HashTableMemoryUsage: 3.429 GB
+               - __MAX_OF_HashTableMemoryUsage: 231.273 MB
+               - __MIN_OF_HashTableMemoryUsage: 202.820 MB
+             - PartialRuntimeMembershipFilterBytes: 0.000 B
+             - PartitionNums: 256
+               - __MAX_OF_PartitionNums: 16
+               - __MIN_OF_PartitionNums: 16
+             - RuntimeFilterBuildTime: 0ns
+             - RuntimeFilterNum: 0
+        AGGREGATE_DISTINCT_BLOCKING_SOURCE (plan_node_id=49):
+          CommonMetrics:
+             - CloseTime: 2.399ms
+               - __MAX_OF_CloseTime: 6.579ms
+               - __MIN_OF_CloseTime: 1.034ms
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 1s163ms
+               - __MAX_OF_OperatorTotalTime: 1s225ms
+               - __MIN_OF_OperatorTotalTime: 1s121ms
+             - OutputChunkBytes: 2.379 GB
+               - __MAX_OF_OutputChunkBytes: 162.571 MB
+               - __MIN_OF_OutputChunkBytes: 139.710 MB
+             - PullChunkNum: 7.026K (7026)
+               - __MAX_OF_PullChunkNum: 469
+               - __MIN_OF_PullChunkNum: 403
+             - PullRowNum: 28.778M (28778496)
+               - __MAX_OF_PullRowNum: 1.921M (1921024)
+               - __MIN_OF_PullRowNum: 1.651M (1650688)
+             - PullTotalTime: 1s160ms
+               - __MAX_OF_PullTotalTime: 1s221ms
+               - __MIN_OF_PullTotalTime: 1s118ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+      Pipeline (id=4):
+         - IsGroupExecution: false
+         - ActiveTime: 1s270ms
+           - __MAX_OF_ActiveTime: 1s357ms
+           - __MIN_OF_ActiveTime: 1s217ms
+         - BlockByInputEmpty: 4.831K (4831)
+           - __MAX_OF_BlockByInputEmpty: 339
+           - __MIN_OF_BlockByInputEmpty: 251
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 7s625ms
+           - __MAX_OF_DriverTotalTime: 7s626ms
+           - __MIN_OF_DriverTotalTime: 7s625ms
+         - OverheadTime: 13.547ms
+           - __MAX_OF_OverheadTime: 14.132ms
+           - __MIN_OF_OverheadTime: 12.907ms
+         - PeakDriverQueueSize: 3.703K (3703)
+           - __MAX_OF_PeakDriverQueueSize: 236
+           - __MIN_OF_PeakDriverQueueSize: 223
+         - PendingTime: 0ns
+           - InputEmptyTime: 5s460ms
+             - __MAX_OF_InputEmptyTime: 5s580ms
+             - __MIN_OF_InputEmptyTime: 5s300ms
+             - FirstInputEmptyTime: 1s47ms
+               - __MAX_OF_FirstInputEmptyTime: 1s49ms
+               - __MIN_OF_FirstInputEmptyTime: 1s46ms
+             - FollowupInputEmptyTime: 4s413ms
+               - __MAX_OF_FollowupInputEmptyTime: 4s533ms
+               - __MIN_OF_FollowupInputEmptyTime: 4s253ms
+         - ScheduleCount: 5.010K (5010)
+           - __MAX_OF_ScheduleCount: 350
+           - __MIN_OF_ScheduleCount: 262
+         - ScheduleTime: 6s355ms
+           - __MAX_OF_ScheduleTime: 6s408ms
+           - __MIN_OF_ScheduleTime: 6s268ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 246
+           - __MAX_OF_YieldByTimeLimit: 23
+           - __MIN_OF_YieldByTimeLimit: 11
+        AGGREGATE_DISTINCT_BLOCKING_SINK (plan_node_id=49):
+          CommonMetrics:
+             - OperatorTotalTime: 1s231ms
+               - __MAX_OF_OperatorTotalTime: 1s302ms
+               - __MIN_OF_OperatorTotalTime: 1s177ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 10.209K (10209)
+               - __MAX_OF_PushChunkNum: 645
+               - __MIN_OF_PushChunkNum: 633
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 2.511M (2510582)
+               - __MIN_OF_PushRowNum: 2.478M (2478404)
+             - PushTotalTime: 1s231ms
+               - __MAX_OF_PushTotalTime: 1s301ms
+               - __MIN_OF_PushTotalTime: 1s177ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - GroupingKeys: 79: p_name, 80: s_name, 83: c_name, 82: o_orderkey
+             - AggComputeTime: 1s230ms
+               - __MAX_OF_AggComputeTime: 1s301ms
+               - __MIN_OF_AggComputeTime: 1s176ms
+             - AggFuncComputeTime: 0ns
+             - ChunkBufferPeakMem: 0.000 B
+             - ChunkBufferPeakSize: 0
+             - ExprComputeTime: 1.950ms
+               - __MAX_OF_ExprComputeTime: 2.134ms
+               - __MIN_OF_ExprComputeTime: 1.779ms
+             - ExprReleaseTime: 15.640ms
+               - __MAX_OF_ExprReleaseTime: 19.119ms
+               - __MIN_OF_ExprReleaseTime: 14.029ms
+             - GetResultsTime: 1s159ms
+               - __MAX_OF_GetResultsTime: 1s220ms
+               - __MIN_OF_GetResultsTime: 1s117ms
+             - HashTableMemoryUsage: 5.150 GB
+               - __MAX_OF_HashTableMemoryUsage: 330.996 MB
+               - __MIN_OF_HashTableMemoryUsage: 327.996 MB
+             - HashTableSize: 39.934M (39933556)
+               - __MAX_OF_HashTableSize: 2.511M (2510578)
+               - __MIN_OF_HashTableSize: 2.478M (2478404)
+             - InputRowCount: 39.934M (39933567)
+               - __MAX_OF_InputRowCount: 2.511M (2510582)
+               - __MIN_OF_InputRowCount: 2.478M (2478404)
+             - PassThroughRowCount: 0
+             - ResultAggAppendTime: 0ns
+             - ResultGroupByAppendTime: 1s134ms
+               - __MAX_OF_ResultGroupByAppendTime: 1s197ms
+               - __MIN_OF_ResultGroupByAppendTime: 1s93ms
+             - ResultIteratorTime: 0ns
+             - RowsReturned: 0
+             - StateAllocate: 0ns
+             - StateDestroy: 0ns
+             - StreamingTime: 0ns
+        EXCHANGE_SOURCE (plan_node_id=48):
+          CommonMetrics:
+             - ConjunctsInputRows: 39.934M (39933567)
+               - __MAX_OF_ConjunctsInputRows: 2.511M (2510582)
+               - __MIN_OF_ConjunctsInputRows: 2.478M (2478404)
+             - ConjunctsOutputRows: 39.934M (39933567)
+               - __MAX_OF_ConjunctsOutputRows: 2.511M (2510582)
+               - __MIN_OF_ConjunctsOutputRows: 2.478M (2478404)
+             - ConjunctsTime: 2.225ms
+               - __MAX_OF_ConjunctsTime: 2.575ms
+               - __MIN_OF_ConjunctsTime: 1.973ms
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 25.421ms
+               - __MAX_OF_OperatorTotalTime: 41.610ms
+               - __MIN_OF_OperatorTotalTime: 21.060ms
+             - OutputChunkBytes: 3.301 GB
+               - __MAX_OF_OutputChunkBytes: 212.454 MB
+               - __MIN_OF_OutputChunkBytes: 209.805 MB
+             - PullChunkNum: 10.209K (10209)
+               - __MAX_OF_PullChunkNum: 645
+               - __MIN_OF_PullChunkNum: 633
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 2.511M (2510582)
+               - __MIN_OF_PullRowNum: 2.478M (2478404)
+             - PullTotalTime: 25.401ms
+               - __MAX_OF_PullTotalTime: 41.548ms
+               - __MIN_OF_PullTotalTime: 21.050ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 24
+               - __MAX_OF_BufferUnplugCount: 3
+               - __MIN_OF_BufferUnplugCount: 0
+             - BytesPassThrough: 3.301 GB
+               - __MAX_OF_BytesPassThrough: 255.230 MB
+               - __MIN_OF_BytesPassThrough: 181.902 MB
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 4.065K (4065)
+               - __MAX_OF_ClosureBlockCount: 271
+               - __MIN_OF_ClosureBlockCount: 241
+             - ClosureBlockTime: 3s570ms
+               - __MAX_OF_ClosureBlockTime: 4s348ms
+               - __MIN_OF_ClosureBlockTime: 2s779ms
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 246.886 MB
+               - __MAX_OF_PeakBufferMemoryBytes: 52.302 MB
+               - __MIN_OF_PeakBufferMemoryBytes: 2.004 MB
+             - ReceiverProcessTotalTime: 3.444ms
+               - __MAX_OF_ReceiverProcessTotalTime: 3.882ms
+               - __MIN_OF_ReceiverProcessTotalTime: 3.161ms
+             - RequestReceived: 10.077K (10077)
+               - __MAX_OF_RequestReceived: 630
+               - __MIN_OF_RequestReceived: 629
+             - WaitLockTime: 0ns
+      Pipeline (id=3):
+         - IsGroupExecution: false
+         - ActiveTime: 2s65ms
+           - __MAX_OF_ActiveTime: 2s88ms
+           - __MIN_OF_ActiveTime: 2s45ms
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 10s13ms
+           - __MAX_OF_DriverTotalTime: 10s22ms
+           - __MIN_OF_DriverTotalTime: 9s981ms
+         - OverheadTime: 3.883ms
+           - __MAX_OF_OverheadTime: 5.724ms
+           - __MIN_OF_OverheadTime: 1.725ms
+         - PeakDriverQueueSize: 1.330K (1330)
+           - __MAX_OF_PeakDriverQueueSize: 86
+           - __MIN_OF_PeakDriverQueueSize: 70
+         - PendingTime: 0ns
+           - InputEmptyTime: 7s645ms
+             - __MAX_OF_InputEmptyTime: 7s646ms
+             - __MIN_OF_InputEmptyTime: 7s645ms
+             - FirstInputEmptyTime: 7s645ms
+               - __MAX_OF_FirstInputEmptyTime: 7s646ms
+               - __MIN_OF_FirstInputEmptyTime: 7s645ms
+         - ScheduleCount: 323
+           - __MAX_OF_ScheduleCount: 21
+           - __MIN_OF_ScheduleCount: 20
+         - ScheduleTime: 7s947ms
+           - __MAX_OF_ScheduleTime: 7s977ms
+           - __MIN_OF_ScheduleTime: 7s897ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 320
+           - __MAX_OF_YieldByTimeLimit: 20
+           - __MIN_OF_YieldByTimeLimit: 20
+        HASH_JOIN_BUILD (plan_node_id=56):
+          CommonMetrics:
+             - OperatorTotalTime: 926.508ms
+               - __MAX_OF_OperatorTotalTime: 950.265ms
+               - __MIN_OF_OperatorTotalTime: 910.325ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 6.930K (6930)
+               - __MAX_OF_PushChunkNum: 450
+               - __MIN_OF_PushChunkNum: 404
+             - PushRowNum: 28.385M (28385280)
+               - __MAX_OF_PushRowNum: 1.843M (1843200)
+               - __MIN_OF_PushRowNum: 1.655M (1654784)
+             - PushTotalTime: 926.068ms
+               - __MAX_OF_PushTotalTime: 949.697ms
+               - __MIN_OF_PushTotalTime: 909.770ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: SHUFFLE_HASH_BUCKET
+             - JoinPredicates: 68: p_name <=> 85: p_name, 69: s_name <=> 86: s_name, 71: c_name <=> 89: c_name, 70: o_orderkey <=> 88: o_orderkey
+             - JoinType: INNER_JOIN
+             - BuildBuckets: 0
+             - BuildConjunctEvaluateTime: 42.725ms
+               - __MAX_OF_BuildConjunctEvaluateTime: 48.772ms
+               - __MIN_OF_BuildConjunctEvaluateTime: 36.344ms
+             - BuildHashTableTime: 0ns
+             - BuildKeysPerBucket%: 0
+             - CopyRightTableChunkTime: 526.832ms
+               - __MAX_OF_CopyRightTableChunkTime: 560.063ms
+               - __MIN_OF_CopyRightTableChunkTime: 499.132ms
+             - HashTableMemoryUsage: 3.321 GB
+               - __MAX_OF_HashTableMemoryUsage: 226.780 MB
+               - __MIN_OF_HashTableMemoryUsage: 188.950 MB
+             - PartialRuntimeMembershipFilterBytes: 0.000 B
+             - PartitionNums: 256
+               - __MAX_OF_PartitionNums: 16
+               - __MIN_OF_PartitionNums: 16
+             - RuntimeFilterBuildTime: 0ns
+             - RuntimeFilterNum: 0
+        AGGREGATE_DISTINCT_BLOCKING_SOURCE (plan_node_id=55):
+          CommonMetrics:
+             - CloseTime: 2.547ms
+               - __MAX_OF_CloseTime: 4.501ms
+               - __MIN_OF_CloseTime: 1.308ms
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 1s135ms
+               - __MAX_OF_OperatorTotalTime: 1s165ms
+               - __MIN_OF_OperatorTotalTime: 1s117ms
+             - OutputChunkBytes: 2.346 GB
+               - __MAX_OF_OutputChunkBytes: 155.986 MB
+               - __MIN_OF_OutputChunkBytes: 140.077 MB
+             - PullChunkNum: 6.930K (6930)
+               - __MAX_OF_PullChunkNum: 450
+               - __MIN_OF_PullChunkNum: 404
+             - PullRowNum: 28.385M (28385280)
+               - __MAX_OF_PullRowNum: 1.843M (1843200)
+               - __MIN_OF_PullRowNum: 1.655M (1654784)
+             - PullTotalTime: 1s133ms
+               - __MAX_OF_PullTotalTime: 1s163ms
+               - __MIN_OF_PullTotalTime: 1s116ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+      Pipeline (id=2):
+         - IsGroupExecution: false
+         - ActiveTime: 1s303ms
+           - __MAX_OF_ActiveTime: 1s374ms
+           - __MIN_OF_ActiveTime: 1s259ms
+         - BlockByInputEmpty: 5.106K (5106)
+           - __MAX_OF_BlockByInputEmpty: 364
+           - __MIN_OF_BlockByInputEmpty: 266
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 7s645ms
+           - __MAX_OF_DriverTotalTime: 7s646ms
+           - __MIN_OF_DriverTotalTime: 7s645ms
+         - OverheadTime: 13.812ms
+           - __MAX_OF_OverheadTime: 14.762ms
+           - __MIN_OF_OverheadTime: 13.061ms
+         - PeakDriverQueueSize: 3.647K (3647)
+           - __MAX_OF_PeakDriverQueueSize: 234
+           - __MIN_OF_PeakDriverQueueSize: 222
+         - PendingTime: 0ns
+           - InputEmptyTime: 5s436ms
+             - __MAX_OF_InputEmptyTime: 5s646ms
+             - __MIN_OF_InputEmptyTime: 5s211ms
+             - FirstInputEmptyTime: 1s53ms
+               - __MAX_OF_FirstInputEmptyTime: 1s54ms
+               - __MIN_OF_FirstInputEmptyTime: 1s53ms
+             - FollowupInputEmptyTime: 4s383ms
+               - __MAX_OF_FollowupInputEmptyTime: 4s593ms
+               - __MIN_OF_FollowupInputEmptyTime: 4s158ms
+         - ScheduleCount: 5.291K (5291)
+           - __MAX_OF_ScheduleCount: 378
+           - __MIN_OF_ScheduleCount: 277
+         - ScheduleTime: 6s342ms
+           - __MAX_OF_ScheduleTime: 6s386ms
+           - __MIN_OF_ScheduleTime: 6s271ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 271
+           - __MAX_OF_YieldByTimeLimit: 31
+           - __MIN_OF_YieldByTimeLimit: 10
+        AGGREGATE_DISTINCT_BLOCKING_SINK (plan_node_id=55):
+          CommonMetrics:
+             - OperatorTotalTime: 1s264ms
+               - __MAX_OF_OperatorTotalTime: 1s335ms
+               - __MIN_OF_OperatorTotalTime: 1s222ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 10.214K (10214)
+               - __MAX_OF_PushChunkNum: 645
+               - __MIN_OF_PushChunkNum: 634
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 2.511M (2510582)
+               - __MIN_OF_PushRowNum: 2.478M (2478404)
+             - PushTotalTime: 1s264ms
+               - __MAX_OF_PushTotalTime: 1s335ms
+               - __MIN_OF_PushTotalTime: 1s222ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - GroupingKeys: 85: p_name, 86: s_name, 89: c_name, 88: o_orderkey
+             - AggComputeTime: 1s263ms
+               - __MAX_OF_AggComputeTime: 1s334ms
+               - __MIN_OF_AggComputeTime: 1s221ms
+             - AggFuncComputeTime: 0ns
+             - ChunkBufferPeakMem: 0.000 B
+             - ChunkBufferPeakSize: 0
+             - ExprComputeTime: 2.016ms
+               - __MAX_OF_ExprComputeTime: 2.207ms
+               - __MIN_OF_ExprComputeTime: 1.715ms
+             - ExprReleaseTime: 14.819ms
+               - __MAX_OF_ExprReleaseTime: 19.967ms
+               - __MIN_OF_ExprReleaseTime: 13.096ms
+             - GetResultsTime: 1s131ms
+               - __MAX_OF_GetResultsTime: 1s162ms
+               - __MIN_OF_GetResultsTime: 1s114ms
+             - HashTableMemoryUsage: 5.150 GB
+               - __MAX_OF_HashTableMemoryUsage: 330.996 MB
+               - __MIN_OF_HashTableMemoryUsage: 327.996 MB
+             - HashTableSize: 39.934M (39933556)
+               - __MAX_OF_HashTableSize: 2.511M (2510578)
+               - __MIN_OF_HashTableSize: 2.478M (2478404)
+             - InputRowCount: 39.934M (39933567)
+               - __MAX_OF_InputRowCount: 2.511M (2510582)
+               - __MIN_OF_InputRowCount: 2.478M (2478404)
+             - PassThroughRowCount: 0
+             - ResultAggAppendTime: 0ns
+             - ResultGroupByAppendTime: 1s107ms
+               - __MAX_OF_ResultGroupByAppendTime: 1s137ms
+               - __MIN_OF_ResultGroupByAppendTime: 1s91ms
+             - ResultIteratorTime: 0ns
+             - RowsReturned: 0
+             - StateAllocate: 0ns
+             - StateDestroy: 0ns
+             - StreamingTime: 0ns
+        EXCHANGE_SOURCE (plan_node_id=54):
+          CommonMetrics:
+             - ConjunctsInputRows: 39.934M (39933567)
+               - __MAX_OF_ConjunctsInputRows: 2.511M (2510582)
+               - __MIN_OF_ConjunctsInputRows: 2.478M (2478404)
+             - ConjunctsOutputRows: 39.934M (39933567)
+               - __MAX_OF_ConjunctsOutputRows: 2.511M (2510582)
+               - __MIN_OF_ConjunctsOutputRows: 2.478M (2478404)
+             - ConjunctsTime: 2.614ms
+               - __MAX_OF_ConjunctsTime: 7.234ms
+               - __MIN_OF_ConjunctsTime: 1.975ms
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 24.670ms
+               - __MAX_OF_OperatorTotalTime: 33.245ms
+               - __MIN_OF_OperatorTotalTime: 21.715ms
+             - OutputChunkBytes: 3.301 GB
+               - __MAX_OF_OutputChunkBytes: 212.454 MB
+               - __MIN_OF_OutputChunkBytes: 209.805 MB
+             - PullChunkNum: 10.214K (10214)
+               - __MAX_OF_PullChunkNum: 645
+               - __MIN_OF_PullChunkNum: 634
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 2.511M (2510582)
+               - __MIN_OF_PullRowNum: 2.478M (2478404)
+             - PullTotalTime: 24.653ms
+               - __MAX_OF_PullTotalTime: 33.169ms
+               - __MIN_OF_PullTotalTime: 21.703ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 19
+               - __MAX_OF_BufferUnplugCount: 3
+               - __MIN_OF_BufferUnplugCount: 0
+             - BytesPassThrough: 3.301 GB
+               - __MAX_OF_BytesPassThrough: 240.544 MB
+               - __MIN_OF_BytesPassThrough: 179.864 MB
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 4.122K (4122)
+               - __MAX_OF_ClosureBlockCount: 273
+               - __MIN_OF_ClosureBlockCount: 241
+             - ClosureBlockTime: 3s417ms
+               - __MAX_OF_ClosureBlockTime: 4s153ms
+               - __MIN_OF_ClosureBlockTime: 2s525ms
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 210.242 MB
+               - __MAX_OF_PeakBufferMemoryBytes: 42.687 MB
+               - __MIN_OF_PeakBufferMemoryBytes: 2.968 MB
+             - ReceiverProcessTotalTime: 3.707ms
+               - __MAX_OF_ReceiverProcessTotalTime: 4.357ms
+               - __MIN_OF_ReceiverProcessTotalTime: 3.239ms
+             - RequestReceived: 10.082K (10082)
+               - __MAX_OF_RequestReceived: 631
+               - __MIN_OF_RequestReceived: 630
+             - WaitLockTime: 0ns
+      Pipeline (id=1):
+         - IsGroupExecution: false
+         - ActiveTime: 0ns
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 9s982ms
+           - __MAX_OF_DriverTotalTime: 9s987ms
+           - __MIN_OF_DriverTotalTime: 9s981ms
+         - PeakDriverQueueSize: 1.137K (1137)
+           - __MAX_OF_PeakDriverQueueSize: 116
+           - __MIN_OF_PeakDriverQueueSize: 51
+         - PendingTime: 0ns
+           - InputEmptyTime: 9s982ms
+             - __MAX_OF_InputEmptyTime: 9s987ms
+             - __MIN_OF_InputEmptyTime: 9s981ms
+             - FirstInputEmptyTime: 9s982ms
+               - __MAX_OF_FirstInputEmptyTime: 9s987ms
+               - __MIN_OF_FirstInputEmptyTime: 9s981ms
+         - ScheduleCount: 0
+         - ScheduleTime: 9s982ms
+           - __MAX_OF_ScheduleTime: 9s987ms
+           - __MIN_OF_ScheduleTime: 9s981ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        HASH_JOIN_BUILD (plan_node_id=62):
+          CommonMetrics:
+             - OperatorTotalTime: 12.308us
+               - __MAX_OF_OperatorTotalTime: 23.602us
+               - __MIN_OF_OperatorTotalTime: 7.807us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: SHUFFLE_HASH_BUCKET
+             - JoinPredicates: 68: p_name <=> 90: p_name, 69: s_name <=> 91: s_name, 71: c_name <=> 97: c_name, 70: o_orderkey <=> 96: o_orderkey
+             - JoinType: INNER_JOIN
+             - BuildBuckets: 0
+             - BuildConjunctEvaluateTime: 0ns
+             - BuildHashTableTime: 0ns
+             - BuildKeysPerBucket%: 0
+             - CopyRightTableChunkTime: 0ns
+             - HashTableMemoryUsage: 1.344 KB
+               - __MAX_OF_HashTableMemoryUsage: 86.000 B
+               - __MIN_OF_HashTableMemoryUsage: 86.000 B
+             - PartialRuntimeMembershipFilterBytes: 0.000 B
+             - PartitionNums: 16
+               - __MAX_OF_PartitionNums: 1
+               - __MIN_OF_PartitionNums: 1
+             - RuntimeFilterBuildTime: 0ns
+             - RuntimeFilterNum: 0
+        AGGREGATE_BLOCKING_SOURCE (plan_node_id=61):
+          CommonMetrics:
+             - CloseTime: 1.162ms
+               - __MAX_OF_CloseTime: 4.954ms
+               - __MIN_OF_CloseTime: 4.262us
+             - OperatorTotalTime: 1.163ms
+               - __MAX_OF_OperatorTotalTime: 4.954ms
+               - __MIN_OF_OperatorTotalTime: 4.905us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+      Pipeline (id=0):
+         - IsGroupExecution: false
+         - ActiveTime: 2s771ms
+           - __MAX_OF_ActiveTime: 2s816ms
+           - __MIN_OF_ActiveTime: 2s684ms
+         - BlockByInputEmpty: 2.592K (2592)
+           - __MAX_OF_BlockByInputEmpty: 186
+           - __MIN_OF_BlockByInputEmpty: 129
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 10s3ms
+           - __MAX_OF_DriverTotalTime: 10s27ms
+           - __MIN_OF_DriverTotalTime: 9s981ms
+         - OverheadTime: 8.478ms
+           - __MAX_OF_OverheadTime: 13.196ms
+           - __MIN_OF_OverheadTime: 2.575ms
+         - PeakDriverQueueSize: 3.724K (3724)
+           - __MAX_OF_PeakDriverQueueSize: 238
+           - __MIN_OF_PeakDriverQueueSize: 224
+         - PendingTime: 0ns
+           - InputEmptyTime: 5s324ms
+             - __MAX_OF_InputEmptyTime: 6s941ms
+             - __MIN_OF_InputEmptyTime: 4s510ms
+             - FirstInputEmptyTime: 1s90ms
+               - __MAX_OF_FirstInputEmptyTime: 1s96ms
+               - __MIN_OF_FirstInputEmptyTime: 1s89ms
+             - FollowupInputEmptyTime: 4s234ms
+               - __MAX_OF_FollowupInputEmptyTime: 5s851ms
+               - __MIN_OF_FollowupInputEmptyTime: 3s421ms
+         - ScheduleCount: 2.892K (2892)
+           - __MAX_OF_ScheduleCount: 206
+           - __MIN_OF_ScheduleCount: 147
+         - ScheduleTime: 7s232ms
+           - __MAX_OF_ScheduleTime: 7s333ms
+           - __MIN_OF_ScheduleTime: 7s164ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 386
+           - __MAX_OF_YieldByTimeLimit: 30
+           - __MIN_OF_YieldByTimeLimit: 18
+        AGGREGATE_BLOCKING_SINK (plan_node_id=61):
+          CommonMetrics:
+             - CloseTime: 3.092ms
+               - __MAX_OF_CloseTime: 7.095ms
+               - __MIN_OF_CloseTime: 9.765us
+             - OperatorTotalTime: 2s739ms
+               - __MAX_OF_OperatorTotalTime: 2s784ms
+               - __MIN_OF_OperatorTotalTime: 2s656ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 7.684K (7684)
+               - __MAX_OF_PushChunkNum: 495
+               - __MIN_OF_PushChunkNum: 465
+             - PushRowNum: 30.416M (30416008)
+               - __MAX_OF_PushRowNum: 1.960M (1959841)
+               - __MIN_OF_PushRowNum: 1.843M (1843111)
+             - PushTotalTime: 2s736ms
+               - __MAX_OF_PushTotalTime: 2s780ms
+               - __MIN_OF_PushTotalTime: 2s652ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - AggregateFunctions: max(65: max), count(62: count), sum(63: sum), avg(64: avg)
+             - GroupingKeys: 90: p_name, 91: s_name, 97: c_name, 96: o_orderkey
+             - AggComputeTime: 2s714ms
+               - __MAX_OF_AggComputeTime: 2s756ms
+               - __MIN_OF_AggComputeTime: 2s627ms
+             - AggFuncComputeTime: 101.262ms
+               - __MAX_OF_AggFuncComputeTime: 106.216ms
+               - __MIN_OF_AggFuncComputeTime: 96.487ms
+             - ChunkBufferPeakMem: 0.000 B
+             - ChunkBufferPeakSize: 0
+             - ExprComputeTime: 5.136ms
+               - __MAX_OF_ExprComputeTime: 8.844ms
+               - __MIN_OF_ExprComputeTime: 4.690ms
+             - ExprReleaseTime: 19.563ms
+               - __MAX_OF_ExprReleaseTime: 22.502ms
+               - __MIN_OF_ExprReleaseTime: 17.773ms
+             - GetResultsTime: 0ns
+             - HashTableMemoryUsage: 8.811 GB
+               - __MAX_OF_HashTableMemoryUsage: 578.379 MB
+               - __MIN_OF_HashTableMemoryUsage: 547.754 MB
+             - HashTableSize: 0
+             - InputRowCount: 30.416M (30416008)
+               - __MAX_OF_InputRowCount: 1.960M (1959841)
+               - __MIN_OF_InputRowCount: 1.843M (1843111)
+             - PassThroughRowCount: 0
+             - ResultAggAppendTime: 0ns
+             - ResultGroupByAppendTime: 0ns
+             - ResultIteratorTime: 0ns
+             - RowsReturned: 0
+             - StateAllocate: 0ns
+             - StateDestroy: 0ns
+             - StreamingTime: 0ns
+        EXCHANGE_SOURCE (plan_node_id=60):
+          CommonMetrics:
+             - ConjunctsInputRows: 30.416M (30416008)
+               - __MAX_OF_ConjunctsInputRows: 1.960M (1959841)
+               - __MIN_OF_ConjunctsInputRows: 1.843M (1843111)
+             - ConjunctsOutputRows: 30.416M (30416008)
+               - __MAX_OF_ConjunctsOutputRows: 1.960M (1959841)
+               - __MIN_OF_ConjunctsOutputRows: 1.843M (1843111)
+             - ConjunctsTime: 2.520ms
+               - __MAX_OF_ConjunctsTime: 2.811ms
+               - __MIN_OF_ConjunctsTime: 2.332ms
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 23.424ms
+               - __MAX_OF_OperatorTotalTime: 30.689ms
+               - __MIN_OF_OperatorTotalTime: 20.831ms
+             - OutputChunkBytes: 4.185 GB
+               - __MAX_OF_OutputChunkBytes: 276.150 MB
+               - __MIN_OF_OutputChunkBytes: 259.716 MB
+             - PullChunkNum: 7.684K (7684)
+               - __MAX_OF_PullChunkNum: 495
+               - __MIN_OF_PullChunkNum: 465
+             - PullRowNum: 30.416M (30416008)
+               - __MAX_OF_PullRowNum: 1.960M (1959841)
+               - __MIN_OF_PullRowNum: 1.843M (1843111)
+             - PullTotalTime: 22.563ms
+               - __MAX_OF_PullTotalTime: 29.024ms
+               - __MIN_OF_PullTotalTime: 19.007ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 27
+               - __MAX_OF_BufferUnplugCount: 2
+               - __MIN_OF_BufferUnplugCount: 0
+             - BytesPassThrough: 4.289 GB
+               - __MAX_OF_BytesPassThrough: 346.464 MB
+               - __MIN_OF_BytesPassThrough: 216.318 MB
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 3.559K (3559)
+               - __MAX_OF_ClosureBlockCount: 235
+               - __MIN_OF_ClosureBlockCount: 207
+             - ClosureBlockTime: 15s945ms
+               - __MAX_OF_ClosureBlockTime: 32s994ms
+               - __MIN_OF_ClosureBlockTime: 4s280ms
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 449.275 MB
+               - __MAX_OF_PeakBufferMemoryBytes: 100.017 MB
+               - __MIN_OF_PeakBufferMemoryBytes: 3.927 MB
+             - ReceiverProcessTotalTime: 2.840ms
+               - __MAX_OF_ReceiverProcessTotalTime: 3.093ms
+               - __MIN_OF_ReceiverProcessTotalTime: 2.524ms
+             - RequestReceived: 7.803K (7803)
+               - __MAX_OF_RequestReceived: 488
+               - __MIN_OF_RequestReceived: 487
+             - WaitLockTime: 0ns
+    Fragment 2:
+       - BackendAddresses: 172.26.95.146:9060
+       - InstanceIds: b32190b0-8a0b-11f0-94e0-00163e341b99
+       - EnableEventScheduler: true
+       - BackendNum: 1
+       - BackendProfileMergeTime: 3.308ms
+       - InitialProcessDriverCount: 226
+       - InitialProcessMem: 9.388 GB
+       - InstanceAllocatedMemoryUsage: 11.615 GB
+       - InstanceDeallocatedMemoryUsage: 11.368 GB
+       - InstanceNum: 1
+       - InstancePeakMemoryUsage: 957.415 MB
+       - JITCounter: 0
+       - JITTotalCostTime: 0ns
+       - QueryMemoryLimit: -1.000 B
+      Pipeline (id=2):
+         - IsGroupExecution: false
+         - ActiveTime: 732.529ms
+           - __MAX_OF_ActiveTime: 801.133ms
+           - __MIN_OF_ActiveTime: 682.963ms
+         - BlockByInputEmpty: 1.649K (1649)
+           - __MAX_OF_BlockByInputEmpty: 108
+           - __MIN_OF_BlockByInputEmpty: 101
+         - BlockByOutputFull: 304
+           - __MAX_OF_BlockByOutputFull: 23
+           - __MIN_OF_BlockByOutputFull: 15
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 10s22ms
+           - __MAX_OF_DriverTotalTime: 10s23ms
+           - __MIN_OF_DriverTotalTime: 10s21ms
+         - OverheadTime: 13.337ms
+           - __MAX_OF_OverheadTime: 19.525ms
+           - __MIN_OF_OverheadTime: 8.008ms
+         - PeakDriverQueueSize: 3.769K (3769)
+           - __MAX_OF_PeakDriverQueueSize: 243
+           - __MIN_OF_PeakDriverQueueSize: 228
+         - PendingTime: 0ns
+           - InputEmptyTime: 5s214ms
+             - __MAX_OF_InputEmptyTime: 5s332ms
+             - __MIN_OF_InputEmptyTime: 5s39ms
+             - FirstInputEmptyTime: 934.380ms
+               - __MAX_OF_FirstInputEmptyTime: 939.119ms
+               - __MIN_OF_FirstInputEmptyTime: 933.187ms
+             - FollowupInputEmptyTime: 4s279ms
+               - __MAX_OF_FollowupInputEmptyTime: 4s396ms
+               - __MIN_OF_FollowupInputEmptyTime: 4s104ms
+           - OutputFullTime: 2s922ms
+             - __MAX_OF_OutputFullTime: 2s933ms
+             - __MIN_OF_OutputFullTime: 2s913ms
+           - PendingFinishTime: 46.067ms
+             - __MAX_OF_PendingFinishTime: 47ms
+             - __MIN_OF_PendingFinishTime: 45.537ms
+         - ScheduleCount: 2.053K (2053)
+           - __MAX_OF_ScheduleCount: 131
+           - __MIN_OF_ScheduleCount: 125
+         - ScheduleTime: 9s289ms
+           - __MAX_OF_ScheduleTime: 9s339ms
+           - __MIN_OF_ScheduleTime: 9s220ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 111
+           - __MAX_OF_YieldByTimeLimit: 9
+           - __MIN_OF_YieldByTimeLimit: 6
+        EXCHANGE_SINK (plan_node_id=60):
+          CommonMetrics:
+             - OperatorTotalTime: 714.137ms
+               - __MAX_OF_OperatorTotalTime: 780.827ms
+               - __MIN_OF_OperatorTotalTime: 664.492ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 8.337K (8337)
+               - __MAX_OF_PushChunkNum: 567
+               - __MIN_OF_PushChunkNum: 503
+             - PushRowNum: 31.662M (31661843)
+               - __MAX_OF_PushRowNum: 2.184M (2183785)
+               - __MIN_OF_PushRowNum: 1.908M (1907916)
+             - PushTotalTime: 714.135ms
+               - __MAX_OF_PushTotalTime: 780.807ms
+               - __MIN_OF_PushTotalTime: 664.491ms
+          UniqueMetrics:
+             - ChannelNum: 1
+             - DestFragments: b32190b08a0b11f0-94e000163e341b98
+             - DestID: 60
+             - PartType: HASH_PARTITIONED
+             - PipelineLevelShuffle: Yes
+             - ShuffleNumPerChannel: 16
+             - TotalShuffleNum: 16
+             - BytesPassThrough: 4.289 GB
+               - __MAX_OF_BytesPassThrough: 303.490 MB
+               - __MIN_OF_BytesPassThrough: 264.231 MB
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 207.112ms
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 9s5ms
+             - PassThroughBufferPeakMemoryUsage: 28.464 MB
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 573.651us
+             - RpcCount: 7.803K (7803)
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 130.428K (130428)
+               - __MAX_OF_ShuffleChunkAppendCounter: 8.953K (8953)
+               - __MIN_OF_ShuffleChunkAppendCounter: 7.868K (7868)
+             - ShuffleChunkAppendTime: 350.737ms
+               - __MAX_OF_ShuffleChunkAppendTime: 380.112ms
+               - __MIN_OF_ShuffleChunkAppendTime: 332.773ms
+             - ShuffleHashTime: 120.109ms
+               - __MAX_OF_ShuffleHashTime: 132.350ms
+               - __MIN_OF_ShuffleHashTime: 113.931ms
+             - WaitTime: 2s943ms
+        AGGREGATE_STREAMING_SOURCE (plan_node_id=59):
+          CommonMetrics:
+             - CloseTime: 3.274ms
+               - __MAX_OF_CloseTime: 8.054ms
+               - __MIN_OF_CloseTime: 145.137us
+             - OperatorTotalTime: 5.054ms
+               - __MAX_OF_OperatorTotalTime: 9.546ms
+               - __MIN_OF_OperatorTotalTime: 2.171ms
+             - OutputChunkBytes: 4.357 GB
+               - __MAX_OF_OutputChunkBytes: 307.687 MB
+               - __MIN_OF_OutputChunkBytes: 268.842 MB
+             - PullChunkNum: 8.337K (8337)
+               - __MAX_OF_PullChunkNum: 567
+               - __MIN_OF_PullChunkNum: 503
+             - PullRowNum: 31.662M (31661843)
+               - __MAX_OF_PullRowNum: 2.184M (2183785)
+               - __MIN_OF_PullRowNum: 1.908M (1907916)
+             - PullTotalTime: 1.778ms
+               - __MAX_OF_PullTotalTime: 2.167ms
+               - __MIN_OF_PullTotalTime: 1.491ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+      Pipeline (id=1):
+         - IsGroupExecution: false
+         - ActiveTime: 114.211ms
+           - __MAX_OF_ActiveTime: 120.451ms
+           - __MIN_OF_ActiveTime: 109.215ms
+         - BlockByInputEmpty: 2.464K (2464)
+           - __MAX_OF_BlockByInputEmpty: 156
+           - __MIN_OF_BlockByInputEmpty: 152
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 10s10ms
+           - __MAX_OF_DriverTotalTime: 10s10ms
+           - __MIN_OF_DriverTotalTime: 10s10ms
+         - OverheadTime: 3.087ms
+           - __MAX_OF_OverheadTime: 3.380ms
+           - __MIN_OF_OverheadTime: 2.868ms
+         - PeakDriverQueueSize: 3.678K (3678)
+           - __MAX_OF_PeakDriverQueueSize: 235
+           - __MIN_OF_PeakDriverQueueSize: 224
+         - PendingTime: 0ns
+           - InputEmptyTime: 6s135ms
+             - __MAX_OF_InputEmptyTime: 6s255ms
+             - __MIN_OF_InputEmptyTime: 5s983ms
+             - FirstInputEmptyTime: 926.870ms
+               - __MAX_OF_FirstInputEmptyTime: 926.887ms
+               - __MIN_OF_FirstInputEmptyTime: 926.852ms
+             - FollowupInputEmptyTime: 5s208ms
+               - __MAX_OF_FollowupInputEmptyTime: 5s328ms
+               - __MIN_OF_FollowupInputEmptyTime: 5s56ms
+         - ScheduleCount: 2.480K (2480)
+           - __MAX_OF_ScheduleCount: 157
+           - __MIN_OF_ScheduleCount: 153
+         - ScheduleTime: 9s896ms
+           - __MAX_OF_ScheduleTime: 9s901ms
+           - __MIN_OF_ScheduleTime: 9s890ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 20
+           - __MAX_OF_YieldByTimeLimit: 2
+           - __MIN_OF_YieldByTimeLimit: 1
+        AGGREGATE_STREAMING_SINK (plan_node_id=59):
+          CommonMetrics:
+             - OperatorTotalTime: 108.530ms
+               - __MAX_OF_OperatorTotalTime: 115.059ms
+               - __MIN_OF_OperatorTotalTime: 103.571ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 9.275K (9275)
+               - __MAX_OF_PushChunkNum: 580
+               - __MIN_OF_PushChunkNum: 579
+             - PushRowNum: 35.195M (35194674)
+               - __MAX_OF_PushRowNum: 2.234M (2233559)
+               - __MIN_OF_PushRowNum: 2.158M (2157524)
+             - PushTotalTime: 108.518ms
+               - __MAX_OF_PushTotalTime: 115.050ms
+               - __MIN_OF_PushTotalTime: 103.560ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - AggregateFunctions: max(95: l_shipdate), count(92: l_orderkey), sum(93: l_extendedprice), avg(94: l_discount)
+             - GroupingKeys: 90: p_name, 91: s_name, 97: c_name, 96: o_orderkey
+             - AggComputeTime: 36.107ms
+               - __MAX_OF_AggComputeTime: 40.608ms
+               - __MIN_OF_AggComputeTime: 31.615ms
+             - AggFuncComputeTime: 1.431ms
+               - __MAX_OF_AggFuncComputeTime: 1.695ms
+               - __MIN_OF_AggFuncComputeTime: 1.226ms
+             - ChunkBufferPeakMem: 32.282 MB
+               - __MAX_OF_ChunkBufferPeakMem: 36.406 MB
+               - __MIN_OF_ChunkBufferPeakMem: 26.265 MB
+             - ChunkBufferPeakSize: 60
+               - __MAX_OF_ChunkBufferPeakSize: 67
+               - __MIN_OF_ChunkBufferPeakSize: 50
+             - ExprComputeTime: 2.075ms
+               - __MAX_OF_ExprComputeTime: 2.298ms
+               - __MIN_OF_ExprComputeTime: 1.913ms
+             - ExprReleaseTime: 5.798ms
+               - __MAX_OF_ExprReleaseTime: 9.267ms
+               - __MIN_OF_ExprReleaseTime: 5.148ms
+             - GetResultsTime: 0ns
+             - HashTableMemoryUsage: 163.563 MB
+               - __MAX_OF_HashTableMemoryUsage: 10.441 MB
+               - __MIN_OF_HashTableMemoryUsage: 9.441 MB
+             - HashTableSize: 563.675K (563675)
+               - __MAX_OF_HashTableSize: 36.864K (36864)
+               - __MIN_OF_HashTableSize: 31.730K (31730)
+             - InputRowCount: 35.195M (35194674)
+               - __MAX_OF_InputRowCount: 2.234M (2233559)
+               - __MIN_OF_InputRowCount: 2.158M (2157524)
+             - PassThroughRowCount: 34.631M (34630999)
+               - __MAX_OF_PassThroughRowCount: 2.198M (2198071)
+               - __MIN_OF_PassThroughRowCount: 2.126M (2125794)
+             - ResultAggAppendTime: 0ns
+             - ResultGroupByAppendTime: 0ns
+             - ResultIteratorTime: 0ns
+             - RowsReturned: 0
+             - StateAllocate: 0ns
+             - StateDestroy: 0ns
+             - StreamingTime: 64.403ms
+               - __MAX_OF_StreamingTime: 69.926ms
+               - __MIN_OF_StreamingTime: 61.239ms
+        LOCAL_EXCHANGE_SOURCE (plan_node_id=59):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 2.594ms
+               - __MAX_OF_OperatorTotalTime: 6.349ms
+               - __MIN_OF_OperatorTotalTime: 2.139ms
+             - OutputChunkBytes: 3.827 GB
+               - __MAX_OF_OutputChunkBytes: 248.667 MB
+               - __MIN_OF_OutputChunkBytes: 240.221 MB
+             - PullChunkNum: 9.275K (9275)
+               - __MAX_OF_PullChunkNum: 580
+               - __MIN_OF_PullChunkNum: 579
+             - PullRowNum: 35.195M (35194674)
+               - __MAX_OF_PullRowNum: 2.234M (2233559)
+               - __MIN_OF_PullRowNum: 2.158M (2157524)
+             - PullTotalTime: 2.591ms
+               - __MAX_OF_PullTotalTime: 6.346ms
+               - __MIN_OF_PullTotalTime: 2.136ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+      Pipeline (id=0):
+         - IsGroupExecution: false
+         - ActiveTime: 18.306ms
+           - __MAX_OF_ActiveTime: 75.290ms
+           - __MIN_OF_ActiveTime: 705.210us
+         - BlockByInputEmpty: 2.407K (2407)
+           - __MAX_OF_BlockByInputEmpty: 154
+           - __MIN_OF_BlockByInputEmpty: 148
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 10s8ms
+           - __MAX_OF_DriverTotalTime: 10s10ms
+           - __MIN_OF_DriverTotalTime: 9s981ms
+         - OverheadTime: 4.960ms
+           - __MAX_OF_OverheadTime: 17.118ms
+           - __MIN_OF_OverheadTime: 548.480us
+         - PeakDriverQueueSize: 3.816K (3816)
+           - __MAX_OF_PeakDriverQueueSize: 246
+           - __MIN_OF_PeakDriverQueueSize: 231
+         - PendingTime: 0ns
+           - InputEmptyTime: 5s503ms
+             - __MAX_OF_InputEmptyTime: 5s548ms
+             - __MIN_OF_InputEmptyTime: 5s392ms
+             - FirstInputEmptyTime: 924.139ms
+               - __MAX_OF_FirstInputEmptyTime: 924.153ms
+               - __MIN_OF_FirstInputEmptyTime: 924.135ms
+             - FollowupInputEmptyTime: 4s579ms
+               - __MAX_OF_FollowupInputEmptyTime: 4s624ms
+               - __MIN_OF_FollowupInputEmptyTime: 4s468ms
+         - ScheduleCount: 2.465K (2465)
+           - __MAX_OF_ScheduleCount: 164
+           - __MIN_OF_ScheduleCount: 149
+         - ScheduleTime: 9s989ms
+           - __MAX_OF_ScheduleTime: 10s9ms
+           - __MIN_OF_ScheduleTime: 9s906ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        LOCAL_EXCHANGE_SINK (plan_node_id=59):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 2.192ms
+               - __MAX_OF_OperatorTotalTime: 11.345ms
+               - __MIN_OF_OperatorTotalTime: 12.545us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 9.275K (9275)
+               - __MAX_OF_PushChunkNum: 2.666K (2666)
+               - __MIN_OF_PushChunkNum: 1
+             - PushRowNum: 35.195M (35194674)
+               - __MAX_OF_PushRowNum: 10.082M (10082491)
+               - __MIN_OF_PushRowNum: 4.096K (4096)
+             - PushTotalTime: 2.190ms
+               - __MAX_OF_PushTotalTime: 11.343ms
+               - __MIN_OF_PushTotalTime: 1.535us
+          UniqueMetrics:
+             - ShuffleNum: 16
+             - Type: Passthrough
+             - LocalExchangePeakMemoryUsage: 90.796 MB
+        PROJECT (plan_node_id=58):
+          CommonMetrics:
+             - OperatorTotalTime: 2.562ms
+               - __MAX_OF_OperatorTotalTime: 10.887ms
+               - __MIN_OF_OperatorTotalTime: 11.111us
+             - OutputChunkBytes: 3.827 GB
+               - __MAX_OF_OutputChunkBytes: 1.096 GB
+               - __MIN_OF_OutputChunkBytes: 465.976 KB
+             - PullChunkNum: 9.275K (9275)
+               - __MAX_OF_PullChunkNum: 2.666K (2666)
+               - __MIN_OF_PullChunkNum: 1
+             - PullRowNum: 35.195M (35194674)
+               - __MAX_OF_PullRowNum: 10.082M (10082491)
+               - __MIN_OF_PullRowNum: 4.096K (4096)
+             - PullTotalTime: 98.476us
+               - __MAX_OF_PullTotalTime: 480.956us
+               - __MIN_OF_PullTotalTime: 116ns
+             - PushChunkNum: 9.275K (9275)
+               - __MAX_OF_PushChunkNum: 2.666K (2666)
+               - __MIN_OF_PushChunkNum: 1
+             - PushRowNum: 35.195M (35194674)
+               - __MAX_OF_PushRowNum: 10.082M (10082491)
+               - __MIN_OF_PushRowNum: 4.096K (4096)
+             - PushTotalTime: 2.457ms
+               - __MAX_OF_PushTotalTime: 10.470ms
+               - __MIN_OF_PushTotalTime: 4.715us
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CommonSubExprComputeTime: 40.019us
+               - __MAX_OF_CommonSubExprComputeTime: 198.149us
+               - __MIN_OF_CommonSubExprComputeTime: 313ns
+             - ExprComputeTime: 1.141ms
+               - __MAX_OF_ExprComputeTime: 4.696ms
+               - __MIN_OF_ExprComputeTime: 1.840us
+        EXCHANGE_SOURCE (plan_node_id=57):
+          CommonMetrics:
+             - ConjunctsInputRows: 35.195M (35194674)
+               - __MAX_OF_ConjunctsInputRows: 10.082M (10082491)
+               - __MIN_OF_ConjunctsInputRows: 4.096K (4096)
+             - ConjunctsOutputRows: 35.195M (35194674)
+               - __MAX_OF_ConjunctsOutputRows: 10.082M (10082491)
+               - __MIN_OF_ConjunctsOutputRows: 4.096K (4096)
+             - ConjunctsTime: 1.029ms
+               - __MAX_OF_ConjunctsTime: 4.652ms
+               - __MIN_OF_ConjunctsTime: 1.130us
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 8.590ms
+               - __MAX_OF_OperatorTotalTime: 35.940ms
+               - __MIN_OF_OperatorTotalTime: 124.913us
+             - OutputChunkBytes: 3.827 GB
+               - __MAX_OF_OutputChunkBytes: 1.096 GB
+               - __MIN_OF_OutputChunkBytes: 465.976 KB
+             - PullChunkNum: 9.275K (9275)
+               - __MAX_OF_PullChunkNum: 2.666K (2666)
+               - __MIN_OF_PullChunkNum: 1
+             - PullRowNum: 35.195M (35194674)
+               - __MAX_OF_PullRowNum: 10.082M (10082491)
+               - __MIN_OF_PullRowNum: 4.096K (4096)
+             - PullTotalTime: 8.581ms
+               - __MAX_OF_PullTotalTime: 35.925ms
+               - __MIN_OF_PullTotalTime: 77.174us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 174
+               - __MAX_OF_BufferUnplugCount: 149
+               - __MIN_OF_BufferUnplugCount: 0
+             - BytesPassThrough: 3.828 GB
+               - __MAX_OF_BytesPassThrough: 292.883 MB
+               - __MIN_OF_BytesPassThrough: 204.618 MB
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 3.660K (3660)
+               - __MAX_OF_ClosureBlockCount: 241
+               - __MIN_OF_ClosureBlockCount: 223
+             - ClosureBlockTime: 8s379ms
+               - __MAX_OF_ClosureBlockTime: 37s24ms
+               - __MIN_OF_ClosureBlockTime: 0ns
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 2.023 GB
+               - __MAX_OF_PeakBufferMemoryBytes: 269.718 MB
+               - __MIN_OF_PeakBufferMemoryBytes: 469.771 KB
+             - ReceiverProcessTotalTime: 2.851ms
+               - __MAX_OF_ReceiverProcessTotalTime: 2.999ms
+               - __MIN_OF_ReceiverProcessTotalTime: 2.681ms
+             - RequestReceived: 8.740K (8740)
+               - __MAX_OF_RequestReceived: 547
+               - __MIN_OF_RequestReceived: 546
+             - WaitLockTime: 0ns
+    Fragment 3:
+       - BackendAddresses: 172.26.95.146:9060
+       - InstanceIds: b32190b0-8a0b-11f0-94e0-00163e341b9a
+       - EnableEventScheduler: true
+       - BackendNum: 1
+       - BackendProfileMergeTime: 4.127ms
+       - InitialProcessDriverCount: 226
+       - InitialProcessMem: 9.388 GB
+       - InstanceAllocatedMemoryUsage: 7.891 GB
+       - InstanceDeallocatedMemoryUsage: 7.738 GB
+       - InstanceNum: 1
+       - InstancePeakMemoryUsage: 336.133 MB
+       - JITCounter: 0
+       - JITTotalCostTime: 0ns
+       - QueryMemoryLimit: -1.000 B
+      Pipeline (id=2):
+         - IsGroupExecution: false
+         - ActiveTime: 697.067ms
+           - __MAX_OF_ActiveTime: 734.319ms
+           - __MIN_OF_ActiveTime: 670.542ms
+         - BlockByInputEmpty: 2.570K (2570)
+           - __MAX_OF_BlockByInputEmpty: 166
+           - __MIN_OF_BlockByInputEmpty: 152
+         - BlockByOutputFull: 9
+           - __MAX_OF_BlockByOutputFull: 2
+           - __MIN_OF_BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 7s639ms
+           - __MAX_OF_DriverTotalTime: 7s639ms
+           - __MIN_OF_DriverTotalTime: 7s638ms
+         - OverheadTime: 12.354ms
+           - __MAX_OF_OverheadTime: 13.757ms
+           - __MIN_OF_OverheadTime: 11.394ms
+         - PeakDriverQueueSize: 3.729K (3729)
+           - __MAX_OF_PeakDriverQueueSize: 240
+           - __MIN_OF_PeakDriverQueueSize: 216
+         - PendingTime: 0ns
+           - InputEmptyTime: 5s594ms
+             - __MAX_OF_InputEmptyTime: 5s747ms
+             - __MIN_OF_InputEmptyTime: 5s350ms
+             - FirstInputEmptyTime: 929.784ms
+               - __MAX_OF_FirstInputEmptyTime: 935.420ms
+               - __MIN_OF_FirstInputEmptyTime: 926.605ms
+             - FollowupInputEmptyTime: 4s665ms
+               - __MAX_OF_FollowupInputEmptyTime: 4s820ms
+               - __MIN_OF_FollowupInputEmptyTime: 4s415ms
+           - OutputFullTime: 9.659ms
+             - __MAX_OF_OutputFullTime: 23.996ms
+             - __MIN_OF_OutputFullTime: 8.125ms
+           - PendingFinishTime: 17.997ms
+             - __MAX_OF_PendingFinishTime: 23.766ms
+             - __MIN_OF_PendingFinishTime: 2.738ms
+         - ScheduleCount: 2.691K (2691)
+           - __MAX_OF_ScheduleCount: 173
+           - __MIN_OF_ScheduleCount: 159
+         - ScheduleTime: 6s942ms
+           - __MAX_OF_ScheduleTime: 6s968ms
+           - __MIN_OF_ScheduleTime: 6s904ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 136
+           - __MAX_OF_YieldByTimeLimit: 12
+           - __MIN_OF_YieldByTimeLimit: 6
+        EXCHANGE_SINK (plan_node_id=54):
+          CommonMetrics:
+             - OperatorTotalTime: 679.226ms
+               - __MAX_OF_OperatorTotalTime: 716.007ms
+               - __MIN_OF_OperatorTotalTime: 653.249ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 10.451K (10451)
+               - __MAX_OF_PushChunkNum: 657
+               - __MIN_OF_PushChunkNum: 647
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 2.534M (2534439)
+               - __MIN_OF_PushRowNum: 2.451M (2450692)
+             - PushTotalTime: 673.960ms
+               - __MAX_OF_PushTotalTime: 710.809ms
+               - __MIN_OF_PushTotalTime: 645.932ms
+             - SetFinishingTime: 5.263ms
+               - __MAX_OF_SetFinishingTime: 7.678ms
+               - __MIN_OF_SetFinishingTime: 1.560ms
+          UniqueMetrics:
+             - ChannelNum: 1
+             - DestFragments: b32190b08a0b11f0-94e000163e341b98
+             - DestID: 54
+             - PartType: HASH_PARTITIONED
+             - PipelineLevelShuffle: Yes
+             - ShuffleNumPerChannel: 16
+             - TotalShuffleNum: 16
+             - BytesPassThrough: 3.301 GB
+               - __MAX_OF_BytesPassThrough: 214.535 MB
+               - __MIN_OF_BytesPassThrough: 207.453 MB
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 400.511ms
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 6s626ms
+             - PassThroughBufferPeakMemoryUsage: 16.267 MB
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 606.858us
+             - RpcCount: 10.082K (10082)
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 164.359K (164359)
+               - __MAX_OF_ShuffleChunkAppendCounter: 10.334K (10334)
+               - __MIN_OF_ShuffleChunkAppendCounter: 10.208K (10208)
+             - ShuffleChunkAppendTime: 265.138ms
+               - __MAX_OF_ShuffleChunkAppendTime: 274.309ms
+               - __MIN_OF_ShuffleChunkAppendTime: 252.355ms
+             - ShuffleHashTime: 154.425ms
+               - __MAX_OF_ShuffleHashTime: 165.392ms
+               - __MIN_OF_ShuffleHashTime: 150.479ms
+             - WaitTime: 37.124ms
+        AGGREGATE_DISTINCT_STREAMING_SOURCE (plan_node_id=53):
+          CommonMetrics:
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 5.486ms
+               - __MAX_OF_OperatorTotalTime: 5.860ms
+               - __MIN_OF_OperatorTotalTime: 4.989ms
+             - OutputChunkBytes: 3.301 GB
+               - __MAX_OF_OutputChunkBytes: 214.495 MB
+               - __MIN_OF_OutputChunkBytes: 207.415 MB
+             - PullChunkNum: 10.451K (10451)
+               - __MAX_OF_PullChunkNum: 657
+               - __MIN_OF_PullChunkNum: 647
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 2.534M (2534439)
+               - __MIN_OF_PullRowNum: 2.451M (2450692)
+             - PullTotalTime: 5.440ms
+               - __MAX_OF_PullTotalTime: 5.804ms
+               - __MIN_OF_PullTotalTime: 4.959ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+      Pipeline (id=1):
+         - IsGroupExecution: false
+         - ActiveTime: 286.815ms
+           - __MAX_OF_ActiveTime: 309.474ms
+           - __MIN_OF_ActiveTime: 267.725ms
+         - BlockByInputEmpty: 2.622K (2622)
+           - __MAX_OF_BlockByInputEmpty: 167
+           - __MIN_OF_BlockByInputEmpty: 161
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 7s600ms
+           - __MAX_OF_DriverTotalTime: 7s619ms
+           - __MIN_OF_DriverTotalTime: 7s596ms
+         - OverheadTime: 4.480ms
+           - __MAX_OF_OverheadTime: 4.725ms
+           - __MIN_OF_OverheadTime: 4.063ms
+         - PeakDriverQueueSize: 3.918K (3918)
+           - __MAX_OF_PeakDriverQueueSize: 253
+           - __MIN_OF_PeakDriverQueueSize: 235
+         - PendingTime: 0ns
+           - InputEmptyTime: 4s399ms
+             - __MAX_OF_InputEmptyTime: 4s782ms
+             - __MIN_OF_InputEmptyTime: 4s96ms
+             - FirstInputEmptyTime: 924.391ms
+               - __MAX_OF_FirstInputEmptyTime: 924.415ms
+               - __MIN_OF_FirstInputEmptyTime: 924.341ms
+             - FollowupInputEmptyTime: 3s474ms
+               - __MAX_OF_FollowupInputEmptyTime: 3s857ms
+               - __MIN_OF_FollowupInputEmptyTime: 3s172ms
+         - ScheduleCount: 2.670K (2670)
+           - __MAX_OF_ScheduleCount: 170
+           - __MIN_OF_ScheduleCount: 164
+         - ScheduleTime: 7s313ms
+           - __MAX_OF_ScheduleTime: 7s340ms
+           - __MIN_OF_ScheduleTime: 7s287ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 46
+           - __MAX_OF_YieldByTimeLimit: 5
+           - __MIN_OF_YieldByTimeLimit: 2
+        AGGREGATE_DISTINCT_STREAMING_SINK (plan_node_id=53):
+          CommonMetrics:
+             - OperatorTotalTime: 280.176ms
+               - __MAX_OF_OperatorTotalTime: 302.710ms
+               - __MIN_OF_OperatorTotalTime: 260.938ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 10.528K (10528)
+               - __MAX_OF_PushChunkNum: 658
+               - __MIN_OF_PushChunkNum: 658
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 2.534M (2534439)
+               - __MIN_OF_PushRowNum: 2.451M (2450692)
+             - PushTotalTime: 280.157ms
+               - __MAX_OF_PushTotalTime: 302.688ms
+               - __MIN_OF_PushTotalTime: 260.924ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - GroupingKeys: 85: p_name, 86: s_name, 89: c_name, 88: o_orderkey
+             - AggComputeTime: 268.364ms
+               - __MAX_OF_AggComputeTime: 290.348ms
+               - __MIN_OF_AggComputeTime: 249.751ms
+             - AggFuncComputeTime: 0ns
+             - ChunkBufferPeakMem: 7.474 MB
+               - __MAX_OF_ChunkBufferPeakMem: 8.572 MB
+               - __MIN_OF_ChunkBufferPeakMem: 5.999 MB
+             - ChunkBufferPeakSize: 23
+               - __MAX_OF_ChunkBufferPeakSize: 26
+               - __MIN_OF_ChunkBufferPeakSize: 20
+             - ExprComputeTime: 1.571ms
+               - __MAX_OF_ExprComputeTime: 1.787ms
+               - __MIN_OF_ExprComputeTime: 1.313ms
+             - ExprReleaseTime: 2.451ms
+               - __MAX_OF_ExprReleaseTime: 2.859ms
+               - __MIN_OF_ExprReleaseTime: 2.172ms
+             - GetResultsTime: 3.631ms
+               - __MAX_OF_GetResultsTime: 3.976ms
+               - __MIN_OF_GetResultsTime: 3.302ms
+             - HashTableMemoryUsage: 19.063 MB
+               - __MAX_OF_HashTableMemoryUsage: 1.191 MB
+               - __MIN_OF_HashTableMemoryUsage: 1.191 MB
+             - HashTableSize: 114.145K (114145)
+               - __MAX_OF_HashTableSize: 7.163K (7163)
+               - __MIN_OF_HashTableSize: 7.086K (7086)
+             - InputRowCount: 39.934M (39933567)
+               - __MAX_OF_InputRowCount: 2.534M (2534439)
+               - __MIN_OF_InputRowCount: 2.451M (2450692)
+             - PassThroughRowCount: 39.819M (39819422)
+               - __MAX_OF_PassThroughRowCount: 2.527M (2527295)
+               - __MIN_OF_PassThroughRowCount: 2.444M (2443557)
+             - ResultAggAppendTime: 0ns
+             - ResultGroupByAppendTime: 3.514ms
+               - __MAX_OF_ResultGroupByAppendTime: 3.858ms
+               - __MIN_OF_ResultGroupByAppendTime: 3.198ms
+             - ResultIteratorTime: 0ns
+             - RowsReturned: 0
+             - StateAllocate: 0ns
+             - StateDestroy: 0ns
+             - StreamingTime: 6.072ms
+               - __MAX_OF_StreamingTime: 6.489ms
+               - __MIN_OF_StreamingTime: 5.557ms
+        LOCAL_EXCHANGE_SOURCE (plan_node_id=53):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 2.158ms
+               - __MAX_OF_OperatorTotalTime: 2.368ms
+               - __MIN_OF_OperatorTotalTime: 1.964ms
+             - OutputChunkBytes: 3.301 GB
+               - __MAX_OF_OutputChunkBytes: 214.495 MB
+               - __MIN_OF_OutputChunkBytes: 207.415 MB
+             - PullChunkNum: 10.528K (10528)
+               - __MAX_OF_PullChunkNum: 658
+               - __MIN_OF_PullChunkNum: 658
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 2.534M (2534439)
+               - __MIN_OF_PullRowNum: 2.451M (2450692)
+             - PullTotalTime: 2.153ms
+               - __MAX_OF_PullTotalTime: 2.363ms
+               - __MIN_OF_PullTotalTime: 1.963ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+      Pipeline (id=0):
+         - IsGroupExecution: false
+         - ActiveTime: 26.734ms
+           - __MAX_OF_ActiveTime: 98.952ms
+           - __MIN_OF_ActiveTime: 5.943ms
+         - BlockByInputEmpty: 2.280K (2280)
+           - __MAX_OF_BlockByInputEmpty: 145
+           - __MIN_OF_BlockByInputEmpty: 140
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 7s594ms
+           - __MAX_OF_DriverTotalTime: 7s596ms
+           - __MIN_OF_DriverTotalTime: 7s566ms
+         - OverheadTime: 9.642ms
+           - __MAX_OF_OverheadTime: 23.947ms
+           - __MIN_OF_OverheadTime: 3.798ms
+         - PeakDriverQueueSize: 3.676K (3676)
+           - __MAX_OF_PeakDriverQueueSize: 241
+           - __MIN_OF_PeakDriverQueueSize: 222
+         - PendingTime: 0ns
+           - InputEmptyTime: 3s119ms
+             - __MAX_OF_InputEmptyTime: 3s165ms
+             - __MIN_OF_InputEmptyTime: 3s44ms
+             - FirstInputEmptyTime: 922.320ms
+               - __MAX_OF_FirstInputEmptyTime: 922.326ms
+               - __MIN_OF_FirstInputEmptyTime: 922.316ms
+             - FollowupInputEmptyTime: 2s197ms
+               - __MAX_OF_FollowupInputEmptyTime: 2s243ms
+               - __MIN_OF_FollowupInputEmptyTime: 2s122ms
+         - ScheduleCount: 2.337K (2337)
+           - __MAX_OF_ScheduleCount: 156
+           - __MIN_OF_ScheduleCount: 142
+         - ScheduleTime: 7s567ms
+           - __MAX_OF_ScheduleTime: 7s590ms
+           - __MIN_OF_ScheduleTime: 7s467ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        LOCAL_EXCHANGE_SINK (plan_node_id=53):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 2.873ms
+               - __MAX_OF_OperatorTotalTime: 22.779ms
+               - __MIN_OF_OperatorTotalTime: 2.467us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 10.528K (10528)
+               - __MAX_OF_PushChunkNum: 3.000K (3000)
+               - __MIN_OF_PushChunkNum: 1
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 11.343M (11342826)
+               - __MIN_OF_PushRowNum: 4.096K (4096)
+             - PushTotalTime: 2.868ms
+               - __MAX_OF_PushTotalTime: 22.777ms
+               - __MIN_OF_PushTotalTime: 1.902us
+          UniqueMetrics:
+             - ShuffleNum: 16
+             - Type: Passthrough
+             - LocalExchangePeakMemoryUsage: 72.452 MB
+        PROJECT (plan_node_id=52):
+          CommonMetrics:
+             - OperatorTotalTime: 1.916ms
+               - __MAX_OF_OperatorTotalTime: 8.568ms
+               - __MIN_OF_OperatorTotalTime: 7.781us
+             - OutputChunkBytes: 3.301 GB
+               - __MAX_OF_OutputChunkBytes: 959.982 MB
+               - __MIN_OF_OutputChunkBytes: 357.480 KB
+             - PullChunkNum: 10.528K (10528)
+               - __MAX_OF_PullChunkNum: 3.000K (3000)
+               - __MIN_OF_PullChunkNum: 1
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 11.343M (11342826)
+               - __MIN_OF_PullRowNum: 4.096K (4096)
+             - PullTotalTime: 97.313us
+               - __MAX_OF_PullTotalTime: 532.983us
+               - __MIN_OF_PullTotalTime: 132ns
+             - PushChunkNum: 10.528K (10528)
+               - __MAX_OF_PushChunkNum: 3.000K (3000)
+               - __MIN_OF_PushChunkNum: 1
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 11.343M (11342826)
+               - __MIN_OF_PushRowNum: 4.096K (4096)
+             - PushTotalTime: 1.811ms
+               - __MAX_OF_PushTotalTime: 8.151ms
+               - __MIN_OF_PushTotalTime: 2.502us
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CommonSubExprComputeTime: 36.510us
+               - __MAX_OF_CommonSubExprComputeTime: 165.804us
+               - __MIN_OF_CommonSubExprComputeTime: 192ns
+             - ExprComputeTime: 780.109us
+               - __MAX_OF_ExprComputeTime: 3.496ms
+               - __MIN_OF_ExprComputeTime: 908ns
+        EXCHANGE_SOURCE (plan_node_id=51):
+          CommonMetrics:
+             - ConjunctsInputRows: 39.934M (39933567)
+               - __MAX_OF_ConjunctsInputRows: 11.343M (11342826)
+               - __MIN_OF_ConjunctsInputRows: 4.096K (4096)
+             - ConjunctsOutputRows: 39.934M (39933567)
+               - __MAX_OF_ConjunctsOutputRows: 11.343M (11342826)
+               - __MIN_OF_ConjunctsOutputRows: 4.096K (4096)
+             - ConjunctsTime: 857.526us
+               - __MAX_OF_ConjunctsTime: 4.258ms
+               - __MIN_OF_ConjunctsTime: 507ns
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 12.302ms
+               - __MAX_OF_OperatorTotalTime: 43.656ms
+               - __MIN_OF_OperatorTotalTime: 2.041ms
+             - OutputChunkBytes: 3.301 GB
+               - __MAX_OF_OutputChunkBytes: 959.982 MB
+               - __MIN_OF_OutputChunkBytes: 357.480 KB
+             - PullChunkNum: 10.528K (10528)
+               - __MAX_OF_PullChunkNum: 3.000K (3000)
+               - __MIN_OF_PullChunkNum: 1
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 11.343M (11342826)
+               - __MIN_OF_PullRowNum: 4.096K (4096)
+             - PullTotalTime: 12.297ms
+               - __MAX_OF_PullTotalTime: 43.650ms
+               - __MIN_OF_PullTotalTime: 2.039ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 197
+               - __MAX_OF_BufferUnplugCount: 143
+               - __MIN_OF_BufferUnplugCount: 0
+             - BytesPassThrough: 3.301 GB
+               - __MAX_OF_BytesPassThrough: 243.910 MB
+               - __MIN_OF_BytesPassThrough: 184.496 MB
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 3.599K (3599)
+               - __MAX_OF_ClosureBlockCount: 239
+               - __MIN_OF_ClosureBlockCount: 212
+             - ClosureBlockTime: 5s630ms
+               - __MAX_OF_ClosureBlockTime: 38s538ms
+               - __MIN_OF_ClosureBlockTime: 0ns
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 2.101 GB
+               - __MAX_OF_PeakBufferMemoryBytes: 239.414 MB
+               - __MIN_OF_PeakBufferMemoryBytes: 357.740 KB
+             - ReceiverProcessTotalTime: 3.224ms
+               - __MAX_OF_ReceiverProcessTotalTime: 3.423ms
+               - __MIN_OF_ReceiverProcessTotalTime: 3.042ms
+             - RequestReceived: 9.660K (9660)
+               - __MAX_OF_RequestReceived: 604
+               - __MIN_OF_RequestReceived: 603
+             - WaitLockTime: 0ns
+    Fragment 4:
+       - BackendAddresses: 172.26.95.146:9060
+       - InstanceIds: b32190b0-8a0b-11f0-94e0-00163e341b9b
+       - EnableEventScheduler: true
+       - BackendNum: 1
+       - BackendProfileMergeTime: 4.423ms
+       - InitialProcessDriverCount: 226
+       - InitialProcessMem: 9.388 GB
+       - InstanceAllocatedMemoryUsage: 7.871 GB
+       - InstanceDeallocatedMemoryUsage: 7.720 GB
+       - InstanceNum: 1
+       - InstancePeakMemoryUsage: 356.520 MB
+       - JITCounter: 0
+       - JITTotalCostTime: 0ns
+       - QueryMemoryLimit: -1.000 B
+      Pipeline (id=2):
+         - IsGroupExecution: false
+         - ActiveTime: 690.507ms
+           - __MAX_OF_ActiveTime: 726.198ms
+           - __MIN_OF_ActiveTime: 659.855ms
+         - BlockByInputEmpty: 2.293K (2293)
+           - __MAX_OF_BlockByInputEmpty: 150
+           - __MIN_OF_BlockByInputEmpty: 137
+         - BlockByOutputFull: 65
+           - __MAX_OF_BlockByOutputFull: 6
+           - __MIN_OF_BlockByOutputFull: 1
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 7s618ms
+           - __MAX_OF_DriverTotalTime: 7s618ms
+           - __MIN_OF_DriverTotalTime: 7s617ms
+         - OverheadTime: 13.150ms
+           - __MAX_OF_OverheadTime: 28.378ms
+           - __MIN_OF_OverheadTime: 11.473ms
+         - PeakDriverQueueSize: 3.619K (3619)
+           - __MAX_OF_PeakDriverQueueSize: 231
+           - __MIN_OF_PeakDriverQueueSize: 219
+         - PendingTime: 0ns
+           - InputEmptyTime: 5s603ms
+             - __MAX_OF_InputEmptyTime: 5s771ms
+             - __MIN_OF_InputEmptyTime: 5s485ms
+             - FirstInputEmptyTime: 936.284ms
+               - __MAX_OF_FirstInputEmptyTime: 936.446ms
+               - __MIN_OF_FirstInputEmptyTime: 936.170ms
+             - FollowupInputEmptyTime: 4s667ms
+               - __MAX_OF_FollowupInputEmptyTime: 4s835ms
+               - __MIN_OF_FollowupInputEmptyTime: 4s549ms
+           - OutputFullTime: 45.258ms
+             - __MAX_OF_OutputFullTime: 49.868ms
+             - __MIN_OF_OutputFullTime: 19.103ms
+           - PendingFinishTime: 23.238ms
+             - __MAX_OF_PendingFinishTime: 32.374ms
+             - __MIN_OF_PendingFinishTime: 6.826ms
+         - ScheduleCount: 2.470K (2470)
+           - __MAX_OF_ScheduleCount: 163
+           - __MIN_OF_ScheduleCount: 147
+         - ScheduleTime: 6s927ms
+           - __MAX_OF_ScheduleTime: 6s958ms
+           - __MIN_OF_ScheduleTime: 6s892ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 121
+           - __MAX_OF_YieldByTimeLimit: 12
+           - __MIN_OF_YieldByTimeLimit: 6
+        EXCHANGE_SINK (plan_node_id=48):
+          CommonMetrics:
+             - OperatorTotalTime: 671.859ms
+               - __MAX_OF_OperatorTotalTime: 708.231ms
+               - __MIN_OF_OperatorTotalTime: 642.344ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 10.455K (10455)
+               - __MAX_OF_PushChunkNum: 658
+               - __MIN_OF_PushChunkNum: 649
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 2.530M (2530353)
+               - __MIN_OF_PushRowNum: 2.457M (2456770)
+             - PushTotalTime: 666.502ms
+               - __MAX_OF_PushTotalTime: 704.309ms
+               - __MIN_OF_PushTotalTime: 640.659ms
+             - SetFinishingTime: 5.353ms
+               - __MAX_OF_SetFinishingTime: 17.155ms
+               - __MIN_OF_SetFinishingTime: 1.649ms
+          UniqueMetrics:
+             - ChannelNum: 1
+             - DestFragments: b32190b08a0b11f0-94e000163e341b98
+             - DestID: 48
+             - PartType: HASH_PARTITIONED
+             - PipelineLevelShuffle: Yes
+             - ShuffleNumPerChannel: 16
+             - TotalShuffleNum: 16
+             - BytesPassThrough: 3.301 GB
+               - __MAX_OF_BytesPassThrough: 214.186 MB
+               - __MIN_OF_BytesPassThrough: 207.919 MB
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 395.782ms
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 6s581ms
+             - PassThroughBufferPeakMemoryUsage: 32.878 MB
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 659us
+             - RpcCount: 10.077K (10077)
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 164.340K (164340)
+               - __MAX_OF_ShuffleChunkAppendCounter: 10.355K (10355)
+               - __MIN_OF_ShuffleChunkAppendCounter: 10.173K (10173)
+             - ShuffleChunkAppendTime: 261.597ms
+               - __MAX_OF_ShuffleChunkAppendTime: 276.227ms
+               - __MIN_OF_ShuffleChunkAppendTime: 250.964ms
+             - ShuffleHashTime: 153.869ms
+               - __MAX_OF_ShuffleHashTime: 162.595ms
+               - __MIN_OF_ShuffleHashTime: 148.620ms
+             - WaitTime: 69.221ms
+        AGGREGATE_DISTINCT_STREAMING_SOURCE (plan_node_id=47):
+          CommonMetrics:
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 5.497ms
+               - __MAX_OF_OperatorTotalTime: 6.532ms
+               - __MIN_OF_OperatorTotalTime: 4.915ms
+             - OutputChunkBytes: 3.301 GB
+               - __MAX_OF_OutputChunkBytes: 214.146 MB
+               - __MIN_OF_OutputChunkBytes: 207.881 MB
+             - PullChunkNum: 10.455K (10455)
+               - __MAX_OF_PullChunkNum: 658
+               - __MIN_OF_PullChunkNum: 649
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 2.530M (2530353)
+               - __MIN_OF_PullRowNum: 2.457M (2456770)
+             - PullTotalTime: 5.447ms
+               - __MAX_OF_PullTotalTime: 6.481ms
+               - __MIN_OF_PullTotalTime: 4.848ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+      Pipeline (id=1):
+         - IsGroupExecution: false
+         - ActiveTime: 277.988ms
+           - __MAX_OF_ActiveTime: 294.019ms
+           - __MIN_OF_ActiveTime: 263.919ms
+         - BlockByInputEmpty: 2.384K (2384)
+           - __MAX_OF_BlockByInputEmpty: 152
+           - __MIN_OF_BlockByInputEmpty: 145
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 7s573ms
+           - __MAX_OF_DriverTotalTime: 7s586ms
+           - __MIN_OF_DriverTotalTime: 7s567ms
+         - OverheadTime: 4.117ms
+           - __MAX_OF_OverheadTime: 4.542ms
+           - __MIN_OF_OverheadTime: 3.836ms
+         - PeakDriverQueueSize: 3.517K (3517)
+           - __MAX_OF_PeakDriverQueueSize: 226
+           - __MIN_OF_PeakDriverQueueSize: 216
+         - PendingTime: 0ns
+           - InputEmptyTime: 4s256ms
+             - __MAX_OF_InputEmptyTime: 4s500ms
+             - __MIN_OF_InputEmptyTime: 4s67ms
+             - FirstInputEmptyTime: 924.043ms
+               - __MAX_OF_FirstInputEmptyTime: 924.103ms
+               - __MIN_OF_FirstInputEmptyTime: 923.971ms
+             - FollowupInputEmptyTime: 3s332ms
+               - __MAX_OF_FollowupInputEmptyTime: 3s576ms
+               - __MIN_OF_FollowupInputEmptyTime: 3s143ms
+         - ScheduleCount: 2.432K (2432)
+           - __MAX_OF_ScheduleCount: 155
+           - __MIN_OF_ScheduleCount: 148
+         - ScheduleTime: 7s295ms
+           - __MAX_OF_ScheduleTime: 7s317ms
+           - __MIN_OF_ScheduleTime: 7s277ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 40
+           - __MAX_OF_YieldByTimeLimit: 4
+           - __MIN_OF_YieldByTimeLimit: 2
+        AGGREGATE_DISTINCT_STREAMING_SINK (plan_node_id=47):
+          CommonMetrics:
+             - OperatorTotalTime: 271.788ms
+               - __MAX_OF_OperatorTotalTime: 287.331ms
+               - __MIN_OF_OperatorTotalTime: 258.036ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 10.528K (10528)
+               - __MAX_OF_PushChunkNum: 658
+               - __MIN_OF_PushChunkNum: 658
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 2.530M (2530353)
+               - __MIN_OF_PushRowNum: 2.457M (2456770)
+             - PushTotalTime: 271.769ms
+               - __MAX_OF_PushTotalTime: 287.314ms
+               - __MIN_OF_PushTotalTime: 258.021ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - GroupingKeys: 79: p_name, 80: s_name, 83: c_name, 82: o_orderkey
+             - AggComputeTime: 260.203ms
+               - __MAX_OF_AggComputeTime: 275.932ms
+               - __MIN_OF_AggComputeTime: 247.715ms
+             - AggFuncComputeTime: 0ns
+             - ChunkBufferPeakMem: 8.055 MB
+               - __MAX_OF_ChunkBufferPeakMem: 10.275 MB
+               - __MIN_OF_ChunkBufferPeakMem: 6.396 MB
+             - ChunkBufferPeakSize: 24
+               - __MAX_OF_ChunkBufferPeakSize: 31
+               - __MIN_OF_ChunkBufferPeakSize: 20
+             - ExprComputeTime: 1.410ms
+               - __MAX_OF_ExprComputeTime: 1.604ms
+               - __MIN_OF_ExprComputeTime: 1.248ms
+             - ExprReleaseTime: 2.338ms
+               - __MAX_OF_ExprReleaseTime: 4.868ms
+               - __MIN_OF_ExprReleaseTime: 1.898ms
+             - GetResultsTime: 3.530ms
+               - __MAX_OF_GetResultsTime: 4.422ms
+               - __MIN_OF_GetResultsTime: 2.884ms
+             - HashTableMemoryUsage: 19.063 MB
+               - __MAX_OF_HashTableMemoryUsage: 1.191 MB
+               - __MIN_OF_HashTableMemoryUsage: 1.191 MB
+             - HashTableSize: 114.367K (114367)
+               - __MAX_OF_HashTableSize: 7.165K (7165)
+               - __MIN_OF_HashTableSize: 7.113K (7113)
+             - InputRowCount: 39.934M (39933567)
+               - __MAX_OF_InputRowCount: 2.530M (2530353)
+               - __MIN_OF_InputRowCount: 2.457M (2456770)
+             - PassThroughRowCount: 39.819M (39819200)
+               - __MAX_OF_PassThroughRowCount: 2.523M (2523198)
+               - __MIN_OF_PassThroughRowCount: 2.450M (2449622)
+             - ResultAggAppendTime: 0ns
+             - ResultGroupByAppendTime: 3.411ms
+               - __MAX_OF_ResultGroupByAppendTime: 4.312ms
+               - __MIN_OF_ResultGroupByAppendTime: 2.763ms
+             - ResultIteratorTime: 0ns
+             - RowsReturned: 0
+             - StateAllocate: 0ns
+             - StateDestroy: 0ns
+             - StreamingTime: 6.194ms
+               - __MAX_OF_StreamingTime: 14.378ms
+               - __MIN_OF_StreamingTime: 5.144ms
+        LOCAL_EXCHANGE_SOURCE (plan_node_id=47):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 2.082ms
+               - __MAX_OF_OperatorTotalTime: 2.365ms
+               - __MIN_OF_OperatorTotalTime: 1.896ms
+             - OutputChunkBytes: 3.301 GB
+               - __MAX_OF_OutputChunkBytes: 214.146 MB
+               - __MIN_OF_OutputChunkBytes: 207.881 MB
+             - PullChunkNum: 10.528K (10528)
+               - __MAX_OF_PullChunkNum: 658
+               - __MIN_OF_PullChunkNum: 658
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 2.530M (2530353)
+               - __MIN_OF_PullRowNum: 2.457M (2456770)
+             - PullTotalTime: 2.078ms
+               - __MAX_OF_PullTotalTime: 2.362ms
+               - __MIN_OF_PullTotalTime: 1.893ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+      Pipeline (id=0):
+         - IsGroupExecution: false
+         - ActiveTime: 17.163ms
+           - __MAX_OF_ActiveTime: 68.730ms
+           - __MIN_OF_ActiveTime: 589.339us
+         - BlockByInputEmpty: 2.079K (2079)
+           - __MAX_OF_BlockByInputEmpty: 134
+           - __MIN_OF_BlockByInputEmpty: 126
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 7s567ms
+           - __MAX_OF_DriverTotalTime: 7s567ms
+           - __MIN_OF_DriverTotalTime: 7s567ms
+         - OverheadTime: 4.495ms
+           - __MAX_OF_OverheadTime: 18.217ms
+           - __MIN_OF_OverheadTime: 516.930us
+         - PeakDriverQueueSize: 3.745K (3745)
+           - __MAX_OF_PeakDriverQueueSize: 242
+           - __MIN_OF_PeakDriverQueueSize: 220
+         - PendingTime: 0ns
+           - InputEmptyTime: 3s164ms
+             - __MAX_OF_InputEmptyTime: 3s208ms
+             - __MIN_OF_InputEmptyTime: 3s63ms
+             - FirstInputEmptyTime: 923.911ms
+               - __MAX_OF_FirstInputEmptyTime: 923.921ms
+               - __MIN_OF_FirstInputEmptyTime: 923.847ms
+             - FollowupInputEmptyTime: 2s240ms
+               - __MAX_OF_FollowupInputEmptyTime: 2s284ms
+               - __MIN_OF_FollowupInputEmptyTime: 2s139ms
+         - ScheduleCount: 2.139K (2139)
+           - __MAX_OF_ScheduleCount: 147
+           - __MIN_OF_ScheduleCount: 127
+         - ScheduleTime: 7s550ms
+           - __MAX_OF_ScheduleTime: 7s567ms
+           - __MIN_OF_ScheduleTime: 7s498ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        LOCAL_EXCHANGE_SINK (plan_node_id=47):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 2.478ms
+               - __MAX_OF_OperatorTotalTime: 11.423ms
+               - __MIN_OF_OperatorTotalTime: 9.944us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 10.528K (10528)
+               - __MAX_OF_PushChunkNum: 2.835K (2835)
+               - __MIN_OF_PushChunkNum: 0
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 10.713M (10713203)
+               - __MIN_OF_PushRowNum: 0
+             - PushTotalTime: 2.475ms
+               - __MAX_OF_PushTotalTime: 11.422ms
+               - __MIN_OF_PushTotalTime: 0ns
+          UniqueMetrics:
+             - ShuffleNum: 16
+             - Type: Passthrough
+             - LocalExchangePeakMemoryUsage: 69.115 MB
+        PROJECT (plan_node_id=46):
+          CommonMetrics:
+             - OperatorTotalTime: 1.896ms
+               - __MAX_OF_OperatorTotalTime: 8.742ms
+               - __MIN_OF_OperatorTotalTime: 5.742us
+             - OutputChunkBytes: 3.301 GB
+               - __MAX_OF_OutputChunkBytes: 906.709 MB
+               - __MIN_OF_OutputChunkBytes: 0.000 B
+             - PullChunkNum: 10.528K (10528)
+               - __MAX_OF_PullChunkNum: 2.835K (2835)
+               - __MIN_OF_PullChunkNum: 0
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 10.713M (10713203)
+               - __MIN_OF_PullRowNum: 0
+             - PullTotalTime: 101.081us
+               - __MAX_OF_PullTotalTime: 477.865us
+               - __MIN_OF_PullTotalTime: 0ns
+             - PushChunkNum: 10.528K (10528)
+               - __MAX_OF_PushChunkNum: 2.835K (2835)
+               - __MIN_OF_PushChunkNum: 0
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 10.713M (10713203)
+               - __MIN_OF_PushRowNum: 0
+             - PushTotalTime: 1.788ms
+               - __MAX_OF_PushTotalTime: 8.254ms
+               - __MIN_OF_PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CommonSubExprComputeTime: 45.875us
+               - __MAX_OF_CommonSubExprComputeTime: 211.959us
+               - __MIN_OF_CommonSubExprComputeTime: 0ns
+             - ExprComputeTime: 844.171us
+               - __MAX_OF_ExprComputeTime: 4.221ms
+               - __MIN_OF_ExprComputeTime: 0ns
+        EXCHANGE_SOURCE (plan_node_id=45):
+          CommonMetrics:
+             - ConjunctsInputRows: 39.934M (39933567)
+               - __MAX_OF_ConjunctsInputRows: 10.713M (10713203)
+               - __MIN_OF_ConjunctsInputRows: 25.620K (25620)
+             - ConjunctsOutputRows: 39.934M (39933567)
+               - __MAX_OF_ConjunctsOutputRows: 10.713M (10713203)
+               - __MIN_OF_ConjunctsOutputRows: 25.620K (25620)
+             - ConjunctsTime: 820.467us
+               - __MAX_OF_ConjunctsTime: 3.150ms
+               - __MIN_OF_ConjunctsTime: 8.854us
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 8.292ms
+               - __MAX_OF_OperatorTotalTime: 33.259ms
+               - __MIN_OF_OperatorTotalTime: 21.991us
+             - OutputChunkBytes: 3.301 GB
+               - __MAX_OF_OutputChunkBytes: 906.709 MB
+               - __MIN_OF_OutputChunkBytes: 0.000 B
+             - PullChunkNum: 10.528K (10528)
+               - __MAX_OF_PullChunkNum: 2.835K (2835)
+               - __MIN_OF_PullChunkNum: 0
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 10.713M (10713203)
+               - __MIN_OF_PullRowNum: 0
+             - PullTotalTime: 8.287ms
+               - __MAX_OF_PullTotalTime: 33.254ms
+               - __MIN_OF_PullTotalTime: 1.915us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 170
+               - __MAX_OF_BufferUnplugCount: 131
+               - __MIN_OF_BufferUnplugCount: 0
+             - BytesPassThrough: 3.301 GB
+               - __MAX_OF_BytesPassThrough: 255.812 MB
+               - __MIN_OF_BytesPassThrough: 170.237 MB
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 3.703K (3703)
+               - __MAX_OF_ClosureBlockCount: 245
+               - __MIN_OF_ClosureBlockCount: 213
+             - ClosureBlockTime: 8s190ms
+               - __MAX_OF_ClosureBlockTime: 36s818ms
+               - __MIN_OF_ClosureBlockTime: 0ns
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 2.018 GB
+               - __MAX_OF_PeakBufferMemoryBytes: 251.429 MB
+               - __MIN_OF_PeakBufferMemoryBytes: 0.000 B
+             - ReceiverProcessTotalTime: 3.115ms
+               - __MAX_OF_ReceiverProcessTotalTime: 3.245ms
+               - __MIN_OF_ReceiverProcessTotalTime: 2.894ms
+             - RequestReceived: 9.660K (9660)
+               - __MAX_OF_RequestReceived: 604
+               - __MIN_OF_RequestReceived: 603
+             - WaitLockTime: 0ns
+    Fragment 5:
+       - BackendAddresses: 172.26.95.146:9060
+       - InstanceIds: b32190b0-8a0b-11f0-94e0-00163e341b9c
+       - EnableEventScheduler: true
+       - BackendNum: 1
+       - BackendProfileMergeTime: 3.935ms
+       - InitialProcessDriverCount: 226
+       - InitialProcessMem: 9.388 GB
+       - InstanceAllocatedMemoryUsage: 9.431 GB
+       - InstanceDeallocatedMemoryUsage: 9.249 GB
+       - InstanceNum: 1
+       - InstancePeakMemoryUsage: 416.645 MB
+       - JITCounter: 0
+       - JITTotalCostTime: 0ns
+       - QueryMemoryLimit: -1.000 B
+      Pipeline (id=2):
+         - IsGroupExecution: false
+         - ActiveTime: 784.309ms
+           - __MAX_OF_ActiveTime: 812.727ms
+           - __MIN_OF_ActiveTime: 758.542ms
+         - BlockByInputEmpty: 2.918K (2918)
+           - __MAX_OF_BlockByInputEmpty: 189
+           - __MIN_OF_BlockByInputEmpty: 177
+         - BlockByOutputFull: 19
+           - __MAX_OF_BlockByOutputFull: 2
+           - __MIN_OF_BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 7s661ms
+           - __MAX_OF_DriverTotalTime: 7s661ms
+           - __MIN_OF_DriverTotalTime: 7s661ms
+         - OverheadTime: 16.431ms
+           - __MAX_OF_OverheadTime: 26.042ms
+           - __MIN_OF_OverheadTime: 13.888ms
+         - PeakDriverQueueSize: 3.642K (3642)
+           - __MAX_OF_PeakDriverQueueSize: 240
+           - __MIN_OF_PeakDriverQueueSize: 219
+         - PendingTime: 0ns
+           - InputEmptyTime: 5s618ms
+             - __MAX_OF_InputEmptyTime: 5s794ms
+             - __MIN_OF_InputEmptyTime: 5s504ms
+             - FirstInputEmptyTime: 933.091ms
+               - __MAX_OF_FirstInputEmptyTime: 937.060ms
+               - __MIN_OF_FirstInputEmptyTime: 928.141ms
+             - FollowupInputEmptyTime: 4s685ms
+               - __MAX_OF_FollowupInputEmptyTime: 4s858ms
+               - __MIN_OF_FollowupInputEmptyTime: 4s576ms
+           - OutputFullTime: 23.425ms
+             - __MAX_OF_OutputFullTime: 26.253ms
+             - __MIN_OF_OutputFullTime: 19.536ms
+           - PendingFinishTime: 17.523ms
+             - __MAX_OF_PendingFinishTime: 25.891ms
+             - __MIN_OF_PendingFinishTime: 6.110ms
+         - ScheduleCount: 3.065K (3065)
+           - __MAX_OF_ScheduleCount: 197
+           - __MIN_OF_ScheduleCount: 187
+         - ScheduleTime: 6s877ms
+           - __MAX_OF_ScheduleTime: 6s903ms
+           - __MIN_OF_ScheduleTime: 6s848ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 171
+           - __MAX_OF_YieldByTimeLimit: 21
+           - __MIN_OF_YieldByTimeLimit: 7
+        EXCHANGE_SINK (plan_node_id=41):
+          CommonMetrics:
+             - OperatorTotalTime: 761.654ms
+               - __MAX_OF_OperatorTotalTime: 791.400ms
+               - __MIN_OF_OperatorTotalTime: 733.370ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 10.441K (10441)
+               - __MAX_OF_PushChunkNum: 656
+               - __MIN_OF_PushChunkNum: 644
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 2.531M (2531126)
+               - __MIN_OF_PushRowNum: 2.467M (2467399)
+             - PushTotalTime: 756.763ms
+               - __MAX_OF_PushTotalTime: 785.136ms
+               - __MIN_OF_PushTotalTime: 730.754ms
+             - SetFinishingTime: 4.888ms
+               - __MAX_OF_SetFinishingTime: 7.155ms
+               - __MIN_OF_SetFinishingTime: 2.495ms
+          UniqueMetrics:
+             - ChannelNum: 1
+             - DestFragments: b32190b08a0b11f0-94e000163e341b98
+             - DestID: 41
+             - PartType: HASH_PARTITIONED
+             - PipelineLevelShuffle: Yes
+             - ShuffleNumPerChannel: 16
+             - TotalShuffleNum: 16
+             - BytesPassThrough: 3.990 GB
+               - __MAX_OF_BytesPassThrough: 258.957 MB
+               - __MIN_OF_BytesPassThrough: 252.468 MB
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 382.750ms
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 6s652ms
+             - PassThroughBufferPeakMemoryUsage: 26.433 MB
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 580.918us
+             - RpcCount: 10.098K (10098)
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 164.277K (164277)
+               - __MAX_OF_ShuffleChunkAppendCounter: 10.362K (10362)
+               - __MIN_OF_ShuffleChunkAppendCounter: 10.193K (10193)
+             - ShuffleChunkAppendTime: 336.717ms
+               - __MAX_OF_ShuffleChunkAppendTime: 349.197ms
+               - __MIN_OF_ShuffleChunkAppendTime: 325.763ms
+             - ShuffleHashTime: 156.667ms
+               - __MAX_OF_ShuffleHashTime: 173.555ms
+               - __MIN_OF_ShuffleHashTime: 148.342ms
+             - WaitTime: 40.745ms
+        AGGREGATE_DISTINCT_STREAMING_SOURCE (plan_node_id=40):
+          CommonMetrics:
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 6.223ms
+               - __MAX_OF_OperatorTotalTime: 6.904ms
+               - __MIN_OF_OperatorTotalTime: 5.666ms
+             - OutputChunkBytes: 3.989 GB
+               - __MAX_OF_OutputChunkBytes: 258.908 MB
+               - __MIN_OF_OutputChunkBytes: 252.420 MB
+             - PullChunkNum: 10.441K (10441)
+               - __MAX_OF_PullChunkNum: 656
+               - __MIN_OF_PullChunkNum: 644
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 2.531M (2531126)
+               - __MIN_OF_PullRowNum: 2.467M (2467399)
+             - PullTotalTime: 6.181ms
+               - __MAX_OF_PullTotalTime: 6.874ms
+               - __MIN_OF_PullTotalTime: 5.613ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+      Pipeline (id=1):
+         - IsGroupExecution: false
+         - ActiveTime: 343.131ms
+           - __MAX_OF_ActiveTime: 360.905ms
+           - __MIN_OF_ActiveTime: 326.508ms
+         - BlockByInputEmpty: 3.000K (3000)
+           - __MAX_OF_BlockByInputEmpty: 191
+           - __MIN_OF_BlockByInputEmpty: 184
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 7s626ms
+           - __MAX_OF_DriverTotalTime: 7s639ms
+           - __MIN_OF_DriverTotalTime: 7s619ms
+         - OverheadTime: 4.788ms
+           - __MAX_OF_OverheadTime: 5.241ms
+           - __MIN_OF_OverheadTime: 4.478ms
+         - PeakDriverQueueSize: 3.453K (3453)
+           - __MAX_OF_PeakDriverQueueSize: 223
+           - __MIN_OF_PeakDriverQueueSize: 211
+         - PendingTime: 0ns
+           - InputEmptyTime: 4s352ms
+             - __MAX_OF_InputEmptyTime: 4s584ms
+             - __MIN_OF_InputEmptyTime: 4s55ms
+             - FirstInputEmptyTime: 924.767ms
+               - __MAX_OF_FirstInputEmptyTime: 924.850ms
+               - __MIN_OF_FirstInputEmptyTime: 924.687ms
+             - FollowupInputEmptyTime: 3s427ms
+               - __MAX_OF_FollowupInputEmptyTime: 3s659ms
+               - __MIN_OF_FollowupInputEmptyTime: 3s130ms
+         - ScheduleCount: 3.064K (3064)
+           - __MAX_OF_ScheduleCount: 195
+           - __MIN_OF_ScheduleCount: 188
+         - ScheduleTime: 7s283ms
+           - __MAX_OF_ScheduleTime: 7s298ms
+           - __MIN_OF_ScheduleTime: 7s258ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 60
+           - __MAX_OF_YieldByTimeLimit: 5
+           - __MIN_OF_YieldByTimeLimit: 3
+        AGGREGATE_DISTINCT_STREAMING_SINK (plan_node_id=40):
+          CommonMetrics:
+             - OperatorTotalTime: 336.033ms
+               - __MAX_OF_OperatorTotalTime: 353.960ms
+               - __MIN_OF_OperatorTotalTime: 319.032ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 10.528K (10528)
+               - __MAX_OF_PushChunkNum: 658
+               - __MIN_OF_PushChunkNum: 658
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 2.531M (2531126)
+               - __MIN_OF_PushRowNum: 2.467M (2467399)
+             - PushTotalTime: 336.014ms
+               - __MAX_OF_PushTotalTime: 353.935ms
+               - __MIN_OF_PushTotalTime: 319.019ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - GroupingKeys: 73: p_name, 74: p_comment, 75: s_name, 76: o_orderkey, 77: c_name
+             - AggComputeTime: 321.380ms
+               - __MAX_OF_AggComputeTime: 339.703ms
+               - __MIN_OF_AggComputeTime: 304.429ms
+             - AggFuncComputeTime: 0ns
+             - ChunkBufferPeakMem: 9.993 MB
+               - __MAX_OF_ChunkBufferPeakMem: 11.533 MB
+               - __MIN_OF_ChunkBufferPeakMem: 7.921 MB
+             - ChunkBufferPeakSize: 25
+               - __MAX_OF_ChunkBufferPeakSize: 28
+               - __MIN_OF_ChunkBufferPeakSize: 21
+             - ExprComputeTime: 1.851ms
+               - __MAX_OF_ExprComputeTime: 2.213ms
+               - __MIN_OF_ExprComputeTime: 1.641ms
+             - ExprReleaseTime: 3.945ms
+               - __MAX_OF_ExprReleaseTime: 8.807ms
+               - __MIN_OF_ExprReleaseTime: 3.215ms
+             - GetResultsTime: 4.218ms
+               - __MAX_OF_GetResultsTime: 4.819ms
+               - __MIN_OF_GetResultsTime: 3.657ms
+             - HashTableMemoryUsage: 19.063 MB
+               - __MAX_OF_HashTableMemoryUsage: 1.191 MB
+               - __MIN_OF_HashTableMemoryUsage: 1.191 MB
+             - HashTableSize: 114.291K (114291)
+               - __MAX_OF_HashTableSize: 7.166K (7166)
+               - __MIN_OF_HashTableSize: 7.107K (7107)
+             - InputRowCount: 39.934M (39933567)
+               - __MAX_OF_InputRowCount: 2.531M (2531126)
+               - __MIN_OF_InputRowCount: 2.467M (2467399)
+             - PassThroughRowCount: 39.819M (39819276)
+               - __MAX_OF_PassThroughRowCount: 2.524M (2524003)
+               - __MIN_OF_PassThroughRowCount: 2.460M (2460245)
+             - ResultAggAppendTime: 0ns
+             - ResultGroupByAppendTime: 4.107ms
+               - __MAX_OF_ResultGroupByAppendTime: 4.704ms
+               - __MIN_OF_ResultGroupByAppendTime: 3.562ms
+             - ResultIteratorTime: 0ns
+             - RowsReturned: 0
+             - StateAllocate: 0ns
+             - StateDestroy: 0ns
+             - StreamingTime: 6.974ms
+               - __MAX_OF_StreamingTime: 7.425ms
+               - __MIN_OF_StreamingTime: 6.555ms
+        LOCAL_EXCHANGE_SOURCE (plan_node_id=40):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 2.310ms
+               - __MAX_OF_OperatorTotalTime: 2.528ms
+               - __MIN_OF_OperatorTotalTime: 2.130ms
+             - OutputChunkBytes: 3.989 GB
+               - __MAX_OF_OutputChunkBytes: 258.908 MB
+               - __MIN_OF_OutputChunkBytes: 252.420 MB
+             - PullChunkNum: 10.528K (10528)
+               - __MAX_OF_PullChunkNum: 658
+               - __MIN_OF_PullChunkNum: 658
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 2.531M (2531126)
+               - __MIN_OF_PullRowNum: 2.467M (2467399)
+             - PullTotalTime: 2.306ms
+               - __MAX_OF_PullTotalTime: 2.524ms
+               - __MIN_OF_PullTotalTime: 2.126ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+      Pipeline (id=0):
+         - IsGroupExecution: false
+         - ActiveTime: 17.585ms
+           - __MAX_OF_ActiveTime: 58.314ms
+           - __MIN_OF_ActiveTime: 690.117us
+         - BlockByInputEmpty: 2.239K (2239)
+           - __MAX_OF_BlockByInputEmpty: 147
+           - __MIN_OF_BlockByInputEmpty: 136
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 7s600ms
+           - __MAX_OF_DriverTotalTime: 7s619ms
+           - __MIN_OF_DriverTotalTime: 7s592ms
+         - OverheadTime: 4.621ms
+           - __MAX_OF_OverheadTime: 14.202ms
+           - __MIN_OF_OverheadTime: 598.741us
+         - PeakDriverQueueSize: 3.658K (3658)
+           - __MAX_OF_PeakDriverQueueSize: 242
+           - __MIN_OF_PeakDriverQueueSize: 220
+         - PendingTime: 0ns
+           - InputEmptyTime: 3s142ms
+             - __MAX_OF_InputEmptyTime: 3s293ms
+             - __MIN_OF_InputEmptyTime: 2s910ms
+             - FirstInputEmptyTime: 922.402ms
+               - __MAX_OF_FirstInputEmptyTime: 922.408ms
+               - __MIN_OF_FirstInputEmptyTime: 922.395ms
+             - FollowupInputEmptyTime: 2s219ms
+               - __MAX_OF_FollowupInputEmptyTime: 2s371ms
+               - __MIN_OF_FollowupInputEmptyTime: 1s988ms
+         - ScheduleCount: 2.312K (2312)
+           - __MAX_OF_ScheduleCount: 158
+           - __MIN_OF_ScheduleCount: 138
+         - ScheduleTime: 7s582ms
+           - __MAX_OF_ScheduleTime: 7s618ms
+           - __MIN_OF_ScheduleTime: 7s534ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        LOCAL_EXCHANGE_SINK (plan_node_id=40):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 2.129ms
+               - __MAX_OF_OperatorTotalTime: 8.434ms
+               - __MIN_OF_OperatorTotalTime: 1.200us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 10.528K (10528)
+               - __MAX_OF_PushChunkNum: 2.430K (2430)
+               - __MIN_OF_PushChunkNum: 0
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 9.187M (9186880)
+               - __MIN_OF_PushRowNum: 0
+             - PushTotalTime: 2.124ms
+               - __MAX_OF_PushTotalTime: 8.433ms
+               - __MIN_OF_PushTotalTime: 0ns
+          UniqueMetrics:
+             - ShuffleNum: 16
+             - Type: Passthrough
+             - LocalExchangePeakMemoryUsage: 95.814 MB
+        PROJECT (plan_node_id=39):
+          CommonMetrics:
+             - OperatorTotalTime: 2.370ms
+               - __MAX_OF_OperatorTotalTime: 9.150ms
+               - __MIN_OF_OperatorTotalTime: 6.517us
+             - OutputChunkBytes: 3.989 GB
+               - __MAX_OF_OutputChunkBytes: 939.721 MB
+               - __MIN_OF_OutputChunkBytes: 0.000 B
+             - PullChunkNum: 10.528K (10528)
+               - __MAX_OF_PullChunkNum: 2.430K (2430)
+               - __MIN_OF_PullChunkNum: 0
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 9.187M (9186880)
+               - __MIN_OF_PullRowNum: 0
+             - PullTotalTime: 95.255us
+               - __MAX_OF_PullTotalTime: 466.567us
+               - __MIN_OF_PullTotalTime: 0ns
+             - PushChunkNum: 10.528K (10528)
+               - __MAX_OF_PushChunkNum: 2.430K (2430)
+               - __MIN_OF_PushChunkNum: 0
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 9.187M (9186880)
+               - __MIN_OF_PushRowNum: 0
+             - PushTotalTime: 2.267ms
+               - __MAX_OF_PushTotalTime: 8.676ms
+               - __MIN_OF_PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CommonSubExprComputeTime: 49.594us
+               - __MAX_OF_CommonSubExprComputeTime: 175.971us
+               - __MIN_OF_CommonSubExprComputeTime: 0ns
+             - ExprComputeTime: 954.641us
+               - __MAX_OF_ExprComputeTime: 3.551ms
+               - __MIN_OF_ExprComputeTime: 0ns
+        EXCHANGE_SOURCE (plan_node_id=38):
+          CommonMetrics:
+             - ConjunctsInputRows: 39.934M (39933567)
+               - __MAX_OF_ConjunctsInputRows: 9.187M (9186880)
+               - __MIN_OF_ConjunctsInputRows: 4.096K (4096)
+             - ConjunctsOutputRows: 39.934M (39933567)
+               - __MAX_OF_ConjunctsOutputRows: 9.187M (9186880)
+               - __MIN_OF_ConjunctsOutputRows: 4.096K (4096)
+             - ConjunctsTime: 905.993us
+               - __MAX_OF_ConjunctsTime: 2.748ms
+               - __MIN_OF_ConjunctsTime: 2.670us
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 8.465ms
+               - __MAX_OF_OperatorTotalTime: 31.731ms
+               - __MIN_OF_OperatorTotalTime: 30.267us
+             - OutputChunkBytes: 3.989 GB
+               - __MAX_OF_OutputChunkBytes: 939.721 MB
+               - __MIN_OF_OutputChunkBytes: 0.000 B
+             - PullChunkNum: 10.528K (10528)
+               - __MAX_OF_PullChunkNum: 2.430K (2430)
+               - __MIN_OF_PullChunkNum: 0
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 9.187M (9186880)
+               - __MIN_OF_PullRowNum: 0
+             - PullTotalTime: 8.458ms
+               - __MAX_OF_PullTotalTime: 31.727ms
+               - __MIN_OF_PullTotalTime: 11.928us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 223
+               - __MAX_OF_BufferUnplugCount: 145
+               - __MIN_OF_BufferUnplugCount: 0
+             - BytesPassThrough: 3.990 GB
+               - __MAX_OF_BytesPassThrough: 297.184 MB
+               - __MIN_OF_BytesPassThrough: 222.629 MB
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 3.821K (3821)
+               - __MAX_OF_ClosureBlockCount: 252
+               - __MIN_OF_ClosureBlockCount: 226
+             - ClosureBlockTime: 5s811ms
+               - __MAX_OF_ClosureBlockTime: 34s263ms
+               - __MIN_OF_ClosureBlockTime: 0ns
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 2.202 GB
+               - __MAX_OF_PeakBufferMemoryBytes: 297.184 MB
+               - __MIN_OF_PeakBufferMemoryBytes: 1.257 MB
+             - ReceiverProcessTotalTime: 3.363ms
+               - __MAX_OF_ReceiverProcessTotalTime: 3.484ms
+               - __MIN_OF_ReceiverProcessTotalTime: 3.241ms
+             - RequestReceived: 9.878K (9878)
+               - __MAX_OF_RequestReceived: 618
+               - __MIN_OF_RequestReceived: 617
+             - WaitLockTime: 0ns
+    Fragment 6:
+       - BackendAddresses: 172.26.95.146:9060
+       - InstanceIds: b32190b0-8a0b-11f0-94e0-00163e341b9d
+       - EnableEventScheduler: true
+       - BackendNum: 1
+       - BackendProfileMergeTime: 4.100ms
+       - InitialProcessDriverCount: 226
+       - InitialProcessMem: 9.388 GB
+       - InstanceAllocatedMemoryUsage: 4.284 GB
+       - InstanceDeallocatedMemoryUsage: 4.123 GB
+       - InstanceNum: 1
+       - InstancePeakMemoryUsage: 3.838 GB
+       - JITCounter: 0
+       - JITTotalCostTime: 0ns
+       - QueryMemoryLimit: -1.000 B
+      Pipeline (id=2):
+         - IsGroupExecution: false
+         - ActiveTime: 28.928ms
+           - __MAX_OF_ActiveTime: 35.183ms
+           - __MIN_OF_ActiveTime: 21.786ms
+         - BlockByInputEmpty: 115
+           - __MAX_OF_BlockByInputEmpty: 8
+           - __MIN_OF_BlockByInputEmpty: 6
+         - BlockByOutputFull: 2
+           - __MAX_OF_BlockByOutputFull: 1
+           - __MIN_OF_BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 9s990ms
+           - __MAX_OF_DriverTotalTime: 10s0ms
+           - __MIN_OF_DriverTotalTime: 9s988ms
+         - PeakDriverQueueSize: 2.185K (2185)
+           - __MAX_OF_PeakDriverQueueSize: 139
+           - __MIN_OF_PeakDriverQueueSize: 135
+         - PendingTime: 0ns
+           - InputEmptyTime: 1s0ms
+             - __MAX_OF_InputEmptyTime: 1s17ms
+             - __MIN_OF_InputEmptyTime: 968.913ms
+             - FirstInputEmptyTime: 934.437ms
+               - __MAX_OF_FirstInputEmptyTime: 942.707ms
+               - __MIN_OF_FirstInputEmptyTime: 931.212ms
+             - FollowupInputEmptyTime: 66.094ms
+               - __MAX_OF_FollowupInputEmptyTime: 78.924ms
+               - __MIN_OF_FollowupInputEmptyTime: 31.103ms
+           - OutputFullTime: 8s912ms
+             - __MAX_OF_OutputFullTime: 8s930ms
+             - __MIN_OF_OutputFullTime: 8s908ms
+           - PendingFinishTime: 7.274ms
+             - __MAX_OF_PendingFinishTime: 7.322ms
+             - __MIN_OF_PendingFinishTime: 7.230ms
+         - ScheduleCount: 117
+           - __MAX_OF_ScheduleCount: 8
+           - __MIN_OF_ScheduleCount: 6
+         - ScheduleTime: 9s961ms
+           - __MAX_OF_ScheduleTime: 9s974ms
+           - __MIN_OF_ScheduleTime: 9s954ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        EXCHANGE_SINK (plan_node_id=35):
+          CommonMetrics:
+             - OperatorTotalTime: 28.526ms
+               - __MAX_OF_OperatorTotalTime: 34.789ms
+               - __MIN_OF_OperatorTotalTime: 21.362ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 289
+               - __MAX_OF_PushChunkNum: 19
+               - __MIN_OF_PushChunkNum: 17
+             - PushRowNum: 1.158M (1158273)
+               - __MAX_OF_PushRowNum: 77.674K (77674)
+               - __MIN_OF_PushRowNum: 65.792K (65792)
+             - PushTotalTime: 28.523ms
+               - __MAX_OF_PushTotalTime: 34.788ms
+               - __MIN_OF_PushTotalTime: 21.361ms
+          UniqueMetrics:
+             - ChannelNum: 1
+             - DestFragments: b32190b08a0b11f0-94e000163e341b98
+             - DestID: 35
+             - PartType: HASH_PARTITIONED
+             - PipelineLevelShuffle: Yes
+             - ShuffleNumPerChannel: 16
+             - TotalShuffleNum: 16
+             - BytesPassThrough: 81.330 MB
+               - __MAX_OF_BytesPassThrough: 6.091 MB
+               - __MIN_OF_BytesPassThrough: 2.288 MB
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 1.648ms
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 8s969ms
+             - PassThroughBufferPeakMemoryUsage: 898.688 KB
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 317.317us
+             - RpcCount: 146
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 4.624K (4624)
+               - __MAX_OF_ShuffleChunkAppendCounter: 304
+               - __MIN_OF_ShuffleChunkAppendCounter: 272
+             - ShuffleChunkAppendTime: 17.068ms
+               - __MAX_OF_ShuffleChunkAppendTime: 20.824ms
+               - __MIN_OF_ShuffleChunkAppendTime: 14.801ms
+             - ShuffleHashTime: 4.182ms
+               - __MAX_OF_ShuffleHashTime: 4.639ms
+               - __MIN_OF_ShuffleHashTime: 3.638ms
+             - WaitTime: 30.755ms
+        AGGREGATE_DISTINCT_STREAMING_SOURCE (plan_node_id=34):
+          CommonMetrics:
+             - CloseTime: 16.595ms
+               - __MAX_OF_CloseTime: 26.713ms
+               - __MIN_OF_CloseTime: 10.846ms
+             - OperatorTotalTime: 16.660ms
+               - __MAX_OF_OperatorTotalTime: 26.771ms
+               - __MIN_OF_OperatorTotalTime: 10.900ms
+             - OutputChunkBytes: 111.083 MB
+               - __MAX_OF_OutputChunkBytes: 7.450 MB
+               - __MIN_OF_OutputChunkBytes: 6.311 MB
+             - PullChunkNum: 289
+               - __MAX_OF_PullChunkNum: 19
+               - __MIN_OF_PullChunkNum: 17
+             - PullRowNum: 1.158M (1158273)
+               - __MAX_OF_PullRowNum: 77.674K (77674)
+               - __MIN_OF_PullRowNum: 65.792K (65792)
+             - PullTotalTime: 64.451us
+               - __MAX_OF_PullTotalTime: 182.815us
+               - __MIN_OF_PullTotalTime: 48.989us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+      Pipeline (id=1):
+         - IsGroupExecution: false
+         - ActiveTime: 176.065ms
+           - __MAX_OF_ActiveTime: 195.395ms
+           - __MIN_OF_ActiveTime: 157.122ms
+         - BlockByInputEmpty: 1.159K (1159)
+           - __MAX_OF_BlockByInputEmpty: 76
+           - __MIN_OF_BlockByInputEmpty: 69
+         - BlockByOutputFull: 16
+           - __MAX_OF_BlockByOutputFull: 1
+           - __MIN_OF_BlockByOutputFull: 1
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 9s986ms
+           - __MAX_OF_DriverTotalTime: 9s988ms
+           - __MIN_OF_DriverTotalTime: 9s983ms
+         - PeakDriverQueueSize: 3.610K (3610)
+           - __MAX_OF_PeakDriverQueueSize: 241
+           - __MIN_OF_PeakDriverQueueSize: 209
+         - PendingTime: 0ns
+           - InputEmptyTime: 2s505ms
+             - __MAX_OF_InputEmptyTime: 2s766ms
+             - __MIN_OF_InputEmptyTime: 2s236ms
+             - FirstInputEmptyTime: 926.571ms
+               - __MAX_OF_FirstInputEmptyTime: 926.607ms
+               - __MIN_OF_FirstInputEmptyTime: 926.487ms
+             - FollowupInputEmptyTime: 1s579ms
+               - __MAX_OF_FollowupInputEmptyTime: 1s840ms
+               - __MIN_OF_FollowupInputEmptyTime: 1s309ms
+           - OutputFullTime: 4s920ms
+             - __MAX_OF_OutputFullTime: 5s2ms
+             - __MIN_OF_OutputFullTime: 4s791ms
+         - ScheduleCount: 1.192K (1192)
+           - __MAX_OF_ScheduleCount: 78
+           - __MIN_OF_ScheduleCount: 71
+         - ScheduleTime: 9s810ms
+           - __MAX_OF_ScheduleTime: 9s827ms
+           - __MIN_OF_ScheduleTime: 9s790ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 20
+           - __MAX_OF_YieldByTimeLimit: 2
+           - __MIN_OF_YieldByTimeLimit: 1
+        AGGREGATE_DISTINCT_STREAMING_SINK (plan_node_id=34):
+          CommonMetrics:
+             - OperatorTotalTime: 172.034ms
+               - __MAX_OF_OperatorTotalTime: 191.348ms
+               - __MIN_OF_OperatorTotalTime: 153.350ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 5.882K (5882)
+               - __MAX_OF_PushChunkNum: 376
+               - __MIN_OF_PushChunkNum: 362
+             - PushRowNum: 22.582M (22581892)
+               - __MAX_OF_PushRowNum: 1.420M (1419746)
+               - __MIN_OF_PushRowNum: 1.400M (1400147)
+             - PushTotalTime: 172.018ms
+               - __MAX_OF_PushTotalTime: 191.330ms
+               - __MIN_OF_PushTotalTime: 153.336ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - GroupingKeys: 68: p_name, 69: s_name, 70: o_orderkey, 71: c_name, 72: r_name
+             - AggComputeTime: 166.470ms
+               - __MAX_OF_AggComputeTime: 185.817ms
+               - __MIN_OF_AggComputeTime: 147.597ms
+             - AggFuncComputeTime: 0ns
+             - ChunkBufferPeakMem: 128.190 MB
+               - __MAX_OF_ChunkBufferPeakMem: 128.380 MB
+               - __MIN_OF_ChunkBufferPeakMem: 128.003 MB
+             - ChunkBufferPeakSize: 343
+               - __MAX_OF_ChunkBufferPeakSize: 352
+               - __MIN_OF_ChunkBufferPeakSize: 337
+             - ExprComputeTime: 904.584us
+               - __MAX_OF_ExprComputeTime: 1.088ms
+               - __MIN_OF_ExprComputeTime: 785.578us
+             - ExprReleaseTime: 259.100us
+               - __MAX_OF_ExprReleaseTime: 294.203us
+               - __MIN_OF_ExprReleaseTime: 231.061us
+             - GetResultsTime: 0ns
+             - HashTableMemoryUsage: 19.063 MB
+               - __MAX_OF_HashTableMemoryUsage: 1.191 MB
+               - __MIN_OF_HashTableMemoryUsage: 1.191 MB
+             - HashTableSize: 113.912K (113912)
+               - __MAX_OF_HashTableSize: 7.167K (7167)
+               - __MIN_OF_HashTableSize: 7.016K (7016)
+             - InputRowCount: 22.582M (22581892)
+               - __MAX_OF_InputRowCount: 1.420M (1419746)
+               - __MIN_OF_InputRowCount: 1.400M (1400147)
+             - PassThroughRowCount: 22.468M (22467980)
+               - __MAX_OF_PassThroughRowCount: 1.413M (1412591)
+               - __MIN_OF_PassThroughRowCount: 1.393M (1393044)
+             - ResultAggAppendTime: 0ns
+             - ResultGroupByAppendTime: 0ns
+             - ResultIteratorTime: 0ns
+             - RowsReturned: 0
+             - StateAllocate: 0ns
+             - StateDestroy: 0ns
+             - StreamingTime: 3.484ms
+               - __MAX_OF_StreamingTime: 3.673ms
+               - __MIN_OF_StreamingTime: 3.258ms
+        LOCAL_EXCHANGE_SOURCE (plan_node_id=34):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 8.615ms
+               - __MAX_OF_OperatorTotalTime: 10.019ms
+               - __MIN_OF_OperatorTotalTime: 7.092ms
+             - OutputChunkBytes: 2.115 GB
+               - __MAX_OF_OutputChunkBytes: 136.142 MB
+               - __MIN_OF_OutputChunkBytes: 134.290 MB
+             - PullChunkNum: 5.882K (5882)
+               - __MAX_OF_PullChunkNum: 376
+               - __MIN_OF_PullChunkNum: 362
+             - PullRowNum: 22.582M (22581892)
+               - __MAX_OF_PullRowNum: 1.420M (1419746)
+               - __MIN_OF_PullRowNum: 1.400M (1400147)
+             - PullTotalTime: 1.480ms
+               - __MAX_OF_PullTotalTime: 1.636ms
+               - __MIN_OF_PullTotalTime: 1.373ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - SetFinishedTime: 7.133ms
+               - __MAX_OF_SetFinishedTime: 8.645ms
+               - __MIN_OF_SetFinishedTime: 5.590ms
+          UniqueMetrics:
+      Pipeline (id=0):
+         - IsGroupExecution: false
+         - ActiveTime: 21.543ms
+           - __MAX_OF_ActiveTime: 73.574ms
+           - __MIN_OF_ActiveTime: 943.068us
+         - BlockByInputEmpty: 2.514K (2514)
+           - __MAX_OF_BlockByInputEmpty: 162
+           - __MIN_OF_BlockByInputEmpty: 154
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 9s978ms
+           - __MAX_OF_DriverTotalTime: 9s988ms
+           - __MIN_OF_DriverTotalTime: 9s977ms
+         - OverheadTime: 6.515ms
+           - __MAX_OF_OverheadTime: 22.911ms
+           - __MIN_OF_OverheadTime: 0ns
+         - PeakDriverQueueSize: 3.605K (3605)
+           - __MAX_OF_PeakDriverQueueSize: 233
+           - __MIN_OF_PeakDriverQueueSize: 218
+         - PendingTime: 0ns
+           - InputEmptyTime: 5s709ms
+             - __MAX_OF_InputEmptyTime: 5s737ms
+             - __MIN_OF_InputEmptyTime: 5s609ms
+             - FirstInputEmptyTime: 903.790ms
+               - __MAX_OF_FirstInputEmptyTime: 903.802ms
+               - __MIN_OF_FirstInputEmptyTime: 903.775ms
+             - FollowupInputEmptyTime: 4s805ms
+               - __MAX_OF_FollowupInputEmptyTime: 4s833ms
+               - __MIN_OF_FollowupInputEmptyTime: 4s705ms
+           - PreconditionBlockTime: 20.111ms
+             - __MAX_OF_PreconditionBlockTime: 20.116ms
+             - __MIN_OF_PreconditionBlockTime: 20.106ms
+         - ScheduleCount: 2.560K (2560)
+           - __MAX_OF_ScheduleCount: 170
+           - __MIN_OF_ScheduleCount: 154
+         - ScheduleTime: 9s956ms
+           - __MAX_OF_ScheduleTime: 9s987ms
+           - __MIN_OF_ScheduleTime: 9s903ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        LOCAL_EXCHANGE_SINK (plan_node_id=34):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 2.723ms
+               - __MAX_OF_OperatorTotalTime: 10.565ms
+               - __MIN_OF_OperatorTotalTime: 7.060us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 9.155K (9155)
+               - __MAX_OF_PushChunkNum: 2.253K (2253)
+               - __MIN_OF_PushChunkNum: 1
+             - PushRowNum: 35.093M (35093106)
+               - __MAX_OF_PushRowNum: 8.645M (8645257)
+               - __MIN_OF_PushRowNum: 4.096K (4096)
+             - PushTotalTime: 2.062ms
+               - __MAX_OF_PushTotalTime: 8.187ms
+               - __MIN_OF_PushTotalTime: 2.785us
+          UniqueMetrics:
+             - ShuffleNum: 16
+             - Type: Passthrough
+             - LocalExchangePeakMemoryUsage: 1.176 GB
+        PROJECT (plan_node_id=33):
+          CommonMetrics:
+             - OperatorTotalTime: 2.123ms
+               - __MAX_OF_OperatorTotalTime: 7.808ms
+               - __MIN_OF_OperatorTotalTime: 12.344us
+             - OutputChunkBytes: 3.286 GB
+               - __MAX_OF_OutputChunkBytes: 829.036 MB
+               - __MIN_OF_OutputChunkBytes: 401.730 KB
+             - PullChunkNum: 9.155K (9155)
+               - __MAX_OF_PullChunkNum: 2.253K (2253)
+               - __MIN_OF_PullChunkNum: 1
+             - PullRowNum: 35.093M (35093106)
+               - __MAX_OF_PullRowNum: 8.645M (8645257)
+               - __MIN_OF_PullRowNum: 4.096K (4096)
+             - PullTotalTime: 98.279us
+               - __MAX_OF_PullTotalTime: 488.857us
+               - __MIN_OF_PullTotalTime: 140ns
+             - PushChunkNum: 9.155K (9155)
+               - __MAX_OF_PushChunkNum: 2.253K (2253)
+               - __MIN_OF_PushChunkNum: 1
+             - PushRowNum: 35.093M (35093106)
+               - __MAX_OF_PushRowNum: 8.645M (8645257)
+               - __MIN_OF_PushRowNum: 4.096K (4096)
+             - PushTotalTime: 2.019ms
+               - __MAX_OF_PushTotalTime: 7.457ms
+               - __MIN_OF_PushTotalTime: 5.954us
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CommonSubExprComputeTime: 40.746us
+               - __MAX_OF_CommonSubExprComputeTime: 151.674us
+               - __MIN_OF_CommonSubExprComputeTime: 150ns
+             - ExprComputeTime: 846.410us
+               - __MAX_OF_ExprComputeTime: 3.302ms
+               - __MIN_OF_ExprComputeTime: 2.410us
+        CHUNK_ACCUMULATE (plan_node_id=32):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 1.703ms
+               - __MAX_OF_OperatorTotalTime: 6.619ms
+               - __MIN_OF_OperatorTotalTime: 1.824us
+             - OutputChunkBytes: 3.286 GB
+               - __MAX_OF_OutputChunkBytes: 829.036 MB
+               - __MIN_OF_OutputChunkBytes: 401.730 KB
+             - PullChunkNum: 9.155K (9155)
+               - __MAX_OF_PullChunkNum: 2.253K (2253)
+               - __MIN_OF_PullChunkNum: 1
+             - PullRowNum: 35.093M (35093106)
+               - __MAX_OF_PullRowNum: 8.645M (8645257)
+               - __MIN_OF_PullRowNum: 4.096K (4096)
+             - PullTotalTime: 83.062us
+               - __MAX_OF_PullTotalTime: 375.979us
+               - __MIN_OF_PullTotalTime: 158ns
+             - PushChunkNum: 9.261K (9261)
+               - __MAX_OF_PushChunkNum: 2.275K (2275)
+               - __MIN_OF_PushChunkNum: 1
+             - PushRowNum: 35.146M (35146354)
+               - __MAX_OF_PushRowNum: 8.649M (8649353)
+               - __MIN_OF_PushRowNum: 4.096K (4096)
+             - PushTotalTime: 1.569ms
+               - __MAX_OF_PushTotalTime: 5.833ms
+               - __MIN_OF_PushTotalTime: 915ns
+          UniqueMetrics:
+        EXCHANGE_SOURCE (plan_node_id=32):
+          CommonMetrics:
+             - RuntimeFilterDesc: <7: NULL> <11: NULL> <12: NULL> <13: NULL> <14: NULL> <15: NULL> <16: NULL> <17: NULL> <18: NULL> <19: NULL> <20: NULL> <21: NULL> <22: NULL> 
+             - ConjunctsInputRows: 35.146M (35146354)
+               - __MAX_OF_ConjunctsInputRows: 8.649M (8649353)
+               - __MIN_OF_ConjunctsInputRows: 4.096K (4096)
+             - ConjunctsOutputRows: 35.146M (35146354)
+               - __MAX_OF_ConjunctsOutputRows: 8.649M (8649353)
+               - __MIN_OF_ConjunctsOutputRows: 4.096K (4096)
+             - ConjunctsTime: 765.131us
+               - __MAX_OF_ConjunctsTime: 2.672ms
+               - __MIN_OF_ConjunctsTime: 4.782us
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 35.146M (35146354)
+               - __MAX_OF_JoinRuntimeFilterInputRows: 8.649M (8649353)
+               - __MIN_OF_JoinRuntimeFilterInputRows: 4.096K (4096)
+             - JoinRuntimeFilterOutputRows: 35.146M (35146354)
+               - __MAX_OF_JoinRuntimeFilterOutputRows: 8.649M (8649353)
+               - __MIN_OF_JoinRuntimeFilterOutputRows: 4.096K (4096)
+             - JoinRuntimeFilterTime: 155.421us
+               - __MAX_OF_JoinRuntimeFilterTime: 768.414us
+               - __MIN_OF_JoinRuntimeFilterTime: 1.933us
+             - OperatorTotalTime: 9.125ms
+               - __MAX_OF_OperatorTotalTime: 34.130ms
+               - __MIN_OF_OperatorTotalTime: 211.564us
+             - OutputChunkBytes: 3.291 GB
+               - __MAX_OF_OutputChunkBytes: 829.429 MB
+               - __MIN_OF_OutputChunkBytes: 401.730 KB
+             - PullChunkNum: 9.261K (9261)
+               - __MAX_OF_PullChunkNum: 2.275K (2275)
+               - __MIN_OF_PullChunkNum: 1
+             - PullRowNum: 35.146M (35146354)
+               - __MAX_OF_PullRowNum: 8.649M (8649353)
+               - __MIN_OF_PullRowNum: 4.096K (4096)
+             - PullTotalTime: 9.090ms
+               - __MAX_OF_PullTotalTime: 34.106ms
+               - __MIN_OF_PullTotalTime: 200.633us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 13
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 177
+               - __MAX_OF_BufferUnplugCount: 158
+               - __MIN_OF_BufferUnplugCount: 0
+             - BytesPassThrough: 3.297 GB
+               - __MAX_OF_BytesPassThrough: 259.716 MB
+               - __MIN_OF_BytesPassThrough: 179.414 MB
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 3.350K (3350)
+               - __MAX_OF_ClosureBlockCount: 220
+               - __MIN_OF_ClosureBlockCount: 192
+             - ClosureBlockTime: 6s779ms
+               - __MAX_OF_ClosureBlockTime: 34s970ms
+               - __MIN_OF_ClosureBlockTime: 0ns
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 1.713 GB
+               - __MAX_OF_PeakBufferMemoryBytes: 238.211 MB
+               - __MIN_OF_PeakBufferMemoryBytes: 803.007 KB
+             - ReceiverProcessTotalTime: 2.808ms
+               - __MAX_OF_ReceiverProcessTotalTime: 3.027ms
+               - __MIN_OF_ReceiverProcessTotalTime: 2.609ms
+             - RequestReceived: 8.655K (8655)
+               - __MAX_OF_RequestReceived: 541
+               - __MIN_OF_RequestReceived: 540
+             - WaitLockTime: 0ns
+    Fragment 7:
+       - BackendAddresses: 172.26.95.146:9060
+       - InstanceIds: b32190b0-8a0b-11f0-94e0-00163e341b9e
+       - EnableEventScheduler: true
+       - BackendNum: 1
+       - BackendProfileMergeTime: 10.355ms
+       - InitialProcessDriverCount: 466
+       - InitialProcessMem: 9.411 GB
+       - InstanceAllocatedMemoryUsage: 31.915 GB
+       - InstanceDeallocatedMemoryUsage: 31.762 GB
+       - InstanceNum: 1
+       - InstancePeakMemoryUsage: 1.983 GB
+       - JITCounter: 0
+       - JITTotalCostTime: 0ns
+       - QueryMemoryLimit: -1.000 B
+      Pipeline (id=10):
+         - IsGroupExecution: false
+         - ActiveTime: 4s696ms
+         - BlockByInputEmpty: 5
+         - BlockByOutputFull: 13
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 1
+         - DriverTotalTime: 10s52ms
+         - OverheadTime: 108.990ms
+         - PeakDriverQueueSize: 242
+         - PendingTime: 0ns
+           - InputEmptyTime: 922.212ms
+             - FirstInputEmptyTime: 910.206ms
+             - FollowupInputEmptyTime: 12.005ms
+           - OutputFullTime: 446.164ms
+         - ScheduleCount: 59
+         - ScheduleTime: 5s356ms
+         - TotalDegreeOfParallelism: 1
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 41
+        EXCHANGE_SINK (plan_node_id=57):
+          CommonMetrics:
+             - OperatorTotalTime: 4s383ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 9.276K (9276)
+             - PushRowNum: 35.199M (35198770)
+             - PushTotalTime: 4s383ms
+          UniqueMetrics:
+             - ChannelNum: 1
+             - DestFragments: b32190b08a0b11f0-94e000163e341b99
+             - DestID: 57
+             - PartType: RANDOM
+             - BytesPassThrough: 3.828 GB
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 380.007ms
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 9s141ms
+             - PassThroughBufferPeakMemoryUsage: 37.033 MB
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 702.132us
+             - RpcCount: 8.741K (8741)
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 0
+             - ShuffleChunkAppendTime: 0ns
+             - ShuffleHashTime: 0ns
+             - WaitTime: 446.381ms
+        MULTI_CAST_LOCAL_EXCHANGE_SOURCE (plan_node_id=31):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 203.508ms
+             - OutputChunkBytes: 4.821 GB
+             - PullChunkNum: 9.276K (9276)
+             - PullRowNum: 35.199M (35198770)
+             - PullTotalTime: 161.448ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - SetFinishingTime: 42.058ms
+          UniqueMetrics:
+             - IsSpill: false
+      Pipeline (id=9):
+         - IsGroupExecution: false
+         - ActiveTime: 4s286ms
+         - BlockByInputEmpty: 253
+         - BlockByOutputFull: 8
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 1
+         - DriverTotalTime: 9s799ms
+         - OverheadTime: 215.119ms
+         - PeakDriverQueueSize: 236
+         - PendingTime: 0ns
+           - InputEmptyTime: 1s107ms
+             - FirstInputEmptyTime: 910.191ms
+             - FollowupInputEmptyTime: 197.787ms
+           - OutputFullTime: 178.555ms
+         - ScheduleCount: 298
+         - ScheduleTime: 5s512ms
+         - TotalDegreeOfParallelism: 1
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 43
+        EXCHANGE_SINK (plan_node_id=51):
+          CommonMetrics:
+             - OperatorTotalTime: 3s972ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 10.528K (10528)
+             - PushRowNum: 39.934M (39933567)
+             - PushTotalTime: 3s972ms
+          UniqueMetrics:
+             - ChannelNum: 1
+             - DestFragments: b32190b08a0b11f0-94e000163e341b9a
+             - DestID: 51
+             - PartType: RANDOM
+             - BytesPassThrough: 3.301 GB
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 487.481ms
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 6s645ms
+             - PassThroughBufferPeakMemoryUsage: 27.407 MB
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 709.842us
+             - RpcCount: 9.660K (9660)
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 0
+             - ShuffleChunkAppendTime: 0ns
+             - ShuffleHashTime: 0ns
+             - WaitTime: 2s422ms
+        MULTI_CAST_LOCAL_EXCHANGE_SOURCE (plan_node_id=31):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 98.536ms
+             - OutputChunkBytes: 5.469 GB
+             - PullChunkNum: 10.528K (10528)
+             - PullRowNum: 39.934M (39933567)
+             - PullTotalTime: 98.528ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+             - IsSpill: false
+      Pipeline (id=8):
+         - IsGroupExecution: false
+         - ActiveTime: 4s225ms
+         - BlockByInputEmpty: 164
+         - BlockByOutputFull: 16
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 1
+         - DriverTotalTime: 9s799ms
+         - OverheadTime: 270.134ms
+         - PeakDriverQueueSize: 236
+         - PendingTime: 0ns
+           - InputEmptyTime: 1s95ms
+             - FirstInputEmptyTime: 910.174ms
+             - FollowupInputEmptyTime: 185.574ms
+           - OutputFullTime: 515.191ms
+         - ScheduleCount: 216
+         - ScheduleTime: 5s574ms
+         - TotalDegreeOfParallelism: 1
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 49
+        EXCHANGE_SINK (plan_node_id=45):
+          CommonMetrics:
+             - OperatorTotalTime: 3s877ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 10.528K (10528)
+             - PushRowNum: 39.934M (39933567)
+             - PushTotalTime: 3s877ms
+          UniqueMetrics:
+             - ChannelNum: 1
+             - DestFragments: b32190b08a0b11f0-94e000163e341b9b
+             - DestID: 45
+             - PartType: RANDOM
+             - BytesPassThrough: 3.301 GB
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 423.392ms
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 6s645ms
+             - PassThroughBufferPeakMemoryUsage: 27.021 MB
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 736.471us
+             - RpcCount: 9.660K (9660)
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 0
+             - ShuffleChunkAppendTime: 0ns
+             - ShuffleHashTime: 0ns
+             - WaitTime: 2s759ms
+        MULTI_CAST_LOCAL_EXCHANGE_SOURCE (plan_node_id=31):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 77.312ms
+             - OutputChunkBytes: 5.469 GB
+             - PullChunkNum: 10.528K (10528)
+             - PullRowNum: 39.934M (39933567)
+             - PullTotalTime: 77.309ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+             - IsSpill: false
+      Pipeline (id=7):
+         - IsGroupExecution: false
+         - ActiveTime: 4s515ms
+         - BlockByInputEmpty: 146
+         - BlockByOutputFull: 7
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 1
+         - DriverTotalTime: 9s799ms
+         - OverheadTime: 202.714ms
+         - PeakDriverQueueSize: 242
+         - PendingTime: 0ns
+           - InputEmptyTime: 1s60ms
+             - FirstInputEmptyTime: 910.137ms
+             - FollowupInputEmptyTime: 150.828ms
+           - OutputFullTime: 121.211ms
+         - ScheduleCount: 195
+         - ScheduleTime: 5s284ms
+         - TotalDegreeOfParallelism: 1
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 43
+        EXCHANGE_SINK (plan_node_id=38):
+          CommonMetrics:
+             - OperatorTotalTime: 4s240ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 10.528K (10528)
+             - PushRowNum: 39.934M (39933567)
+             - PushTotalTime: 4s240ms
+          UniqueMetrics:
+             - ChannelNum: 1
+             - DestFragments: b32190b08a0b11f0-94e000163e341b9c
+             - DestID: 38
+             - PartType: RANDOM
+             - BytesPassThrough: 3.990 GB
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 470.885ms
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 6s646ms
+             - PassThroughBufferPeakMemoryUsage: 39.329 MB
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 659.930us
+             - RpcCount: 9.878K (9878)
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 0
+             - ShuffleChunkAppendTime: 0ns
+             - ShuffleHashTime: 0ns
+             - WaitTime: 2s365ms
+        MULTI_CAST_LOCAL_EXCHANGE_SOURCE (plan_node_id=31):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 72.372ms
+             - OutputChunkBytes: 5.469 GB
+             - PullChunkNum: 10.528K (10528)
+             - PullRowNum: 39.934M (39933567)
+             - PullTotalTime: 72.371ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+             - IsSpill: false
+      Pipeline (id=6):
+         - IsGroupExecution: false
+         - ActiveTime: 4s649ms
+         - BlockByInputEmpty: 4
+         - BlockByOutputFull: 10
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 1
+         - DriverTotalTime: 10s10ms
+         - OverheadTime: 123.196ms
+         - PeakDriverQueueSize: 225
+         - PendingTime: 0ns
+           - InputEmptyTime: 938.321ms
+             - FirstInputEmptyTime: 910.115ms
+             - FollowupInputEmptyTime: 28.205ms
+           - OutputFullTime: 205.906ms
+         - ScheduleCount: 56
+         - ScheduleTime: 5s360ms
+         - TotalDegreeOfParallelism: 1
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 42
+        EXCHANGE_SINK (plan_node_id=32):
+          CommonMetrics:
+             - OperatorTotalTime: 4s222ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 9.275K (9275)
+             - PushRowNum: 35.195M (35194674)
+             - PushTotalTime: 4s222ms
+          UniqueMetrics:
+             - ChannelNum: 1
+             - DestFragments: b32190b08a0b11f0-94e000163e341b9d
+             - DestID: 32
+             - PartType: RANDOM
+             - BytesPassThrough: 3.297 GB
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 371.502ms
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 9s100ms
+             - PassThroughBufferPeakMemoryUsage: 29.498 MB
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 698.878us
+             - RpcCount: 8.656K (8656)
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 0
+             - ShuffleChunkAppendTime: 0ns
+             - ShuffleHashTime: 0ns
+             - WaitTime: 206.292ms
+        MULTI_CAST_LOCAL_EXCHANGE_SOURCE (plan_node_id=31):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 303.932ms
+             - OutputChunkBytes: 4.820 GB
+             - PullChunkNum: 9.275K (9275)
+             - PullRowNum: 35.195M (35194674)
+             - PullTotalTime: 303.602ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+             - IsSpill: false
+      Pipeline (id=5):
+         - LocalRfWaitingSet: 3
+         - IsGroupExecution: false
+         - ActiveTime: 1s87ms
+           - __MAX_OF_ActiveTime: 1s134ms
+           - __MIN_OF_ActiveTime: 1s40ms
+         - BlockByInputEmpty: 5
+           - __MAX_OF_BlockByInputEmpty: 1
+           - __MIN_OF_BlockByInputEmpty: 0
+         - BlockByOutputFull: 5.916K (5916)
+           - __MAX_OF_BlockByOutputFull: 720
+           - __MIN_OF_BlockByOutputFull: 145
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 5s178ms
+           - __MAX_OF_DriverTotalTime: 7s555ms
+           - __MIN_OF_DriverTotalTime: 2s666ms
+         - OverheadTime: 45.688ms
+           - __MAX_OF_OverheadTime: 56.566ms
+           - __MIN_OF_OverheadTime: 25.947ms
+         - PeakDriverQueueSize: 3.764K (3764)
+           - __MAX_OF_PeakDriverQueueSize: 241
+           - __MIN_OF_PeakDriverQueueSize: 224
+         - PendingTime: 0ns
+           - OutputFullTime: 981.460ms
+             - __MAX_OF_OutputFullTime: 1s629ms
+             - __MIN_OF_OutputFullTime: 261.269ms
+           - PreconditionBlockTime: 902.426ms
+             - __MAX_OF_PreconditionBlockTime: 902.481ms
+             - __MIN_OF_PreconditionBlockTime: 902.365ms
+         - ScheduleCount: 6.083K (6083)
+           - __MAX_OF_ScheduleCount: 731
+           - __MIN_OF_ScheduleCount: 156
+         - ScheduleTime: 4s91ms
+           - __MAX_OF_ScheduleTime: 6s506ms
+           - __MIN_OF_ScheduleTime: 1s573ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 330
+           - __MAX_OF_YieldByTimeLimit: 36
+           - __MIN_OF_YieldByTimeLimit: 9
+        MULTI_CAST_LOCAL_EXCHANGE_SINK (plan_node_id=31):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 4.891ms
+               - __MAX_OF_OperatorTotalTime: 12.854ms
+               - __MIN_OF_OperatorTotalTime: 3.104ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 10.528K (10528)
+               - __MAX_OF_PushChunkNum: 664
+               - __MIN_OF_PushChunkNum: 652
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 2.503M (2502834)
+               - __MIN_OF_PushRowNum: 2.483M (2482949)
+             - PushTotalTime: 4.889ms
+               - __MAX_OF_PushTotalTime: 12.853ms
+               - __MIN_OF_PushTotalTime: 3.097ms
+          UniqueMetrics:
+             - IsSpill: false
+             - ExchangerPeakBufferRowSize: 7.740M (7739762)
+             - ExchangerPeakMemoryUsage: 1.061 GB
+        PROJECT (plan_node_id=31):
+          CommonMetrics:
+             - OperatorTotalTime: 6.568ms
+               - __MAX_OF_OperatorTotalTime: 6.867ms
+               - __MIN_OF_OperatorTotalTime: 6.247ms
+             - OutputChunkBytes: 5.469 GB
+               - __MAX_OF_OutputChunkBytes: 351.111 MB
+               - __MIN_OF_OutputChunkBytes: 348.168 MB
+             - PullChunkNum: 10.528K (10528)
+               - __MAX_OF_PullChunkNum: 664
+               - __MIN_OF_PullChunkNum: 652
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 2.503M (2502834)
+               - __MIN_OF_PullRowNum: 2.483M (2482949)
+             - PullTotalTime: 157.041us
+               - __MAX_OF_PullTotalTime: 206.528us
+               - __MIN_OF_PullTotalTime: 140.448us
+             - PushChunkNum: 10.528K (10528)
+               - __MAX_OF_PushChunkNum: 664
+               - __MIN_OF_PushChunkNum: 652
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 2.503M (2502834)
+               - __MIN_OF_PushRowNum: 2.483M (2482949)
+             - PushTotalTime: 6.405ms
+               - __MAX_OF_PushTotalTime: 6.656ms
+               - __MIN_OF_PushTotalTime: 6.101ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CommonSubExprComputeTime: 113.681us
+               - __MAX_OF_CommonSubExprComputeTime: 183.835us
+               - __MIN_OF_CommonSubExprComputeTime: 91.759us
+             - ExprComputeTime: 2.153ms
+               - __MAX_OF_ExprComputeTime: 2.279ms
+               - __MIN_OF_ExprComputeTime: 2.002ms
+        CHUNK_ACCUMULATE (plan_node_id=30):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 1.355ms
+               - __MAX_OF_OperatorTotalTime: 1.541ms
+               - __MIN_OF_OperatorTotalTime: 1.177ms
+             - OutputChunkBytes: 5.469 GB
+               - __MAX_OF_OutputChunkBytes: 351.111 MB
+               - __MIN_OF_OutputChunkBytes: 348.168 MB
+             - PullChunkNum: 10.528K (10528)
+               - __MAX_OF_PullChunkNum: 664
+               - __MIN_OF_PullChunkNum: 652
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 2.503M (2502834)
+               - __MIN_OF_PullRowNum: 2.483M (2482949)
+             - PullTotalTime: 124.217us
+               - __MAX_OF_PullTotalTime: 161.993us
+               - __MIN_OF_PullTotalTime: 102.928us
+             - PushChunkNum: 10.528K (10528)
+               - __MAX_OF_PushChunkNum: 664
+               - __MIN_OF_PushChunkNum: 652
+             - PushRowNum: 39.934M (39933567)
+               - __MAX_OF_PushRowNum: 2.503M (2502834)
+               - __MIN_OF_PushRowNum: 2.483M (2482949)
+             - PushTotalTime: 1.230ms
+               - __MAX_OF_PushTotalTime: 1.416ms
+               - __MIN_OF_PushTotalTime: 1.074ms
+          UniqueMetrics:
+        HASH_JOIN_PROBE (plan_node_id=30):
+          CommonMetrics:
+             - OperatorTotalTime: 836.076ms
+               - __MAX_OF_OperatorTotalTime: 879.472ms
+               - __MIN_OF_OperatorTotalTime: 788.979ms
+             - OutputChunkBytes: 5.469 GB
+               - __MAX_OF_OutputChunkBytes: 351.111 MB
+               - __MIN_OF_OutputChunkBytes: 348.168 MB
+             - PullChunkNum: 10.528K (10528)
+               - __MAX_OF_PullChunkNum: 664
+               - __MIN_OF_PullChunkNum: 652
+             - PullRowNum: 39.934M (39933567)
+               - __MAX_OF_PullRowNum: 2.503M (2502834)
+               - __MIN_OF_PullRowNum: 2.483M (2482949)
+             - PullTotalTime: 835.441ms
+               - __MAX_OF_PullTotalTime: 878.882ms
+               - __MIN_OF_PullTotalTime: 788.399ms
+             - PushChunkNum: 2.046K (2046)
+               - __MAX_OF_PushChunkNum: 128
+               - __MIN_OF_PushChunkNum: 127
+             - PushRowNum: 5.534M (5533804)
+               - __MAX_OF_PushRowNum: 346.496K (346496)
+               - __MIN_OF_PushRowNum: 344.729K (344729)
+             - PushTotalTime: 513.886us
+               - __MAX_OF_PushTotalTime: 545.837us
+               - __MIN_OF_PushTotalTime: 482.298us
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: LOCAL_HASH_BUCKET
+             - JoinType: INNER_JOIN
+             - OtherJoinConjunctEvaluateTime: 0ns
+             - OutputBuildColumnTime: 459.618ms
+               - __MAX_OF_OutputBuildColumnTime: 476.410ms
+               - __MIN_OF_OutputBuildColumnTime: 438.827ms
+             - OutputProbeColumnTime: 192.147ms
+               - __MAX_OF_OutputProbeColumnTime: 224.994ms
+               - __MIN_OF_OutputProbeColumnTime: 167.265ms
+             - PartitionProbeOverhead: 0ns
+             - ProbeConjunctEvaluateTime: 374.277us
+               - __MAX_OF_ProbeConjunctEvaluateTime: 425.751us
+               - __MIN_OF_ProbeConjunctEvaluateTime: 341.790us
+             - SearchHashTableTime: 177.322ms
+               - __MAX_OF_SearchHashTableTime: 190.533ms
+               - __MIN_OF_SearchHashTableTime: 164.800ms
+             - WhereConjunctEvaluateTime: 0ns
+             - probeCount: 0
+        PROJECT (plan_node_id=19):
+          CommonMetrics:
+             - OperatorTotalTime: 781.412us
+               - __MAX_OF_OperatorTotalTime: 996.212us
+               - __MIN_OF_OperatorTotalTime: 703.996us
+             - OutputChunkBytes: 506.949 MB
+               - __MAX_OF_OutputChunkBytes: 31.747 MB
+               - __MIN_OF_OutputChunkBytes: 31.574 MB
+             - PullChunkNum: 2.046K (2046)
+               - __MAX_OF_PullChunkNum: 128
+               - __MIN_OF_PullChunkNum: 127
+             - PullRowNum: 5.534M (5533804)
+               - __MAX_OF_PullRowNum: 346.496K (346496)
+               - __MIN_OF_PullRowNum: 344.729K (344729)
+             - PullTotalTime: 23.392us
+               - __MAX_OF_PullTotalTime: 26.310us
+               - __MIN_OF_PullTotalTime: 20.740us
+             - PushChunkNum: 2.046K (2046)
+               - __MAX_OF_PushChunkNum: 128
+               - __MIN_OF_PushChunkNum: 127
+             - PushRowNum: 5.534M (5533804)
+               - __MAX_OF_PushRowNum: 346.496K (346496)
+               - __MIN_OF_PushRowNum: 344.729K (344729)
+             - PushTotalTime: 753.217us
+               - __MAX_OF_PushTotalTime: 968.707us
+               - __MIN_OF_PushTotalTime: 672.997us
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CommonSubExprComputeTime: 44.329us
+               - __MAX_OF_CommonSubExprComputeTime: 63.517us
+               - __MIN_OF_CommonSubExprComputeTime: 29.833us
+             - ExprComputeTime: 360.402us
+               - __MAX_OF_ExprComputeTime: 534.786us
+               - __MIN_OF_ExprComputeTime: 321.188us
+        CHUNK_ACCUMULATE (plan_node_id=18):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 295.998us
+               - __MAX_OF_OperatorTotalTime: 515.428us
+               - __MIN_OF_OperatorTotalTime: 246.271us
+             - OutputChunkBytes: 506.949 MB
+               - __MAX_OF_OutputChunkBytes: 31.747 MB
+               - __MIN_OF_OutputChunkBytes: 31.574 MB
+             - PullChunkNum: 2.046K (2046)
+               - __MAX_OF_PullChunkNum: 128
+               - __MIN_OF_PullChunkNum: 127
+             - PullRowNum: 5.534M (5533804)
+               - __MAX_OF_PullRowNum: 346.496K (346496)
+               - __MIN_OF_PullRowNum: 344.729K (344729)
+             - PullTotalTime: 21.106us
+               - __MAX_OF_PullTotalTime: 26.190us
+               - __MIN_OF_PullTotalTime: 19.151us
+             - PushChunkNum: 2.048K (2048)
+               - __MAX_OF_PushChunkNum: 128
+               - __MIN_OF_PushChunkNum: 128
+             - PushRowNum: 5.534M (5533804)
+               - __MAX_OF_PushRowNum: 346.496K (346496)
+               - __MIN_OF_PushRowNum: 344.729K (344729)
+             - PushTotalTime: 272.650us
+               - __MAX_OF_PushTotalTime: 488.410us
+               - __MIN_OF_PushTotalTime: 225us
+          UniqueMetrics:
+        HASH_JOIN_PROBE (plan_node_id=18):
+          CommonMetrics:
+             - OperatorTotalTime: 132.321ms
+               - __MAX_OF_OperatorTotalTime: 153.206ms
+               - __MIN_OF_OperatorTotalTime: 127.717ms
+             - OutputChunkBytes: 506.949 MB
+               - __MAX_OF_OutputChunkBytes: 31.747 MB
+               - __MIN_OF_OutputChunkBytes: 31.574 MB
+             - PullChunkNum: 2.048K (2048)
+               - __MAX_OF_PullChunkNum: 128
+               - __MIN_OF_PullChunkNum: 128
+             - PullRowNum: 5.534M (5533804)
+               - __MAX_OF_PullRowNum: 346.496K (346496)
+               - __MIN_OF_PullRowNum: 344.729K (344729)
+             - PullTotalTime: 131.573ms
+               - __MAX_OF_PullTotalTime: 152.467ms
+               - __MIN_OF_PullTotalTime: 127.006ms
+             - PushChunkNum: 2.048K (2048)
+               - __MAX_OF_PushChunkNum: 128
+               - __MIN_OF_PushChunkNum: 128
+             - PushRowNum: 6.374M (6374200)
+               - __MAX_OF_PushRowNum: 399.229K (399229)
+               - __MIN_OF_PushRowNum: 397.501K (397501)
+             - PushTotalTime: 722.669us
+               - __MAX_OF_PushTotalTime: 902.628us
+               - __MIN_OF_PushTotalTime: 668.847us
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: BROADCAST
+             - JoinType: INNER_JOIN
+             - OtherJoinConjunctEvaluateTime: 0ns
+             - OutputBuildColumnTime: 65.465ms
+               - __MAX_OF_OutputBuildColumnTime: 74.231ms
+               - __MIN_OF_OutputBuildColumnTime: 63.371ms
+             - OutputProbeColumnTime: 11.826ms
+               - __MAX_OF_OutputProbeColumnTime: 12.272ms
+               - __MIN_OF_OutputProbeColumnTime: 10.939ms
+             - PartitionProbeOverhead: 0ns
+             - ProbeConjunctEvaluateTime: 0ns
+             - SearchHashTableTime: 53.316ms
+               - __MAX_OF_SearchHashTableTime: 70.896ms
+               - __MIN_OF_SearchHashTableTime: 50.440ms
+             - WhereConjunctEvaluateTime: 0ns
+             - probeCount: 0
+        PROJECT (plan_node_id=5):
+          CommonMetrics:
+             - OperatorTotalTime: 711.274us
+               - __MAX_OF_OperatorTotalTime: 949.689us
+               - __MIN_OF_OperatorTotalTime: 635.478us
+             - OutputChunkBytes: 402.744 MB
+               - __MAX_OF_OutputChunkBytes: 25.234 MB
+               - __MIN_OF_OutputChunkBytes: 25.116 MB
+             - PullChunkNum: 2.048K (2048)
+               - __MAX_OF_PullChunkNum: 128
+               - __MIN_OF_PullChunkNum: 128
+             - PullRowNum: 6.374M (6374200)
+               - __MAX_OF_PullRowNum: 399.229K (399229)
+               - __MIN_OF_PullRowNum: 397.501K (397501)
+             - PullTotalTime: 25.302us
+               - __MAX_OF_PullTotalTime: 28.963us
+               - __MIN_OF_PullTotalTime: 21.633us
+             - PushChunkNum: 2.048K (2048)
+               - __MAX_OF_PushChunkNum: 128
+               - __MIN_OF_PushChunkNum: 128
+             - PushRowNum: 6.374M (6374200)
+               - __MAX_OF_PushRowNum: 399.229K (399229)
+               - __MIN_OF_PushRowNum: 397.501K (397501)
+             - PushTotalTime: 680.948us
+               - __MAX_OF_PushTotalTime: 917.340us
+               - __MIN_OF_PushTotalTime: 604.932us
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CommonSubExprComputeTime: 24.699us
+               - __MAX_OF_CommonSubExprComputeTime: 31.407us
+               - __MIN_OF_CommonSubExprComputeTime: 19.715us
+             - ExprComputeTime: 329.917us
+               - __MAX_OF_ExprComputeTime: 406.794us
+               - __MIN_OF_ExprComputeTime: 296.452us
+        CHUNK_ACCUMULATE (plan_node_id=4):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 226.540us
+               - __MAX_OF_OperatorTotalTime: 304.685us
+               - __MIN_OF_OperatorTotalTime: 165.102us
+             - OutputChunkBytes: 402.744 MB
+               - __MAX_OF_OutputChunkBytes: 25.234 MB
+               - __MIN_OF_OutputChunkBytes: 25.116 MB
+             - PullChunkNum: 2.048K (2048)
+               - __MAX_OF_PullChunkNum: 128
+               - __MIN_OF_PullChunkNum: 128
+             - PullRowNum: 6.374M (6374200)
+               - __MAX_OF_PullRowNum: 399.229K (399229)
+               - __MIN_OF_PullRowNum: 397.501K (397501)
+             - PullTotalTime: 22.823us
+               - __MAX_OF_PullTotalTime: 34.897us
+               - __MIN_OF_PullTotalTime: 19.147us
+             - PushChunkNum: 2.052K (2052)
+               - __MAX_OF_PushChunkNum: 129
+               - __MIN_OF_PushChunkNum: 128
+             - PushRowNum: 6.374M (6374200)
+               - __MAX_OF_PushRowNum: 399.229K (399229)
+               - __MIN_OF_PushRowNum: 397.501K (397501)
+             - PushTotalTime: 202.735us
+               - __MAX_OF_PushTotalTime: 284.103us
+               - __MIN_OF_PushTotalTime: 142.573us
+          UniqueMetrics:
+        HASH_JOIN_PROBE (plan_node_id=4):
+          CommonMetrics:
+             - OperatorTotalTime: 53.425ms
+               - __MAX_OF_OperatorTotalTime: 56.289ms
+               - __MIN_OF_OperatorTotalTime: 50.222ms
+             - OutputChunkBytes: 402.744 MB
+               - __MAX_OF_OutputChunkBytes: 25.234 MB
+               - __MIN_OF_OutputChunkBytes: 25.116 MB
+             - PullChunkNum: 2.052K (2052)
+               - __MAX_OF_PullChunkNum: 129
+               - __MIN_OF_PullChunkNum: 128
+             - PullRowNum: 6.374M (6374200)
+               - __MAX_OF_PullRowNum: 399.229K (399229)
+               - __MIN_OF_PullRowNum: 397.501K (397501)
+             - PullTotalTime: 42.872ms
+               - __MAX_OF_PullTotalTime: 46.016ms
+               - __MIN_OF_PullTotalTime: 40.167ms
+             - PushChunkNum: 1.984K (1984)
+               - __MAX_OF_PushChunkNum: 124
+               - __MIN_OF_PushChunkNum: 124
+             - PushRowNum: 7.918M (7918218)
+               - __MAX_OF_PushRowNum: 495.074K (495074)
+               - __MIN_OF_PushRowNum: 494.697K (494697)
+             - PushTotalTime: 10.142ms
+               - __MAX_OF_PushTotalTime: 11.727ms
+               - __MIN_OF_PushTotalTime: 8.984ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: LOCAL_HASH_BUCKET
+             - JoinType: INNER_JOIN
+             - OtherJoinConjunctEvaluateTime: 0ns
+             - OutputBuildColumnTime: 21.728ms
+               - __MAX_OF_OutputBuildColumnTime: 24.663ms
+               - __MIN_OF_OutputBuildColumnTime: 19.525ms
+             - OutputProbeColumnTime: 1.457ms
+               - __MAX_OF_OutputProbeColumnTime: 1.796ms
+               - __MIN_OF_OutputProbeColumnTime: 1.276ms
+             - PartitionProbeOverhead: 10.120ms
+               - __MAX_OF_PartitionProbeOverhead: 11.699ms
+               - __MIN_OF_PartitionProbeOverhead: 8.965ms
+             - ProbeConjunctEvaluateTime: 429.407us
+               - __MAX_OF_ProbeConjunctEvaluateTime: 502.854us
+               - __MIN_OF_ProbeConjunctEvaluateTime: 387.204us
+             - SearchHashTableTime: 17.856ms
+               - __MAX_OF_SearchHashTableTime: 18.757ms
+               - __MIN_OF_SearchHashTableTime: 17.319ms
+             - WhereConjunctEvaluateTime: 0ns
+             - probeCount: 0
+        CHUNK_ACCUMULATE (plan_node_id=0):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 87.735us
+               - __MAX_OF_OperatorTotalTime: 105.291us
+               - __MIN_OF_OperatorTotalTime: 76.742us
+             - OutputChunkBytes: 75.514 MB
+               - __MAX_OF_OutputChunkBytes: 4.721 MB
+               - __MIN_OF_OutputChunkBytes: 4.718 MB
+             - PullChunkNum: 1.984K (1984)
+               - __MAX_OF_PullChunkNum: 124
+               - __MIN_OF_PullChunkNum: 124
+             - PullRowNum: 7.918M (7918218)
+               - __MAX_OF_PullRowNum: 495.074K (495074)
+               - __MIN_OF_PullRowNum: 494.697K (494697)
+             - PullTotalTime: 17.111us
+               - __MAX_OF_PullTotalTime: 20.528us
+               - __MIN_OF_PullTotalTime: 15.684us
+             - PushChunkNum: 1.984K (1984)
+               - __MAX_OF_PushChunkNum: 124
+               - __MIN_OF_PushChunkNum: 124
+             - PushRowNum: 7.918M (7918218)
+               - __MAX_OF_PushRowNum: 495.074K (495074)
+               - __MIN_OF_PushRowNum: 494.697K (494697)
+             - PushTotalTime: 69.526us
+               - __MAX_OF_PushTotalTime: 86.514us
+               - __MIN_OF_PushTotalTime: 59.125us
+          UniqueMetrics:
+        OLAP_SCAN (plan_node_id=0):
+          CommonMetrics:
+             - RuntimeFilterDesc: <0: BloomFilter> <3: BitsetFilter> 
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 7.918M (7918218)
+               - __MAX_OF_JoinRuntimeFilterInputRows: 495.074K (495074)
+               - __MIN_OF_JoinRuntimeFilterInputRows: 494.697K (494697)
+             - JoinRuntimeFilterOutputRows: 7.918M (7918218)
+               - __MAX_OF_JoinRuntimeFilterOutputRows: 495.074K (495074)
+               - __MIN_OF_JoinRuntimeFilterOutputRows: 494.697K (494697)
+             - JoinRuntimeFilterTime: 37.607us
+               - __MAX_OF_JoinRuntimeFilterTime: 51.417us
+               - __MIN_OF_JoinRuntimeFilterTime: 24.676us
+             - OperatorTotalTime: 4.739ms
+               - __MAX_OF_OperatorTotalTime: 7.629ms
+               - __MIN_OF_OperatorTotalTime: 2.124ms
+             - OutputChunkBytes: 75.514 MB
+               - __MAX_OF_OutputChunkBytes: 4.721 MB
+               - __MIN_OF_OutputChunkBytes: 4.718 MB
+             - PullChunkNum: 1.984K (1984)
+               - __MAX_OF_PullChunkNum: 124
+               - __MIN_OF_PullChunkNum: 124
+             - PullRowNum: 7.918M (7918218)
+               - __MAX_OF_PullRowNum: 495.074K (495074)
+               - __MIN_OF_PullRowNum: 494.697K (494697)
+             - PullTotalTime: 4.111ms
+               - __MAX_OF_PullTotalTime: 6.973ms
+               - __MIN_OF_PullTotalTime: 1.577ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 2
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - MorselQueueType: fixed_morsel_queue
+             - Predicates: 10: ps_partkey IS NOT NULL
+             - Rollup: partsupp
+             - SharedScan: False
+             - Table: partsupp
+             - AccessPathHits: 0
+             - AccessPathUnhits: 0
+             - BytesRead: 76.294 MB
+               - __MAX_OF_BytesRead: 1.192 MB
+               - __MIN_OF_BytesRead: 1.192 MB
+             - CachedPagesNum: 1.024K (1024)
+               - __MAX_OF_CachedPagesNum: 16
+               - __MIN_OF_CachedPagesNum: 16
+             - ChunkBufferCapacity: 1.024K (1024)
+             - CompressedBytesRead: 0.000 B
+             - DefaultChunkBufferCapacity: 1.024K (1024)
+             - IOTaskExecTime: 1.697ms
+               - __MAX_OF_IOTaskExecTime: 2.855ms
+               - __MIN_OF_IOTaskExecTime: 1.339ms
+               - CreateSegmentIter: 36.041us
+                 - __MAX_OF_CreateSegmentIter: 51.071us
+                 - __MIN_OF_CreateSegmentIter: 23.715us
+               - GetDelVec: 0ns
+               - GetDeltaColumnGroup: 2.680us
+                 - __MAX_OF_GetDeltaColumnGroup: 14.171us
+                 - __MIN_OF_GetDeltaColumnGroup: 1.024us
+               - GetRowsets: 3.809us
+                 - __MAX_OF_GetRowsets: 7.798us
+                 - __MIN_OF_GetRowsets: 2.487us
+               - IOTime: 0ns
+               - ReadPKIndex: 0ns
+               - SegmentInit: 105.675us
+                 - __MAX_OF_SegmentInit: 142.162us
+                 - __MIN_OF_SegmentInit: 76.125us
+                 - BitmapIndexFilter: 0ns
+                 - BitmapIndexFilterRows: 0
+                 - BitmapIndexIteratorInit: 6.134us
+                   - __MAX_OF_BitmapIndexIteratorInit: 9.847us
+                   - __MIN_OF_BitmapIndexIteratorInit: 4.213us
+                 - BloomFilterFilter: 780ns
+                   - __MAX_OF_BloomFilterFilter: 1.360us
+                   - __MIN_OF_BloomFilterFilter: 490ns
+                 - BloomFilterFilterRows: 0
+                 - ColumnIteratorInit: 35.014us
+                   - __MAX_OF_ColumnIteratorInit: 52.078us
+                   - __MIN_OF_ColumnIteratorInit: 20.385us
+                 - GetVectorRowRangesTime: 0ns
+                 - GinFilter: 0ns
+                 - GinFilterRows: 0
+                 - ProcessVectorDistanceAndIdTime: 0ns
+                 - RemainingRowsAfterShortKeyFilter: 8.000M (8000000)
+                   - __MAX_OF_RemainingRowsAfterShortKeyFilter: 125.004K (125004)
+                   - __MIN_OF_RemainingRowsAfterShortKeyFilter: 124.996K (124996)
+                 - SegmentRuntimeZoneMapFilterRows: 0
+                 - SegmentZoneMapFilterRows: 0
+                 - ShortKeyFilter: 818ns
+                   - __MAX_OF_ShortKeyFilter: 2.298us
+                   - __MIN_OF_ShortKeyFilter: 372ns
+                 - ShortKeyFilterRows: 0
+                 - ShortKeyRangeNumber: 0
+                 - VectorIndexFilterRows: 0
+                 - VectorSearchTime: 0ns
+                 - ZoneMapIndexFilterRows: 0
+                 - ZoneMapIndexFiter: 20.566us
+                   - __MAX_OF_ZoneMapIndexFiter: 34.573us
+                   - __MIN_OF_ZoneMapIndexFiter: 13.675us
+               - SegmentRead: 1.152ms
+                 - __MAX_OF_SegmentRead: 2.167ms
+                 - __MIN_OF_SegmentRead: 942.091us
+                 - BlockFetch: 605.045us
+                   - __MAX_OF_BlockFetch: 1.574ms
+                   - __MIN_OF_BlockFetch: 483.399us
+                 - BlockFetchCount: 2.048K (2048)
+                   - __MAX_OF_BlockFetchCount: 32
+                   - __MIN_OF_BlockFetchCount: 32
+                 - BlockSeek: 10.327us
+                   - __MAX_OF_BlockSeek: 20.144us
+                   - __MIN_OF_BlockSeek: 7.068us
+                 - BlockSeekCount: 960
+                   - __MAX_OF_BlockSeekCount: 15
+                   - __MIN_OF_BlockSeekCount: 15
+                 - ChunkCopy: 14.458us
+                   - __MAX_OF_ChunkCopy: 35.933us
+                   - __MIN_OF_ChunkCopy: 9.857us
+                 - DecompressT: 0ns
+                 - DelVecFilterRows: 0
+                 - PredFilter: 317.615us
+                   - __MAX_OF_PredFilter: 372.077us
+                   - __MIN_OF_PredFilter: 213.408us
+                 - PredFilterRows: 81.782K (81782)
+                   - __MAX_OF_PredFilterRows: 1.410K (1410)
+                   - __MIN_OF_PredFilterRows: 1.162K (1162)
+                 - RowsetsReadCount: 128
+                   - __MAX_OF_RowsetsReadCount: 2
+                   - __MIN_OF_RowsetsReadCount: 2
+                 - SegmentsReadCount: 64
+                   - __MAX_OF_SegmentsReadCount: 1
+                   - __MIN_OF_SegmentsReadCount: 1
+                 - TotalColumnsDataPageCount: 1.024K (1024)
+                   - __MAX_OF_TotalColumnsDataPageCount: 16
+                   - __MIN_OF_TotalColumnsDataPageCount: 16
+             - IOTaskWaitTime: 674.189us
+               - __MAX_OF_IOTaskWaitTime: 2.519ms
+               - __MIN_OF_IOTaskWaitTime: 44.056us
+             - MorselsCount: 64
+               - __MAX_OF_MorselsCount: 4
+               - __MIN_OF_MorselsCount: 4
+             - PeakChunkBufferMemoryUsage: 40.002 MB
+             - PeakChunkBufferSize: 111
+             - PeakIOTasks: 2
+               - __MAX_OF_PeakIOTasks: 4
+               - __MIN_OF_PeakIOTasks: 1
+             - PeakScanTaskQueueSize: 123
+               - __MAX_OF_PeakScanTaskQueueSize: 13
+               - __MIN_OF_PeakScanTaskQueueSize: 3
+             - PrepareChunkSourceTime: 1.044ms
+               - __MAX_OF_PrepareChunkSourceTime: 2.779ms
+               - __MIN_OF_PrepareChunkSourceTime: 699.947us
+             - PushdownAccessPaths: 0
+             - PushdownPredicates: 8
+             - RawRowsRead: 8.000M (8000000)
+               - __MAX_OF_RawRowsRead: 125.004K (125004)
+               - __MIN_OF_RawRowsRead: 124.996K (124996)
+             - ReadPagesNum: 1.024K (1024)
+               - __MAX_OF_ReadPagesNum: 16
+               - __MIN_OF_ReadPagesNum: 16
+             - RowsRead: 7.918M (7918218)
+               - __MAX_OF_RowsRead: 123.838K (123838)
+               - __MIN_OF_RowsRead: 123.590K (123590)
+             - RuntimeFilterEvalTime: 167.523us
+               - __MAX_OF_RuntimeFilterEvalTime: 247.039us
+               - __MIN_OF_RuntimeFilterEvalTime: 91.927us
+             - RuntimeFilterInputRows: 8.000M (8000000)
+               - __MAX_OF_RuntimeFilterInputRows: 125.004K (125004)
+               - __MIN_OF_RuntimeFilterInputRows: 124.996K (124996)
+             - RuntimeFilterOutputRows: 7.918M (7918218)
+               - __MAX_OF_RuntimeFilterOutputRows: 123.838K (123838)
+               - __MIN_OF_RuntimeFilterOutputRows: 123.590K (123590)
+             - ScanTime: 2.371ms
+               - __MAX_OF_ScanTime: 4.611ms
+               - __MIN_OF_ScanTime: 1.427ms
+             - SubmitTaskCount: 99
+               - __MAX_OF_SubmitTaskCount: 10
+               - __MIN_OF_SubmitTaskCount: 4
+             - SubmitTaskTime: 2.473ms
+               - __MAX_OF_SubmitTaskTime: 5.424ms
+               - __MIN_OF_SubmitTaskTime: 82.294us
+             - TabletCount: 64
+             - UncompressedBytesRead: 0.000 B
+      Pipeline (id=4):
+         - LocalRfWaitingSet: 2
+         - IsGroupExecution: false
+         - ActiveTime: 76.833us
+           - __MAX_OF_ActiveTime: 327.029us
+           - __MIN_OF_ActiveTime: 18.947us
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 902.700ms
+           - __MAX_OF_DriverTotalTime: 902.886ms
+           - __MIN_OF_DriverTotalTime: 902.535ms
+         - PeakDriverQueueSize: 92
+           - __MAX_OF_PeakDriverQueueSize: 13
+           - __MIN_OF_PeakDriverQueueSize: 0
+         - PendingTime: 0ns
+           - PreconditionBlockTime: 902.366ms
+             - __MAX_OF_PreconditionBlockTime: 902.401ms
+             - __MIN_OF_PreconditionBlockTime: 902.248ms
+         - ScheduleCount: 16
+           - __MAX_OF_ScheduleCount: 1
+           - __MIN_OF_ScheduleCount: 1
+         - ScheduleTime: 902.623ms
+           - __MAX_OF_ScheduleTime: 902.868ms
+           - __MIN_OF_ScheduleTime: 902.300ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        NOOP_SINK (plan_node_id=0):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 390ns
+               - __MAX_OF_OperatorTotalTime: 652ns
+               - __MIN_OF_OperatorTotalTime: 286ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+        OLAP_SCAN_PREPARE (plan_node_id=0):
+          CommonMetrics:
+             - IsSubordinate
+             - RuntimeFilterDesc: <0: BloomFilter> <3: BitsetFilter> 
+             - OperatorTotalTime: 79.687us
+               - __MAX_OF_OperatorTotalTime: 330.408us
+               - __MIN_OF_OperatorTotalTime: 22.872us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 69.666us
+               - __MAX_OF_PullTotalTime: 321.639us
+               - __MIN_OF_PullTotalTime: 15.978us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 2
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CaptureTabletRowsetsTime: 11.629us
+               - __MAX_OF_CaptureTabletRowsetsTime: 22.010us
+               - __MIN_OF_CaptureTabletRowsetsTime: 8.844us
+      Pipeline (id=3):
+         - LocalRfWaitingSet: 1
+         - IsGroupExecution: false
+         - ActiveTime: 17.973ms
+           - __MAX_OF_ActiveTime: 33.527ms
+           - __MIN_OF_ActiveTime: 14.821ms
+         - BlockByInputEmpty: 15
+           - __MAX_OF_BlockByInputEmpty: 2
+           - __MIN_OF_BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 889.125ms
+           - __MAX_OF_DriverTotalTime: 902.771ms
+           - __MIN_OF_DriverTotalTime: 887.543ms
+         - PeakDriverQueueSize: 67
+           - __MAX_OF_PeakDriverQueueSize: 10
+           - __MIN_OF_PeakDriverQueueSize: 0
+         - PendingTime: 0ns
+           - InputEmptyTime: 1.902ms
+             - __MAX_OF_InputEmptyTime: 3.648ms
+             - __MIN_OF_InputEmptyTime: 0ns
+             - FirstInputEmptyTime: 1.882ms
+               - __MAX_OF_FirstInputEmptyTime: 3.648ms
+               - __MIN_OF_FirstInputEmptyTime: 0ns
+           - PreconditionBlockTime: 868.967ms
+             - __MAX_OF_PreconditionBlockTime: 869.147ms
+             - __MIN_OF_PreconditionBlockTime: 868.775ms
+         - ScheduleCount: 31
+           - __MAX_OF_ScheduleCount: 3
+           - __MIN_OF_ScheduleCount: 1
+         - ScheduleTime: 871.152ms
+           - __MAX_OF_ScheduleTime: 873.074ms
+           - __MIN_OF_ScheduleTime: 868.866ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        HASH_JOIN_BUILD (plan_node_id=4):
+          CommonMetrics:
+             - OperatorTotalTime: 16.849ms
+               - __MAX_OF_OperatorTotalTime: 32.202ms
+               - __MIN_OF_OperatorTotalTime: 13.844ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 511
+               - __MAX_OF_PushChunkNum: 32
+               - __MIN_OF_PushChunkNum: 31
+             - PushRowNum: 1.601M (1600591)
+               - __MAX_OF_PushRowNum: 100.225K (100225)
+               - __MIN_OF_PushRowNum: 99.813K (99813)
+             - PushTotalTime: 14.758ms
+               - __MAX_OF_PushTotalTime: 17.340ms
+               - __MIN_OF_PushTotalTime: 12.839ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+             - SetFinishingTime: 2.081ms
+               - __MAX_OF_SetFinishingTime: 14.850ms
+               - __MIN_OF_SetFinishingTime: 939.222us
+          UniqueMetrics:
+             - DistributionMode: LOCAL_HASH_BUCKET
+             - JoinPredicates: 10: ps_partkey = 1: p_partkey
+             - JoinType: INNER_JOIN
+             - BuildBuckets: 2.097M (2097152)
+               - __MAX_OF_BuildBuckets: 131.072K (131072)
+               - __MIN_OF_BuildBuckets: 131.072K (131072)
+             - BuildConjunctEvaluateTime: 457.371us
+               - __MAX_OF_BuildConjunctEvaluateTime: 568.793us
+               - __MIN_OF_BuildConjunctEvaluateTime: 369.484us
+             - BuildHashTableTime: 1.206ms
+               - __MAX_OF_BuildHashTableTime: 1.492ms
+               - __MIN_OF_BuildHashTableTime: 922.641us
+             - BuildKeysPerBucket%: 2.288K (2288)
+               - __MAX_OF_BuildKeysPerBucket%: 143
+               - __MIN_OF_BuildKeysPerBucket%: 143
+             - CopyRightTableChunkTime: 5.562ms
+               - __MAX_OF_CopyRightTableChunkTime: 6.677ms
+               - __MIN_OF_CopyRightTableChunkTime: 4.844ms
+             - HashTableMemoryUsage: 152.617 MB
+               - __MAX_OF_HashTableMemoryUsage: 10.677 MB
+               - __MIN_OF_HashTableMemoryUsage: 8.252 MB
+             - PartialRuntimeMembershipFilterBytes: 2.000 MB
+               - __MAX_OF_PartialRuntimeMembershipFilterBytes: 2.000 MB
+               - __MIN_OF_PartialRuntimeMembershipFilterBytes: 0.000 B
+             - PartitionNums: 256
+               - __MAX_OF_PartitionNums: 16
+               - __MIN_OF_PartitionNums: 16
+             - RuntimeFilterBuildTime: 852.659us
+               - __MAX_OF_RuntimeFilterBuildTime: 13.416ms
+               - __MIN_OF_RuntimeFilterBuildTime: 11.649us
+             - RuntimeFilterNum: 0
+        CHUNK_ACCUMULATE (plan_node_id=3):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 25.015us
+               - __MAX_OF_OperatorTotalTime: 29.028us
+               - __MIN_OF_OperatorTotalTime: 20.633us
+             - OutputChunkBytes: 93.499 MB
+               - __MAX_OF_OutputChunkBytes: 5.857 MB
+               - __MIN_OF_OutputChunkBytes: 5.831 MB
+             - PullChunkNum: 511
+               - __MAX_OF_PullChunkNum: 32
+               - __MIN_OF_PullChunkNum: 31
+             - PullRowNum: 1.601M (1600591)
+               - __MAX_OF_PullRowNum: 100.225K (100225)
+               - __MIN_OF_PullRowNum: 99.813K (99813)
+             - PullTotalTime: 4.299us
+               - __MAX_OF_PullTotalTime: 4.741us
+               - __MIN_OF_PullTotalTime: 3.714us
+             - PushChunkNum: 511
+               - __MAX_OF_PushChunkNum: 32
+               - __MIN_OF_PushChunkNum: 31
+             - PushRowNum: 1.601M (1600591)
+               - __MAX_OF_PushRowNum: 100.225K (100225)
+               - __MIN_OF_PushRowNum: 99.813K (99813)
+             - PushTotalTime: 19.987us
+               - __MAX_OF_PushTotalTime: 23.705us
+               - __MIN_OF_PushTotalTime: 15.150us
+          UniqueMetrics:
+        EXCHANGE_SOURCE (plan_node_id=3):
+          CommonMetrics:
+             - RuntimeFilterDesc: <6: BloomFilter> 
+             - ConjunctsInputRows: 1.601M (1600591)
+               - __MAX_OF_ConjunctsInputRows: 100.225K (100225)
+               - __MIN_OF_ConjunctsInputRows: 99.813K (99813)
+             - ConjunctsOutputRows: 1.601M (1600591)
+               - __MAX_OF_ConjunctsOutputRows: 100.225K (100225)
+               - __MIN_OF_ConjunctsOutputRows: 99.813K (99813)
+             - ConjunctsTime: 56.491us
+               - __MAX_OF_ConjunctsTime: 60.271us
+               - __MIN_OF_ConjunctsTime: 52.233us
+             - JoinRuntimeFilterEvaluate: 16
+               - __MAX_OF_JoinRuntimeFilterEvaluate: 1
+               - __MIN_OF_JoinRuntimeFilterEvaluate: 1
+             - JoinRuntimeFilterHashTime: 306ns
+               - __MAX_OF_JoinRuntimeFilterHashTime: 844ns
+               - __MIN_OF_JoinRuntimeFilterHashTime: 83ns
+             - JoinRuntimeFilterInputRows: 1.601M (1600591)
+               - __MAX_OF_JoinRuntimeFilterInputRows: 100.225K (100225)
+               - __MIN_OF_JoinRuntimeFilterInputRows: 99.813K (99813)
+             - JoinRuntimeFilterOutputRows: 1.601M (1600591)
+               - __MAX_OF_JoinRuntimeFilterOutputRows: 100.225K (100225)
+               - __MIN_OF_JoinRuntimeFilterOutputRows: 99.813K (99813)
+             - JoinRuntimeFilterTime: 123.662us
+               - __MAX_OF_JoinRuntimeFilterTime: 214.828us
+               - __MIN_OF_JoinRuntimeFilterTime: 62.320us
+             - OperatorTotalTime: 646.936us
+               - __MAX_OF_OperatorTotalTime: 883.841us
+               - __MIN_OF_OperatorTotalTime: 443.763us
+             - OutputChunkBytes: 93.499 MB
+               - __MAX_OF_OutputChunkBytes: 5.857 MB
+               - __MIN_OF_OutputChunkBytes: 5.831 MB
+             - PullChunkNum: 511
+               - __MAX_OF_PullChunkNum: 32
+               - __MIN_OF_PullChunkNum: 31
+             - PullRowNum: 1.601M (1600591)
+               - __MAX_OF_PullRowNum: 100.225K (100225)
+               - __MIN_OF_PullRowNum: 99.813K (99813)
+             - PullTotalTime: 623.253us
+               - __MAX_OF_PullTotalTime: 872.119us
+               - __MIN_OF_PullTotalTime: 433.923us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 1
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 14
+               - __MAX_OF_BufferUnplugCount: 1
+               - __MIN_OF_BufferUnplugCount: 0
+             - BytesPassThrough: 93.523 MB
+               - __MAX_OF_BytesPassThrough: 26.684 MB
+               - __MIN_OF_BytesPassThrough: 1.911 MB
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 128
+               - __MAX_OF_ClosureBlockCount: 11
+               - __MIN_OF_ClosureBlockCount: 5
+             - ClosureBlockTime: 3s452ms
+               - __MAX_OF_ClosureBlockTime: 6s49ms
+               - __MIN_OF_ClosureBlockTime: 867.838ms
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 68.019 MB
+               - __MAX_OF_PeakBufferMemoryBytes: 25.536 MB
+               - __MIN_OF_PeakBufferMemoryBytes: 590.888 KB
+             - ReceiverProcessTotalTime: 128.809us
+               - __MAX_OF_ReceiverProcessTotalTime: 191.483us
+               - __MIN_OF_ReceiverProcessTotalTime: 64.780us
+             - RequestReceived: 248
+               - __MAX_OF_RequestReceived: 16
+               - __MIN_OF_RequestReceived: 15
+             - WaitLockTime: 0ns
+      Pipeline (id=2):
+         - LocalRfWaitingSet: 1
+         - IsGroupExecution: false
+         - ActiveTime: 4.326ms
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 1
+         - DriverTotalTime: 873.117ms
+         - PeakDriverQueueSize: 0
+         - PendingTime: 0ns
+           - PreconditionBlockTime: 868.718ms
+         - ScheduleCount: 1
+         - ScheduleTime: 868.790ms
+         - TotalDegreeOfParallelism: 1
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        HASH_JOIN_BUILD (plan_node_id=18):
+          CommonMetrics:
+             - OperatorTotalTime: 3.862ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 32
+             - PushRowNum: 86.435K (86435)
+             - PushTotalTime: 2.385ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+             - SetFinishingTime: 1.463ms
+          UniqueMetrics:
+             - DistributionMode: BROADCAST
+             - JoinPredicates: 11: ps_suppkey = 15: s_suppkey
+             - JoinType: INNER_JOIN
+             - BuildBuckets: 131.072K (131072)
+             - BuildConjunctEvaluateTime: 96.895us
+             - BuildHashTableTime: 815.954us
+             - BuildKeysPerBucket%: 138
+             - CopyRightTableChunkTime: 2.269ms
+             - HashTableMemoryUsage: 4.723 MB
+             - PartialRuntimeMembershipFilterBytes: 12.223 KB
+             - PartitionNums: 1
+             - RuntimeFilterBuildTime: 596.543us
+             - RuntimeFilterNum: 0
+        LOCAL_EXCHANGE_SOURCE (plan_node_id=18):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 118.118us
+             - OutputChunkBytes: 3.281 MB
+             - PullChunkNum: 32
+             - PullRowNum: 86.435K (86435)
+             - PullTotalTime: 106.501us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+      Pipeline (id=1):
+         - IsGroupExecution: false
+         - ActiveTime: 37.384us
+           - __MAX_OF_ActiveTime: 178.084us
+           - __MIN_OF_ActiveTime: 7.515us
+         - BlockByInputEmpty: 16
+           - __MAX_OF_BlockByInputEmpty: 1
+           - __MIN_OF_BlockByInputEmpty: 1
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 55.698ms
+           - __MAX_OF_DriverTotalTime: 55.811ms
+           - __MIN_OF_DriverTotalTime: 55.646ms
+         - PeakDriverQueueSize: 99
+           - __MAX_OF_PeakDriverQueueSize: 12
+           - __MIN_OF_PeakDriverQueueSize: 0
+         - PendingTime: 0ns
+           - InputEmptyTime: 55.356ms
+             - __MAX_OF_InputEmptyTime: 55.402ms
+             - __MIN_OF_InputEmptyTime: 55.264ms
+             - FirstInputEmptyTime: 49.244ms
+               - __MAX_OF_FirstInputEmptyTime: 49.269ms
+               - __MIN_OF_FirstInputEmptyTime: 49.209ms
+             - FollowupInputEmptyTime: 6.111ms
+               - __MAX_OF_FollowupInputEmptyTime: 6.143ms
+               - __MIN_OF_FollowupInputEmptyTime: 6.054ms
+         - ScheduleCount: 32
+           - __MAX_OF_ScheduleCount: 2
+           - __MIN_OF_ScheduleCount: 2
+         - ScheduleTime: 55.661ms
+           - __MAX_OF_ScheduleTime: 55.797ms
+           - __MIN_OF_ScheduleTime: 55.481ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        LOCAL_EXCHANGE_SINK (plan_node_id=18):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 5.421us
+               - __MAX_OF_OperatorTotalTime: 37.676us
+               - __MIN_OF_OperatorTotalTime: 387ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 32
+               - __MAX_OF_PushChunkNum: 14
+               - __MIN_OF_PushChunkNum: 0
+             - PushRowNum: 86.435K (86435)
+               - __MAX_OF_PushRowNum: 40.499K (40499)
+               - __MIN_OF_PushRowNum: 0
+             - PushTotalTime: 4.752us
+               - __MAX_OF_PushTotalTime: 37.246us
+               - __MIN_OF_PushTotalTime: 0ns
+          UniqueMetrics:
+             - ShuffleNum: 1
+             - Type: Passthrough
+             - LocalExchangePeakMemoryUsage: 3.282 MB
+        EXCHANGE_SOURCE (plan_node_id=17):
+          CommonMetrics:
+             - ConjunctsInputRows: 86.435K (86435)
+               - __MAX_OF_ConjunctsInputRows: 40.499K (40499)
+               - __MIN_OF_ConjunctsInputRows: 4.051K (4051)
+             - ConjunctsOutputRows: 86.435K (86435)
+               - __MAX_OF_ConjunctsOutputRows: 40.499K (40499)
+               - __MIN_OF_ConjunctsOutputRows: 4.051K (4051)
+             - ConjunctsTime: 8.526us
+               - __MAX_OF_ConjunctsTime: 17.365us
+               - __MIN_OF_ConjunctsTime: 2.250us
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 24.969us
+               - __MAX_OF_OperatorTotalTime: 104.732us
+               - __MIN_OF_OperatorTotalTime: 8.286us
+             - OutputChunkBytes: 3.281 MB
+               - __MAX_OF_OutputChunkBytes: 1.538 MB
+               - __MIN_OF_OutputChunkBytes: 0.000 B
+             - PullChunkNum: 32
+               - __MAX_OF_PullChunkNum: 14
+               - __MIN_OF_PullChunkNum: 0
+             - PullRowNum: 86.435K (86435)
+               - __MAX_OF_PullRowNum: 40.499K (40499)
+               - __MIN_OF_PullRowNum: 0
+             - PullTotalTime: 14.793us
+               - __MAX_OF_PullTotalTime: 98.643us
+               - __MIN_OF_PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 1
+               - __MAX_OF_BufferUnplugCount: 1
+               - __MIN_OF_BufferUnplugCount: 0
+             - BytesPassThrough: 3.283 MB
+               - __MAX_OF_BytesPassThrough: 735.753 KB
+               - __MIN_OF_BytesPassThrough: 0.000 B
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 0
+             - ClosureBlockTime: 0ns
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 3.283 MB
+               - __MAX_OF_PeakBufferMemoryBytes: 735.753 KB
+               - __MIN_OF_PeakBufferMemoryBytes: 0.000 B
+             - ReceiverProcessTotalTime: 9.513us
+               - __MAX_OF_ReceiverProcessTotalTime: 18.398us
+               - __MIN_OF_ReceiverProcessTotalTime: 1.239us
+             - RequestReceived: 17
+               - __MAX_OF_RequestReceived: 2
+               - __MIN_OF_RequestReceived: 1
+             - WaitLockTime: 0ns
+      Pipeline (id=0):
+         - IsGroupExecution: false
+         - ActiveTime: 169.771ms
+           - __MAX_OF_ActiveTime: 419.717ms
+           - __MIN_OF_ActiveTime: 102.737ms
+         - BlockByInputEmpty: 1.347K (1347)
+           - __MAX_OF_BlockByInputEmpty: 100
+           - __MIN_OF_BlockByInputEmpty: 60
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 610.086ms
+           - __MAX_OF_DriverTotalTime: 869.254ms
+           - __MIN_OF_DriverTotalTime: 585.019ms
+         - OverheadTime: 8.529ms
+           - __MAX_OF_OverheadTime: 25.445ms
+           - __MIN_OF_OverheadTime: 6.187ms
+         - PeakDriverQueueSize: 178
+           - __MAX_OF_PeakDriverQueueSize: 15
+           - __MIN_OF_PeakDriverQueueSize: 6
+         - PendingTime: 0ns
+           - InputEmptyTime: 379.189ms
+             - __MAX_OF_InputEmptyTime: 444.448ms
+             - __MIN_OF_InputEmptyTime: 334.513ms
+             - FirstInputEmptyTime: 228.275ms
+               - __MAX_OF_FirstInputEmptyTime: 228.279ms
+               - __MIN_OF_FirstInputEmptyTime: 228.259ms
+             - FollowupInputEmptyTime: 150.913ms
+               - __MAX_OF_FollowupInputEmptyTime: 216.173ms
+               - __MIN_OF_FollowupInputEmptyTime: 106.236ms
+         - ScheduleCount: 1.375K (1375)
+           - __MAX_OF_ScheduleCount: 101
+           - __MIN_OF_ScheduleCount: 62
+         - ScheduleTime: 440.314ms
+           - __MAX_OF_ScheduleTime: 482.623ms
+           - __MIN_OF_ScheduleTime: 403.969ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 54
+           - __MAX_OF_YieldByTimeLimit: 12
+           - __MIN_OF_YieldByTimeLimit: 0
+        HASH_JOIN_BUILD (plan_node_id=30):
+          CommonMetrics:
+             - OperatorTotalTime: 155.109ms
+               - __MAX_OF_OperatorTotalTime: 400.337ms
+               - __MIN_OF_OperatorTotalTime: 90.247ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 3.584K (3584)
+               - __MAX_OF_PushChunkNum: 224
+               - __MIN_OF_PushChunkNum: 224
+             - PushRowNum: 14.430M (14430068)
+               - __MAX_OF_PushRowNum: 903.527K (903527)
+               - __MIN_OF_PushRowNum: 900.029K (900029)
+             - PushTotalTime: 114.190ms
+               - __MAX_OF_PushTotalTime: 153.042ms
+               - __MIN_OF_PushTotalTime: 74.020ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+             - SetFinishingTime: 40.905ms
+               - __MAX_OF_SetFinishingTime: 300.041ms
+               - __MIN_OF_SetFinishingTime: 15.948ms
+          UniqueMetrics:
+             - DistributionMode: LOCAL_HASH_BUCKET
+             - JoinPredicates: 1: p_partkey = 23: l_partkey
+             - JoinType: INNER_JOIN
+             - BuildBuckets: 33.554M (33554432)
+               - __MAX_OF_BuildBuckets: 2.097M (2097152)
+               - __MIN_OF_BuildBuckets: 2.097M (2097152)
+             - BuildConjunctEvaluateTime: 1.053ms
+               - __MAX_OF_BuildConjunctEvaluateTime: 2.619ms
+               - __MIN_OF_BuildConjunctEvaluateTime: 790.249us
+             - BuildHashTableTime: 24.399ms
+               - __MAX_OF_BuildHashTableTime: 36.322ms
+               - __MIN_OF_BuildHashTableTime: 15.933ms
+             - BuildKeysPerBucket%: 11.647K (11647)
+               - __MAX_OF_BuildKeysPerBucket%: 729
+               - __MIN_OF_BuildKeysPerBucket%: 726
+             - CopyRightTableChunkTime: 112.831ms
+               - __MAX_OF_CopyRightTableChunkTime: 151.835ms
+               - __MIN_OF_CopyRightTableChunkTime: 72.690ms
+             - HashTableMemoryUsage: 1.351 GB
+               - __MAX_OF_HashTableMemoryUsage: 114.256 MB
+               - __MIN_OF_HashTableMemoryUsage: 65.354 MB
+             - PartialRuntimeMembershipFilterBytes: 16.000 MB
+               - __MAX_OF_PartialRuntimeMembershipFilterBytes: 16.000 MB
+               - __MIN_OF_PartialRuntimeMembershipFilterBytes: 0.000 B
+             - PartitionNums: 16
+               - __MAX_OF_PartitionNums: 1
+               - __MIN_OF_PartitionNums: 1
+             - RuntimeFilterBuildTime: 16.465ms
+               - __MAX_OF_RuntimeFilterBuildTime: 263.172ms
+               - __MIN_OF_RuntimeFilterBuildTime: 9.856us
+             - RuntimeFilterNum: 0
+        EXCHANGE_SOURCE (plan_node_id=29):
+          CommonMetrics:
+             - ConjunctsInputRows: 14.430M (14430068)
+               - __MAX_OF_ConjunctsInputRows: 903.527K (903527)
+               - __MIN_OF_ConjunctsInputRows: 900.029K (900029)
+             - ConjunctsOutputRows: 14.430M (14430068)
+               - __MAX_OF_ConjunctsOutputRows: 903.527K (903527)
+               - __MIN_OF_ConjunctsOutputRows: 900.029K (900029)
+             - ConjunctsTime: 734.697us
+               - __MAX_OF_ConjunctsTime: 831.909us
+               - __MIN_OF_ConjunctsTime: 644.785us
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 6.132ms
+               - __MAX_OF_OperatorTotalTime: 26.724ms
+               - __MIN_OF_OperatorTotalTime: 4.037ms
+             - OutputChunkBytes: 839.457 MB
+               - __MAX_OF_OutputChunkBytes: 52.562 MB
+               - __MIN_OF_OutputChunkBytes: 52.358 MB
+             - PullChunkNum: 3.584K (3584)
+               - __MAX_OF_PullChunkNum: 224
+               - __MIN_OF_PullChunkNum: 224
+             - PullRowNum: 14.430M (14430068)
+               - __MAX_OF_PullRowNum: 903.527K (903527)
+               - __MIN_OF_PullRowNum: 900.029K (900029)
+             - PullTotalTime: 6.111ms
+               - __MAX_OF_PullTotalTime: 26.718ms
+               - __MIN_OF_PullTotalTime: 4.032ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 31
+               - __MAX_OF_BufferUnplugCount: 3
+               - __MIN_OF_BufferUnplugCount: 1
+             - BytesPassThrough: 839.703 MB
+               - __MAX_OF_BytesPassThrough: 79.385 MB
+               - __MIN_OF_BytesPassThrough: 41.235 MB
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 1.197K (1197)
+               - __MAX_OF_ClosureBlockCount: 82
+               - __MIN_OF_ClosureBlockCount: 65
+             - ClosureBlockTime: 597.635ms
+               - __MAX_OF_ClosureBlockTime: 1s181ms
+               - __MIN_OF_ClosureBlockTime: 304.939ms
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 138.396 MB
+               - __MAX_OF_PeakBufferMemoryBytes: 29.563 MB
+               - __MIN_OF_PeakBufferMemoryBytes: 1.660 MB
+             - ReceiverProcessTotalTime: 900.965us
+               - __MAX_OF_ReceiverProcessTotalTime: 1.145ms
+               - __MIN_OF_ReceiverProcessTotalTime: 762.754us
+             - RequestReceived: 1.793K (1793)
+               - __MAX_OF_RequestReceived: 113
+               - __MIN_OF_RequestReceived: 112
+             - WaitLockTime: 0ns
+    Fragment 8:
+       - BackendAddresses: 172.26.95.146:9060
+       - InstanceIds: b32190b0-8a0b-11f0-94e0-00163e341b9f
+       - EnableEventScheduler: true
+       - BackendNum: 1
+       - BackendProfileMergeTime: 6.479ms
+       - InitialProcessDriverCount: 552
+       - InitialProcessMem: 9.419 GB
+       - InstanceAllocatedMemoryUsage: 4.661 GB
+       - InstanceDeallocatedMemoryUsage: 4.520 GB
+       - InstanceNum: 1
+       - InstancePeakMemoryUsage: 623.424 MB
+       - JITCounter: 0
+       - JITTotalCostTime: 0ns
+       - QueryMemoryLimit: -1.000 B
+      Pipeline (id=2):
+         - LocalRfWaitingSet: 1
+         - IsGroupExecution: false
+         - ActiveTime: 298.687ms
+           - __MAX_OF_ActiveTime: 322.909ms
+           - __MIN_OF_ActiveTime: 278.366ms
+         - BlockByInputEmpty: 34
+           - __MAX_OF_BlockByInputEmpty: 12
+           - __MIN_OF_BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 561.308ms
+           - __MAX_OF_DriverTotalTime: 561.477ms
+           - __MIN_OF_DriverTotalTime: 561.145ms
+         - OverheadTime: 8.648ms
+           - __MAX_OF_OverheadTime: 14.102ms
+           - __MIN_OF_OverheadTime: 7.344ms
+         - PeakDriverQueueSize: 131
+           - __MAX_OF_PeakDriverQueueSize: 15
+           - __MIN_OF_PeakDriverQueueSize: 2
+         - PendingTime: 0ns
+           - InputEmptyTime: 10.618ms
+             - __MAX_OF_InputEmptyTime: 35.278ms
+             - __MIN_OF_InputEmptyTime: 0ns
+             - FirstInputEmptyTime: 1.103ms
+               - __MAX_OF_FirstInputEmptyTime: 5.351ms
+               - __MIN_OF_FirstInputEmptyTime: 0ns
+             - FollowupInputEmptyTime: 9.514ms
+               - __MAX_OF_FollowupInputEmptyTime: 35.020ms
+               - __MIN_OF_FollowupInputEmptyTime: 0ns
+           - PendingFinishTime: 64.796ms
+             - __MAX_OF_PendingFinishTime: 96.883ms
+             - __MIN_OF_PendingFinishTime: 23.054ms
+           - PreconditionBlockTime: 170.114ms
+             - __MAX_OF_PreconditionBlockTime: 170.173ms
+             - __MIN_OF_PreconditionBlockTime: 170.085ms
+         - ScheduleCount: 86
+           - __MAX_OF_ScheduleCount: 16
+           - __MIN_OF_ScheduleCount: 3
+         - ScheduleTime: 262.621ms
+           - __MAX_OF_ScheduleTime: 282.979ms
+           - __MIN_OF_ScheduleTime: 238.355ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 35
+           - __MAX_OF_YieldByTimeLimit: 3
+           - __MIN_OF_YieldByTimeLimit: 2
+        EXCHANGE_SINK (plan_node_id=29):
+          CommonMetrics:
+             - OperatorTotalTime: 130.104ms
+               - __MAX_OF_OperatorTotalTime: 145.929ms
+               - __MIN_OF_OperatorTotalTime: 116.810ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 3.841K (3841)
+               - __MAX_OF_PushChunkNum: 241
+               - __MIN_OF_PushChunkNum: 240
+             - PushRowNum: 14.430M (14430068)
+               - __MAX_OF_PushRowNum: 904.853K (904853)
+               - __MIN_OF_PushRowNum: 898.413K (898413)
+             - PushTotalTime: 128.208ms
+               - __MAX_OF_PushTotalTime: 144.283ms
+               - __MIN_OF_PushTotalTime: 115.321ms
+             - SetFinishingTime: 1.894ms
+               - __MAX_OF_SetFinishingTime: 3.365ms
+               - __MIN_OF_SetFinishingTime: 1.309ms
+          UniqueMetrics:
+             - ChannelNum: 64
+             - DestFragments: b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e
+             - DestID: 29
+             - PartType: BUCKET_SHUFFLE_HASH_PARTITIONED
+             - PipelineLevelShuffle: Yes
+             - ShuffleNumPerChannel: 1
+             - TotalShuffleNum: 64
+             - BytesPassThrough: 839.703 MB
+               - __MAX_OF_BytesPassThrough: 52.654 MB
+               - __MIN_OF_BytesPassThrough: 52.280 MB
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 43.642ms
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 349.173ms
+             - PassThroughBufferPeakMemoryUsage: 16.340 MB
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 787.506us
+             - RpcCount: 1.793K (1793)
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 245.824K (245824)
+               - __MAX_OF_ShuffleChunkAppendCounter: 15.424K (15424)
+               - __MIN_OF_ShuffleChunkAppendCounter: 15.360K (15360)
+             - ShuffleChunkAppendTime: 68ms
+               - __MAX_OF_ShuffleChunkAppendTime: 73.144ms
+               - __MIN_OF_ShuffleChunkAppendTime: 60.459ms
+             - ShuffleHashTime: 15.050ms
+               - __MAX_OF_ShuffleHashTime: 17.709ms
+               - __MIN_OF_ShuffleHashTime: 13.599ms
+             - WaitTime: 24.401ms
+        CHUNK_ACCUMULATE (plan_node_id=28):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 205.199us
+               - __MAX_OF_OperatorTotalTime: 262.025us
+               - __MIN_OF_OperatorTotalTime: 162.703us
+             - OutputChunkBytes: 839.457 MB
+               - __MAX_OF_OutputChunkBytes: 52.639 MB
+               - __MIN_OF_OutputChunkBytes: 52.264 MB
+             - PullChunkNum: 3.841K (3841)
+               - __MAX_OF_PullChunkNum: 241
+               - __MIN_OF_PullChunkNum: 240
+             - PullRowNum: 14.430M (14430068)
+               - __MAX_OF_PullRowNum: 904.853K (904853)
+               - __MIN_OF_PullRowNum: 898.413K (898413)
+             - PullTotalTime: 32.034us
+               - __MAX_OF_PullTotalTime: 34.809us
+               - __MIN_OF_PullTotalTime: 30.006us
+             - PushChunkNum: 3.848K (3848)
+               - __MAX_OF_PushChunkNum: 242
+               - __MIN_OF_PushChunkNum: 240
+             - PushRowNum: 14.430M (14430068)
+               - __MAX_OF_PushRowNum: 904.853K (904853)
+               - __MIN_OF_PushRowNum: 898.413K (898413)
+             - PushTotalTime: 172.211us
+               - __MAX_OF_PushTotalTime: 230.989us
+               - __MIN_OF_PushTotalTime: 131.617us
+          UniqueMetrics:
+        HASH_JOIN_PROBE (plan_node_id=28):
+          CommonMetrics:
+             - OperatorTotalTime: 147.669ms
+               - __MAX_OF_OperatorTotalTime: 168.343ms
+               - __MIN_OF_OperatorTotalTime: 133.321ms
+             - OutputChunkBytes: 839.457 MB
+               - __MAX_OF_OutputChunkBytes: 52.639 MB
+               - __MIN_OF_OutputChunkBytes: 52.264 MB
+             - PullChunkNum: 3.848K (3848)
+               - __MAX_OF_PullChunkNum: 242
+               - __MIN_OF_PullChunkNum: 240
+             - PullRowNum: 14.430M (14430068)
+               - __MAX_OF_PullRowNum: 904.853K (904853)
+               - __MIN_OF_PullRowNum: 898.413K (898413)
+             - PullTotalTime: 88.233ms
+               - __MAX_OF_PullTotalTime: 103.045ms
+               - __MIN_OF_PullTotalTime: 75.501ms
+             - PushChunkNum: 4.779K (4779)
+               - __MAX_OF_PushChunkNum: 300
+               - __MIN_OF_PushChunkNum: 296
+             - PushRowNum: 15.063M (15062518)
+               - __MAX_OF_PushRowNum: 944.437K (944437)
+               - __MIN_OF_PushRowNum: 937.407K (937407)
+             - PushTotalTime: 58.812ms
+               - __MAX_OF_PushTotalTime: 67.082ms
+               - __MIN_OF_PushTotalTime: 50.772ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: LOCAL_HASH_BUCKET
+             - JoinType: INNER_JOIN
+             - OtherJoinConjunctEvaluateTime: 0ns
+             - OutputBuildColumnTime: 36.833ms
+               - __MAX_OF_OutputBuildColumnTime: 42.494ms
+               - __MIN_OF_OutputBuildColumnTime: 32.709ms
+             - OutputProbeColumnTime: 7.827ms
+               - __MAX_OF_OutputProbeColumnTime: 8.338ms
+               - __MIN_OF_OutputProbeColumnTime: 7.204ms
+             - PartitionProbeOverhead: 58.653ms
+               - __MAX_OF_PartitionProbeOverhead: 66.906ms
+               - __MIN_OF_PartitionProbeOverhead: 50.646ms
+             - ProbeConjunctEvaluateTime: 507.251us
+               - __MAX_OF_ProbeConjunctEvaluateTime: 547.187us
+               - __MIN_OF_ProbeConjunctEvaluateTime: 459.378us
+             - SearchHashTableTime: 41.471ms
+               - __MAX_OF_SearchHashTableTime: 51.306ms
+               - __MIN_OF_SearchHashTableTime: 33.654ms
+             - WhereConjunctEvaluateTime: 0ns
+             - probeCount: 0
+        CHUNK_ACCUMULATE (plan_node_id=20):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 232.114us
+               - __MAX_OF_OperatorTotalTime: 280.675us
+               - __MIN_OF_OperatorTotalTime: 209.692us
+             - OutputChunkBytes: 474.036 MB
+               - __MAX_OF_OutputChunkBytes: 29.723 MB
+               - __MIN_OF_OutputChunkBytes: 29.501 MB
+             - PullChunkNum: 4.779K (4779)
+               - __MAX_OF_PullChunkNum: 300
+               - __MIN_OF_PullChunkNum: 296
+             - PullRowNum: 15.063M (15062518)
+               - __MAX_OF_PullRowNum: 944.437K (944437)
+               - __MIN_OF_PullRowNum: 937.407K (937407)
+             - PullTotalTime: 42.107us
+               - __MAX_OF_PullTotalTime: 53.963us
+               - __MIN_OF_PullTotalTime: 38.167us
+             - PushChunkNum: 4.802K (4802)
+               - __MAX_OF_PushChunkNum: 302
+               - __MIN_OF_PushChunkNum: 299
+             - PushRowNum: 15.063M (15062518)
+               - __MAX_OF_PushRowNum: 944.437K (944437)
+               - __MIN_OF_PushRowNum: 937.407K (937407)
+             - PushTotalTime: 189.251us
+               - __MAX_OF_PushTotalTime: 239.034us
+               - __MIN_OF_PushTotalTime: 169.723us
+          UniqueMetrics:
+        OLAP_SCAN (plan_node_id=20):
+          CommonMetrics:
+             - RuntimeFilterDesc: <5: BloomFilter> 
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 15.063M (15062518)
+               - __MAX_OF_JoinRuntimeFilterInputRows: 944.437K (944437)
+               - __MIN_OF_JoinRuntimeFilterInputRows: 937.407K (937407)
+             - JoinRuntimeFilterOutputRows: 15.063M (15062518)
+               - __MAX_OF_JoinRuntimeFilterOutputRows: 944.437K (944437)
+               - __MIN_OF_JoinRuntimeFilterOutputRows: 937.407K (937407)
+             - JoinRuntimeFilterTime: 66.992us
+               - __MAX_OF_JoinRuntimeFilterTime: 75.515us
+               - __MIN_OF_JoinRuntimeFilterTime: 58.543us
+             - OperatorTotalTime: 11.826ms
+               - __MAX_OF_OperatorTotalTime: 33.373ms
+               - __MIN_OF_OperatorTotalTime: 3.144ms
+             - OutputChunkBytes: 474.036 MB
+               - __MAX_OF_OutputChunkBytes: 29.723 MB
+               - __MIN_OF_OutputChunkBytes: 29.501 MB
+             - PullChunkNum: 4.802K (4802)
+               - __MAX_OF_PullChunkNum: 302
+               - __MIN_OF_PullChunkNum: 299
+             - PullRowNum: 15.063M (15062518)
+               - __MAX_OF_PullRowNum: 944.437K (944437)
+               - __MIN_OF_PullRowNum: 937.407K (937407)
+             - PullTotalTime: 11.262ms
+               - __MAX_OF_PullTotalTime: 32.788ms
+               - __MIN_OF_PullTotalTime: 2.607ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 1
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - MorselQueueType: fixed_morsel_queue
+             - Predicates: 23: l_partkey IS NOT NULL
+             - Rollup: lineitem
+             - SharedScan: False
+             - Table: lineitem
+             - AccessPathHits: 0
+             - AccessPathUnhits: 0
+             - BytesRead: 1.818 GB
+               - __MAX_OF_BytesRead: 29.142 MB
+               - __MIN_OF_BytesRead: 29.005 MB
+             - CachedPagesNum: 26.156K (26156)
+               - __MAX_OF_CachedPagesNum: 409
+               - __MIN_OF_CachedPagesNum: 404
+             - ChunkBufferCapacity: 1.024K (1024)
+             - CompressedBytesRead: 0.000 B
+             - DefaultChunkBufferCapacity: 1.024K (1024)
+             - IOTaskExecTime: 46.492ms
+               - __MAX_OF_IOTaskExecTime: 77.683ms
+               - __MIN_OF_IOTaskExecTime: 36.398ms
+               - CreateSegmentIter: 399.329us
+                 - __MAX_OF_CreateSegmentIter: 21.658ms
+                 - __MIN_OF_CreateSegmentIter: 42.949us
+               - GetDelVec: 0ns
+               - GetDeltaColumnGroup: 4.166us
+                 - __MAX_OF_GetDeltaColumnGroup: 20.632us
+                 - __MIN_OF_GetDeltaColumnGroup: 1.405us
+               - GetRowsets: 4.007us
+                 - __MAX_OF_GetRowsets: 20.596us
+                 - __MIN_OF_GetRowsets: 2.015us
+               - IOTime: 0ns
+               - LateMaterialize: 1.208ms
+                 - __MAX_OF_LateMaterialize: 2.434ms
+                 - __MIN_OF_LateMaterialize: 923.883us
+               - ReadPKIndex: 0ns
+               - SegmentInit: 349.026us
+                 - __MAX_OF_SegmentInit: 452.755us
+                 - __MIN_OF_SegmentInit: 277.885us
+                 - BitmapIndexFilter: 0ns
+                 - BitmapIndexFilterRows: 0
+                 - BitmapIndexIteratorInit: 15.263us
+                   - __MAX_OF_BitmapIndexIteratorInit: 36.695us
+                   - __MIN_OF_BitmapIndexIteratorInit: 9.503us
+                 - BloomFilterFilter: 1.596us
+                   - __MAX_OF_BloomFilterFilter: 4.289us
+                   - __MIN_OF_BloomFilterFilter: 1.128us
+                 - BloomFilterFilterRows: 0
+                 - ColumnIteratorInit: 103.031us
+                   - __MAX_OF_ColumnIteratorInit: 148.980us
+                   - __MIN_OF_ColumnIteratorInit: 68.263us
+                 - GetVectorRowRangesTime: 0ns
+                 - GinFilter: 0ns
+                 - GinFilterRows: 0
+                 - ProcessVectorDistanceAndIdTime: 0ns
+                 - RemainingRowsAfterShortKeyFilter: 59.986M (59986052)
+                   - __MAX_OF_RemainingRowsAfterShortKeyFilter: 939.120K (939120)
+                   - __MIN_OF_RemainingRowsAfterShortKeyFilter: 935.425K (935425)
+                 - SegmentRuntimeZoneMapFilterRows: 0
+                 - SegmentZoneMapFilterRows: 0
+                 - ShortKeyFilter: 2.320us
+                   - __MAX_OF_ShortKeyFilter: 3.564us
+                   - __MIN_OF_ShortKeyFilter: 1.352us
+                 - ShortKeyFilterRows: 0
+                 - ShortKeyRangeNumber: 0
+                 - VectorIndexFilterRows: 0
+                 - VectorSearchTime: 0ns
+                 - ZoneMapIndexFilterRows: 0
+                 - ZoneMapIndexFiter: 90.337us
+                   - __MAX_OF_ZoneMapIndexFiter: 113.782us
+                   - __MIN_OF_ZoneMapIndexFiter: 71.096us
+               - SegmentRead: 41.799ms
+                 - __MAX_OF_SegmentRead: 72.640ms
+                 - __MIN_OF_SegmentRead: 31.930ms
+                 - BlockFetch: 12.730ms
+                   - __MAX_OF_BlockFetch: 33.437ms
+                   - __MIN_OF_BlockFetch: 9.547ms
+                 - BlockFetchCount: 24.562K (24562)
+                   - __MAX_OF_BlockFetchCount: 388
+                   - __MIN_OF_BlockFetchCount: 380
+                 - BlockSeek: 22.621us
+                   - __MAX_OF_BlockSeek: 45.746us
+                   - __MIN_OF_BlockSeek: 17.309us
+                 - BlockSeekCount: 25.388K (25388)
+                   - __MAX_OF_BlockSeekCount: 397
+                   - __MIN_OF_BlockSeekCount: 392
+                 - ChunkCopy: 4.851ms
+                   - __MAX_OF_ChunkCopy: 23.298ms
+                   - __MIN_OF_ChunkCopy: 3.922ms
+                 - DecompressT: 0ns
+                 - DelVecFilterRows: 0
+                 - PredFilter: 2.999ms
+                   - __MAX_OF_PredFilter: 18.610ms
+                   - __MIN_OF_PredFilter: 2.146ms
+                 - PredFilterRows: 44.924M (44923534)
+                   - __MAX_OF_PredFilterRows: 704.996K (704996)
+                   - __MIN_OF_PredFilterRows: 698.556K (698556)
+                 - RowsetsReadCount: 128
+                   - __MAX_OF_RowsetsReadCount: 2
+                   - __MIN_OF_RowsetsReadCount: 2
+                 - SegmentsReadCount: 128
+                   - __MAX_OF_SegmentsReadCount: 2
+                   - __MIN_OF_SegmentsReadCount: 2
+                 - TotalColumnsDataPageCount: 26.156K (26156)
+                   - __MAX_OF_TotalColumnsDataPageCount: 409
+                   - __MIN_OF_TotalColumnsDataPageCount: 404
+             - IOTaskWaitTime: 17.142ms
+               - __MAX_OF_IOTaskWaitTime: 39.560ms
+               - __MIN_OF_IOTaskWaitTime: 104.874us
+             - MorselsCount: 64
+               - __MAX_OF_MorselsCount: 4
+               - __MIN_OF_MorselsCount: 4
+             - PeakChunkBufferMemoryUsage: 131.618 MB
+             - PeakChunkBufferSize: 107
+             - PeakIOTasks: 4
+             - PeakScanTaskQueueSize: 342
+               - __MAX_OF_PeakScanTaskQueueSize: 31
+               - __MIN_OF_PeakScanTaskQueueSize: 7
+             - PrepareChunkSourceTime: 2.403ms
+               - __MAX_OF_PrepareChunkSourceTime: 22.830ms
+               - __MIN_OF_PrepareChunkSourceTime: 874.086us
+             - PushdownAccessPaths: 0
+             - PushdownPredicates: 4
+             - RawRowsRead: 59.986M (59986052)
+               - __MAX_OF_RawRowsRead: 939.120K (939120)
+               - __MIN_OF_RawRowsRead: 935.425K (935425)
+             - ReadPagesNum: 26.156K (26156)
+               - __MAX_OF_ReadPagesNum: 409
+               - __MIN_OF_ReadPagesNum: 404
+             - RowsRead: 15.063M (15062518)
+               - __MAX_OF_RowsRead: 237.739K (237739)
+               - __MIN_OF_RowsRead: 232.692K (232692)
+             - RuntimeFilterEvalTime: 20.309ms
+               - __MAX_OF_RuntimeFilterEvalTime: 37.546ms
+               - __MIN_OF_RuntimeFilterEvalTime: 14.461ms
+             - RuntimeFilterInputRows: 59.986M (59986052)
+               - __MAX_OF_RuntimeFilterInputRows: 939.120K (939120)
+               - __MIN_OF_RuntimeFilterInputRows: 935.425K (935425)
+             - RuntimeFilterOutputRows: 15.063M (15062518)
+               - __MAX_OF_RuntimeFilterOutputRows: 237.739K (237739)
+               - __MIN_OF_RuntimeFilterOutputRows: 232.692K (232692)
+             - ScanTime: 63.635ms
+               - __MAX_OF_ScanTime: 98.593ms
+               - __MIN_OF_ScanTime: 36.563ms
+             - SubmitTaskCount: 271
+               - __MAX_OF_SubmitTaskCount: 41
+               - __MIN_OF_SubmitTaskCount: 9
+             - SubmitTaskTime: 6.975ms
+               - __MAX_OF_SubmitTaskTime: 30.331ms
+               - __MIN_OF_SubmitTaskTime: 271.927us
+             - TabletCount: 64
+             - UncompressedBytesRead: 0.000 B
+      Pipeline (id=1):
+         - LocalRfWaitingSet: 1
+         - IsGroupExecution: false
+         - ActiveTime: 80.718us
+           - __MAX_OF_ActiveTime: 303.825us
+           - __MIN_OF_ActiveTime: 34.238us
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 170.407ms
+           - __MAX_OF_DriverTotalTime: 170.601ms
+           - __MIN_OF_DriverTotalTime: 170.119ms
+         - PeakDriverQueueSize: 80
+           - __MAX_OF_PeakDriverQueueSize: 13
+           - __MIN_OF_PeakDriverQueueSize: 0
+         - PendingTime: 0ns
+           - PreconditionBlockTime: 170.083ms
+             - __MAX_OF_PreconditionBlockTime: 170.117ms
+             - __MIN_OF_PreconditionBlockTime: 169.981ms
+         - ScheduleCount: 16
+           - __MAX_OF_ScheduleCount: 1
+           - __MIN_OF_ScheduleCount: 1
+         - ScheduleTime: 170.327ms
+           - __MAX_OF_ScheduleTime: 170.443ms
+           - __MIN_OF_ScheduleTime: 170.034ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        NOOP_SINK (plan_node_id=20):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 402ns
+               - __MAX_OF_OperatorTotalTime: 654ns
+               - __MIN_OF_OperatorTotalTime: 312ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+        OLAP_SCAN_PREPARE (plan_node_id=20):
+          CommonMetrics:
+             - IsSubordinate
+             - RuntimeFilterDesc: <5: BloomFilter> 
+             - OperatorTotalTime: 84.124us
+               - __MAX_OF_OperatorTotalTime: 304.725us
+               - __MIN_OF_OperatorTotalTime: 39.068us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 74.827us
+               - __MAX_OF_PullTotalTime: 298.602us
+               - __MIN_OF_PullTotalTime: 29.613us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 1
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CaptureTabletRowsetsTime: 10.624us
+               - __MAX_OF_CaptureTabletRowsetsTime: 15.915us
+               - __MIN_OF_CaptureTabletRowsetsTime: 9.197us
+      Pipeline (id=0):
+         - IsGroupExecution: false
+         - ActiveTime: 22.866ms
+           - __MAX_OF_ActiveTime: 52.183ms
+           - __MIN_OF_ActiveTime: 19.277ms
+         - BlockByInputEmpty: 340
+           - __MAX_OF_BlockByInputEmpty: 28
+           - __MIN_OF_BlockByInputEmpty: 11
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 140.257ms
+           - __MAX_OF_DriverTotalTime: 170.460ms
+           - __MIN_OF_DriverTotalTime: 137.466ms
+         - PeakDriverQueueSize: 133
+           - __MAX_OF_PeakDriverQueueSize: 15
+           - __MIN_OF_PeakDriverQueueSize: 2
+         - PendingTime: 0ns
+           - InputEmptyTime: 113.796ms
+             - __MAX_OF_InputEmptyTime: 115.707ms
+             - __MIN_OF_InputEmptyTime: 111.581ms
+             - FirstInputEmptyTime: 97.352ms
+               - __MAX_OF_FirstInputEmptyTime: 97.360ms
+               - __MIN_OF_FirstInputEmptyTime: 97.325ms
+             - FollowupInputEmptyTime: 16.444ms
+               - __MAX_OF_FollowupInputEmptyTime: 18.350ms
+               - __MIN_OF_FollowupInputEmptyTime: 14.230ms
+         - ScheduleCount: 356
+           - __MAX_OF_ScheduleCount: 29
+           - __MIN_OF_ScheduleCount: 12
+         - ScheduleTime: 117.390ms
+           - __MAX_OF_ScheduleTime: 119.454ms
+           - __MIN_OF_ScheduleTime: 115.060ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        HASH_JOIN_BUILD (plan_node_id=28):
+          CommonMetrics:
+             - OperatorTotalTime: 21.310ms
+               - __MAX_OF_OperatorTotalTime: 50.709ms
+               - __MIN_OF_OperatorTotalTime: 17.958ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 1.024K (1024)
+               - __MAX_OF_PushChunkNum: 64
+               - __MIN_OF_PushChunkNum: 64
+             - PushRowNum: 3.609M (3608725)
+               - __MAX_OF_PushRowNum: 226.307K (226307)
+               - __MIN_OF_PushRowNum: 224.633K (224633)
+             - PushTotalTime: 16.794ms
+               - __MAX_OF_PushTotalTime: 19.494ms
+               - __MIN_OF_PushTotalTime: 15.034ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+             - SetFinishingTime: 4.504ms
+               - __MAX_OF_SetFinishingTime: 34.521ms
+               - __MIN_OF_SetFinishingTime: 1.794ms
+          UniqueMetrics:
+             - DistributionMode: LOCAL_HASH_BUCKET
+             - JoinPredicates: 22: l_orderkey = 38: o_orderkey
+             - JoinType: INNER_JOIN
+             - BuildBuckets: 8.389M (8388608)
+               - __MAX_OF_BuildBuckets: 524.288K (524288)
+               - __MIN_OF_BuildBuckets: 524.288K (524288)
+             - BuildConjunctEvaluateTime: 1.102ms
+               - __MAX_OF_BuildConjunctEvaluateTime: 1.207ms
+               - __MIN_OF_BuildConjunctEvaluateTime: 995.803us
+             - BuildHashTableTime: 2.517ms
+               - __MAX_OF_BuildHashTableTime: 3.096ms
+               - __MIN_OF_BuildHashTableTime: 1.778ms
+             - BuildKeysPerBucket%: 1.957K (1957)
+               - __MAX_OF_BuildKeysPerBucket%: 123
+               - __MIN_OF_BuildKeysPerBucket%: 122
+             - CopyRightTableChunkTime: 6.360ms
+               - __MAX_OF_CopyRightTableChunkTime: 9.576ms
+               - __MIN_OF_CopyRightTableChunkTime: 5.657ms
+             - HashTableMemoryUsage: 182.565 MB
+               - __MAX_OF_HashTableMemoryUsage: 12.199 MB
+               - __MIN_OF_HashTableMemoryUsage: 10.141 MB
+             - PartialRuntimeMembershipFilterBytes: 4.000 MB
+               - __MAX_OF_PartialRuntimeMembershipFilterBytes: 4.000 MB
+               - __MIN_OF_PartialRuntimeMembershipFilterBytes: 0.000 B
+             - PartitionNums: 256
+               - __MAX_OF_PartitionNums: 16
+               - __MIN_OF_PartitionNums: 16
+             - RuntimeFilterBuildTime: 1.965ms
+               - __MAX_OF_RuntimeFilterBuildTime: 31.227ms
+               - __MIN_OF_RuntimeFilterBuildTime: 11.671us
+             - RuntimeFilterNum: 0
+        EXCHANGE_SOURCE (plan_node_id=27):
+          CommonMetrics:
+             - ConjunctsInputRows: 3.609M (3608725)
+               - __MAX_OF_ConjunctsInputRows: 226.307K (226307)
+               - __MIN_OF_ConjunctsInputRows: 224.633K (224633)
+             - ConjunctsOutputRows: 3.609M (3608725)
+               - __MAX_OF_ConjunctsOutputRows: 226.307K (226307)
+               - __MIN_OF_ConjunctsOutputRows: 224.633K (224633)
+             - ConjunctsTime: 123.168us
+               - __MAX_OF_ConjunctsTime: 189.222us
+               - __MIN_OF_ConjunctsTime: 104.538us
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 879.020us
+               - __MAX_OF_OperatorTotalTime: 1.306ms
+               - __MIN_OF_OperatorTotalTime: 531.595us
+             - OutputChunkBytes: 96.363 MB
+               - __MAX_OF_OutputChunkBytes: 6.043 MB
+               - __MIN_OF_OutputChunkBytes: 5.998 MB
+             - PullChunkNum: 1.024K (1024)
+               - __MAX_OF_PullChunkNum: 64
+               - __MIN_OF_PullChunkNum: 64
+             - PullRowNum: 3.609M (3608725)
+               - __MAX_OF_PullRowNum: 226.307K (226307)
+               - __MIN_OF_PullRowNum: 224.633K (224633)
+             - PullTotalTime: 855.038us
+               - __MAX_OF_PullTotalTime: 1.298ms
+               - __MIN_OF_PullTotalTime: 514.275us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 8
+               - __MAX_OF_BufferUnplugCount: 1
+               - __MIN_OF_BufferUnplugCount: 0
+             - BytesPassThrough: 96.395 MB
+               - __MAX_OF_BytesPassThrough: 7.624 MB
+               - __MIN_OF_BytesPassThrough: 3.916 MB
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 174
+               - __MAX_OF_ClosureBlockCount: 15
+               - __MIN_OF_ClosureBlockCount: 7
+             - ClosureBlockTime: 7.487ms
+               - __MAX_OF_ClosureBlockTime: 16.981ms
+               - __MIN_OF_ClosureBlockTime: 676.366us
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 26.935 MB
+               - __MAX_OF_PeakBufferMemoryBytes: 3.803 MB
+               - __MIN_OF_PeakBufferMemoryBytes: 223.707 KB
+             - ReceiverProcessTotalTime: 240.379us
+               - __MAX_OF_ReceiverProcessTotalTime: 293.596us
+               - __MIN_OF_ReceiverProcessTotalTime: 181.711us
+             - RequestReceived: 299
+               - __MAX_OF_RequestReceived: 19
+               - __MIN_OF_RequestReceived: 18
+             - WaitLockTime: 0ns
+    Fragment 9:
+       - BackendAddresses: 172.26.95.146:9060
+       - InstanceIds: b32190b0-8a0b-11f0-94e0-00163e341ba0
+       - EnableEventScheduler: true
+       - BackendNum: 1
+       - BackendProfileMergeTime: 3.839ms
+       - InitialProcessDriverCount: 713
+       - InitialProcessMem: 9.515 GB
+       - InstanceAllocatedMemoryUsage: 621.028 MB
+       - InstanceDeallocatedMemoryUsage: 541.634 MB
+       - InstanceNum: 1
+       - InstancePeakMemoryUsage: 190.547 MB
+       - JITCounter: 0
+       - JITTotalCostTime: 0ns
+       - QueryMemoryLimit: -1.000 B
+      Pipeline (id=2):
+         - LocalRfWaitingSet: 1
+         - IsGroupExecution: false
+         - ActiveTime: 43.579ms
+           - __MAX_OF_ActiveTime: 47.287ms
+           - __MIN_OF_ActiveTime: 36.250ms
+         - BlockByInputEmpty: 3
+           - __MAX_OF_BlockByInputEmpty: 1
+           - __MIN_OF_BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 122.749ms
+           - __MAX_OF_DriverTotalTime: 122.856ms
+           - __MIN_OF_DriverTotalTime: 122.656ms
+         - PeakDriverQueueSize: 103
+           - __MAX_OF_PeakDriverQueueSize: 15
+           - __MIN_OF_PeakDriverQueueSize: 3
+         - PendingTime: 0ns
+           - PendingFinishTime: 4.765ms
+             - __MAX_OF_PendingFinishTime: 10.300ms
+             - __MIN_OF_PendingFinishTime: 1.435ms
+           - PreconditionBlockTime: 73.616ms
+             - __MAX_OF_PreconditionBlockTime: 73.673ms
+             - __MIN_OF_PreconditionBlockTime: 73.558ms
+         - ScheduleCount: 19
+           - __MAX_OF_ScheduleCount: 2
+           - __MIN_OF_ScheduleCount: 1
+         - ScheduleTime: 79.169ms
+           - __MAX_OF_ScheduleTime: 86.445ms
+           - __MIN_OF_ScheduleTime: 75.519ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        EXCHANGE_SINK (plan_node_id=27):
+          CommonMetrics:
+             - OperatorTotalTime: 16.826ms
+               - __MAX_OF_OperatorTotalTime: 20.237ms
+               - __MIN_OF_OperatorTotalTime: 14.514ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 1.088K (1088)
+               - __MAX_OF_PushChunkNum: 68
+               - __MIN_OF_PushChunkNum: 68
+             - PushRowNum: 3.609M (3608725)
+               - __MAX_OF_PushRowNum: 226.876K (226876)
+               - __MIN_OF_PushRowNum: 224.616K (224616)
+             - PushTotalTime: 16.034ms
+               - __MAX_OF_PushTotalTime: 19.612ms
+               - __MIN_OF_PushTotalTime: 13.111ms
+          UniqueMetrics:
+             - ChannelNum: 64
+             - DestFragments: b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f, b32190b08a0b11f0-94e000163e341b9f
+             - DestID: 27
+             - PartType: BUCKET_SHUFFLE_HASH_PARTITIONED
+             - PipelineLevelShuffle: Yes
+             - ShuffleNumPerChannel: 1
+             - TotalShuffleNum: 64
+             - BytesPassThrough: 96.395 MB
+               - __MAX_OF_BytesPassThrough: 6.060 MB
+               - __MIN_OF_BytesPassThrough: 6.000 MB
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 16.412ms
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 37.942ms
+             - PassThroughBufferPeakMemoryUsage: 1.060 MB
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 308.053us
+             - RpcCount: 299
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 69.632K (69632)
+               - __MAX_OF_ShuffleChunkAppendCounter: 4.352K (4352)
+               - __MIN_OF_ShuffleChunkAppendCounter: 4.352K (4352)
+             - ShuffleChunkAppendTime: 7.513ms
+               - __MAX_OF_ShuffleChunkAppendTime: 8.330ms
+               - __MIN_OF_ShuffleChunkAppendTime: 6.270ms
+             - ShuffleHashTime: 3.391ms
+               - __MAX_OF_ShuffleHashTime: 3.729ms
+               - __MIN_OF_ShuffleHashTime: 2.948ms
+             - WaitTime: 2.040ms
+        PROJECT (plan_node_id=26):
+          CommonMetrics:
+             - OperatorTotalTime: 155.202us
+               - __MAX_OF_OperatorTotalTime: 179.723us
+               - __MIN_OF_OperatorTotalTime: 136.703us
+             - OutputChunkBytes: 96.363 MB
+               - __MAX_OF_OutputChunkBytes: 6.058 MB
+               - __MIN_OF_OutputChunkBytes: 5.998 MB
+             - PullChunkNum: 1.088K (1088)
+               - __MAX_OF_PullChunkNum: 68
+               - __MIN_OF_PullChunkNum: 68
+             - PullRowNum: 3.609M (3608725)
+               - __MAX_OF_PullRowNum: 226.876K (226876)
+               - __MIN_OF_PullRowNum: 224.616K (224616)
+             - PullTotalTime: 8.657us
+               - __MAX_OF_PullTotalTime: 9.950us
+               - __MIN_OF_PullTotalTime: 7.993us
+             - PushChunkNum: 1.088K (1088)
+               - __MAX_OF_PushChunkNum: 68
+               - __MIN_OF_PushChunkNum: 68
+             - PushRowNum: 3.609M (3608725)
+               - __MAX_OF_PushRowNum: 226.876K (226876)
+               - __MIN_OF_PushRowNum: 224.616K (224616)
+             - PushTotalTime: 142.352us
+               - __MAX_OF_PushTotalTime: 166.203us
+               - __MIN_OF_PushTotalTime: 124.849us
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CommonSubExprComputeTime: 6.694us
+               - __MAX_OF_CommonSubExprComputeTime: 7.911us
+               - __MIN_OF_CommonSubExprComputeTime: 6.035us
+             - ExprComputeTime: 59.364us
+               - __MAX_OF_ExprComputeTime: 78.871us
+               - __MIN_OF_ExprComputeTime: 52.089us
+        CHUNK_ACCUMULATE (plan_node_id=25):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 64.325us
+               - __MAX_OF_OperatorTotalTime: 81.517us
+               - __MIN_OF_OperatorTotalTime: 53.103us
+             - OutputChunkBytes: 96.363 MB
+               - __MAX_OF_OutputChunkBytes: 6.058 MB
+               - __MIN_OF_OutputChunkBytes: 5.998 MB
+             - PullChunkNum: 1.088K (1088)
+               - __MAX_OF_PullChunkNum: 68
+               - __MIN_OF_PullChunkNum: 68
+             - PullRowNum: 3.609M (3608725)
+               - __MAX_OF_PullRowNum: 226.876K (226876)
+               - __MIN_OF_PullRowNum: 224.616K (224616)
+             - PullTotalTime: 8.660us
+               - __MAX_OF_PullTotalTime: 9.204us
+               - __MIN_OF_PullTotalTime: 7.493us
+             - PushChunkNum: 1.088K (1088)
+               - __MAX_OF_PushChunkNum: 68
+               - __MIN_OF_PushChunkNum: 68
+             - PushRowNum: 3.609M (3608725)
+               - __MAX_OF_PushRowNum: 226.876K (226876)
+               - __MIN_OF_PushRowNum: 224.616K (224616)
+             - PushTotalTime: 55.195us
+               - __MAX_OF_PushTotalTime: 72.371us
+               - __MIN_OF_PushTotalTime: 43.902us
+          UniqueMetrics:
+        HASH_JOIN_PROBE (plan_node_id=25):
+          CommonMetrics:
+             - OperatorTotalTime: 23.371ms
+               - __MAX_OF_OperatorTotalTime: 26.332ms
+               - __MIN_OF_OperatorTotalTime: 19.620ms
+             - OutputChunkBytes: 96.363 MB
+               - __MAX_OF_OutputChunkBytes: 6.058 MB
+               - __MIN_OF_OutputChunkBytes: 5.998 MB
+             - PullChunkNum: 1.088K (1088)
+               - __MAX_OF_PullChunkNum: 68
+               - __MIN_OF_PullChunkNum: 68
+             - PullRowNum: 3.609M (3608725)
+               - __MAX_OF_PullRowNum: 226.876K (226876)
+               - __MIN_OF_PullRowNum: 224.616K (224616)
+             - PullTotalTime: 23.274ms
+               - __MAX_OF_PullTotalTime: 26.241ms
+               - __MIN_OF_PullTotalTime: 19.522ms
+             - PushChunkNum: 384
+               - __MAX_OF_PushChunkNum: 24
+               - __MIN_OF_PushChunkNum: 24
+             - PushRowNum: 1.404M (1404154)
+               - __MAX_OF_PushRowNum: 87.803K (87803)
+               - __MIN_OF_PushRowNum: 87.697K (87697)
+             - PushTotalTime: 70.581us
+               - __MAX_OF_PushTotalTime: 101.501us
+               - __MIN_OF_PushTotalTime: 57.313us
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: LOCAL_HASH_BUCKET
+             - JoinType: INNER_JOIN
+             - OtherJoinConjunctEvaluateTime: 0ns
+             - OutputBuildColumnTime: 2.657ms
+               - __MAX_OF_OutputBuildColumnTime: 3.072ms
+               - __MIN_OF_OutputBuildColumnTime: 2.122ms
+             - OutputProbeColumnTime: 2.546ms
+               - __MAX_OF_OutputProbeColumnTime: 2.863ms
+               - __MIN_OF_OutputProbeColumnTime: 2.286ms
+             - PartitionProbeOverhead: 0ns
+             - ProbeConjunctEvaluateTime: 49.626us
+               - __MAX_OF_ProbeConjunctEvaluateTime: 76.569us
+               - __MIN_OF_ProbeConjunctEvaluateTime: 40.499us
+             - SearchHashTableTime: 17.784ms
+               - __MAX_OF_SearchHashTableTime: 20.254ms
+               - __MIN_OF_SearchHashTableTime: 14.844ms
+             - WhereConjunctEvaluateTime: 0ns
+             - probeCount: 0
+        CHUNK_ACCUMULATE (plan_node_id=21):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 28.802us
+               - __MAX_OF_OperatorTotalTime: 45.442us
+               - __MIN_OF_OperatorTotalTime: 23.646us
+             - OutputChunkBytes: 37.495 MB
+               - __MAX_OF_OutputChunkBytes: 2.345 MB
+               - __MIN_OF_OutputChunkBytes: 2.342 MB
+             - PullChunkNum: 384
+               - __MAX_OF_PullChunkNum: 24
+               - __MIN_OF_PullChunkNum: 24
+             - PullRowNum: 1.404M (1404154)
+               - __MAX_OF_PullRowNum: 87.803K (87803)
+               - __MIN_OF_PullRowNum: 87.697K (87697)
+             - PullTotalTime: 4.662us
+               - __MAX_OF_PullTotalTime: 5.417us
+               - __MIN_OF_PullTotalTime: 3.984us
+             - PushChunkNum: 384
+               - __MAX_OF_PushChunkNum: 24
+               - __MIN_OF_PushChunkNum: 24
+             - PushRowNum: 1.404M (1404154)
+               - __MAX_OF_PushRowNum: 87.803K (87803)
+               - __MIN_OF_PushRowNum: 87.697K (87697)
+             - PushTotalTime: 23.289us
+               - __MAX_OF_PushTotalTime: 39.717us
+               - __MIN_OF_PushTotalTime: 18.220us
+          UniqueMetrics:
+        OLAP_SCAN (plan_node_id=21):
+          CommonMetrics:
+             - RuntimeFilterDesc: <4: BloomFilter> 
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 1.404M (1404154)
+               - __MAX_OF_JoinRuntimeFilterInputRows: 87.803K (87803)
+               - __MIN_OF_JoinRuntimeFilterInputRows: 87.697K (87697)
+             - JoinRuntimeFilterOutputRows: 1.404M (1404154)
+               - __MAX_OF_JoinRuntimeFilterOutputRows: 87.803K (87803)
+               - __MIN_OF_JoinRuntimeFilterOutputRows: 87.697K (87697)
+             - JoinRuntimeFilterTime: 8.968us
+               - __MAX_OF_JoinRuntimeFilterTime: 11.098us
+               - __MIN_OF_JoinRuntimeFilterTime: 6.507us
+             - OperatorTotalTime: 2.801ms
+               - __MAX_OF_OperatorTotalTime: 4.848ms
+               - __MIN_OF_OperatorTotalTime: 1.566ms
+             - OutputChunkBytes: 37.495 MB
+               - __MAX_OF_OutputChunkBytes: 2.345 MB
+               - __MIN_OF_OutputChunkBytes: 2.342 MB
+             - PullChunkNum: 384
+               - __MAX_OF_PullChunkNum: 24
+               - __MIN_OF_PullChunkNum: 24
+             - PullRowNum: 1.404M (1404154)
+               - __MAX_OF_PullRowNum: 87.803K (87803)
+               - __MIN_OF_PullRowNum: 87.697K (87697)
+             - PullTotalTime: 2.242ms
+               - __MAX_OF_PullTotalTime: 4.201ms
+               - __MIN_OF_PullTotalTime: 1.042ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 1
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - MorselQueueType: fixed_morsel_queue
+             - Predicates: 47: c_custkey IS NOT NULL
+             - Rollup: customer
+             - SharedScan: False
+             - Table: customer
+             - AccessPathHits: 0
+             - AccessPathUnhits: 0
+             - BytesRead: 37.952 MB
+               - __MAX_OF_BytesRead: 607.900 KB
+               - __MIN_OF_BytesRead: 606.468 KB
+             - CachedPagesNum: 640
+               - __MAX_OF_CachedPagesNum: 10
+               - __MIN_OF_CachedPagesNum: 10
+             - ChunkBufferCapacity: 1.024K (1024)
+             - CompressedBytesRead: 0.000 B
+             - DefaultChunkBufferCapacity: 1.024K (1024)
+             - IOTaskExecTime: 1.270ms
+               - __MAX_OF_IOTaskExecTime: 1.469ms
+               - __MIN_OF_IOTaskExecTime: 811.100us
+               - CreateSegmentIter: 33.067us
+                 - __MAX_OF_CreateSegmentIter: 85.306us
+                 - __MIN_OF_CreateSegmentIter: 18.558us
+               - GetDelVec: 0ns
+               - GetDeltaColumnGroup: 3.622us
+                 - __MAX_OF_GetDeltaColumnGroup: 38.666us
+                 - __MIN_OF_GetDeltaColumnGroup: 925ns
+               - GetRowsets: 3.788us
+                 - __MAX_OF_GetRowsets: 19.850us
+                 - __MIN_OF_GetRowsets: 1.961us
+               - IOTime: 0ns
+               - LateMaterialize: 462.842us
+                 - __MAX_OF_LateMaterialize: 551.626us
+                 - __MIN_OF_LateMaterialize: 249.056us
+               - ReadPKIndex: 0ns
+               - SegmentInit: 92.002us
+                 - __MAX_OF_SegmentInit: 121.780us
+                 - __MIN_OF_SegmentInit: 60.716us
+                 - BitmapIndexFilter: 0ns
+                 - BitmapIndexFilterRows: 0
+                 - BitmapIndexIteratorInit: 4.632us
+                   - __MAX_OF_BitmapIndexIteratorInit: 7.492us
+                   - __MIN_OF_BitmapIndexIteratorInit: 2.984us
+                 - BloomFilterFilter: 606ns
+                   - __MAX_OF_BloomFilterFilter: 1.100us
+                   - __MIN_OF_BloomFilterFilter: 412ns
+                 - BloomFilterFilterRows: 0
+                 - ColumnIteratorInit: 33.045us
+                   - __MAX_OF_ColumnIteratorInit: 51.078us
+                   - __MIN_OF_ColumnIteratorInit: 24.598us
+                 - GetVectorRowRangesTime: 0ns
+                 - GinFilter: 0ns
+                 - GinFilterRows: 0
+                 - ProcessVectorDistanceAndIdTime: 0ns
+                 - RemainingRowsAfterShortKeyFilter: 1.500M (1500000)
+                   - __MAX_OF_RemainingRowsAfterShortKeyFilter: 23.438K (23438)
+                   - __MIN_OF_RemainingRowsAfterShortKeyFilter: 23.436K (23436)
+                 - SegmentRuntimeZoneMapFilterRows: 0
+                 - SegmentZoneMapFilterRows: 0
+                 - ShortKeyFilter: 720ns
+                   - __MAX_OF_ShortKeyFilter: 1.285us
+                   - __MIN_OF_ShortKeyFilter: 423ns
+                 - ShortKeyFilterRows: 0
+                 - ShortKeyRangeNumber: 0
+                 - VectorIndexFilterRows: 0
+                 - VectorSearchTime: 0ns
+                 - ZoneMapIndexFilterRows: 0
+                 - ZoneMapIndexFiter: 7.658us
+                   - __MAX_OF_ZoneMapIndexFiter: 21.262us
+                   - __MIN_OF_ZoneMapIndexFiter: 5.043us
+               - SegmentRead: 535.142us
+                 - __MAX_OF_SegmentRead: 633.780us
+                 - __MIN_OF_SegmentRead: 403.511us
+                 - BlockFetch: 330.040us
+                   - __MAX_OF_BlockFetch: 426.662us
+                   - __MIN_OF_BlockFetch: 239.771us
+                 - BlockFetchCount: 448
+                   - __MAX_OF_BlockFetchCount: 7
+                   - __MIN_OF_BlockFetchCount: 7
+                 - BlockSeek: 7.375us
+                   - __MAX_OF_BlockSeek: 20.969us
+                   - __MIN_OF_BlockSeek: 4.237us
+                 - BlockSeekCount: 512
+                   - __MAX_OF_BlockSeekCount: 8
+                   - __MIN_OF_BlockSeekCount: 8
+                 - ChunkCopy: 13.928us
+                   - __MAX_OF_ChunkCopy: 37.233us
+                   - __MIN_OF_ChunkCopy: 9.310us
+                 - DecompressT: 0ns
+                 - DelVecFilterRows: 0
+                 - PredFilter: 65.488us
+                   - __MAX_OF_PredFilter: 91.939us
+                   - __MIN_OF_PredFilter: 39.124us
+                 - PredFilterRows: 95.846K (95846)
+                   - __MAX_OF_PredFilterRows: 1.531K (1531)
+                   - __MIN_OF_PredFilterRows: 1.466K (1466)
+                 - RowsetsReadCount: 128
+                   - __MAX_OF_RowsetsReadCount: 2
+                   - __MIN_OF_RowsetsReadCount: 2
+                 - SegmentsReadCount: 64
+                   - __MAX_OF_SegmentsReadCount: 1
+                   - __MIN_OF_SegmentsReadCount: 1
+                 - TotalColumnsDataPageCount: 640
+                   - __MAX_OF_TotalColumnsDataPageCount: 10
+                   - __MIN_OF_TotalColumnsDataPageCount: 10
+             - IOTaskWaitTime: 541.631us
+               - __MAX_OF_IOTaskWaitTime: 2.418ms
+               - __MIN_OF_IOTaskWaitTime: 27.263us
+             - MorselsCount: 64
+               - __MAX_OF_MorselsCount: 4
+               - __MIN_OF_MorselsCount: 4
+             - PeakChunkBufferMemoryUsage: 45.003 MB
+             - PeakChunkBufferSize: 26
+             - PeakIOTasks: 3
+               - __MAX_OF_PeakIOTasks: 4
+               - __MIN_OF_PeakIOTasks: 2
+             - PeakScanTaskQueueSize: 105
+               - __MAX_OF_PeakScanTaskQueueSize: 14
+               - __MIN_OF_PeakScanTaskQueueSize: 1
+             - PrepareChunkSourceTime: 697.076us
+               - __MAX_OF_PrepareChunkSourceTime: 867.376us
+               - __MIN_OF_PrepareChunkSourceTime: 548.331us
+             - PushdownAccessPaths: 0
+             - PushdownPredicates: 4
+             - RawRowsRead: 1.500M (1500000)
+               - __MAX_OF_RawRowsRead: 23.438K (23438)
+               - __MIN_OF_RawRowsRead: 23.436K (23436)
+             - ReadPagesNum: 640
+               - __MAX_OF_ReadPagesNum: 10
+               - __MIN_OF_ReadPagesNum: 10
+             - RowsRead: 1.404M (1404154)
+               - __MAX_OF_RowsRead: 21.970K (21970)
+               - __MIN_OF_RowsRead: 21.906K (21906)
+             - RuntimeFilterEvalTime: 107.836us
+               - __MAX_OF_RuntimeFilterEvalTime: 174.426us
+               - __MIN_OF_RuntimeFilterEvalTime: 50.893us
+             - RuntimeFilterInputRows: 1.500M (1500000)
+               - __MAX_OF_RuntimeFilterInputRows: 23.438K (23438)
+               - __MIN_OF_RuntimeFilterInputRows: 23.436K (23436)
+             - RuntimeFilterOutputRows: 1.404M (1404154)
+               - __MAX_OF_RuntimeFilterOutputRows: 21.970K (21970)
+               - __MIN_OF_RuntimeFilterOutputRows: 21.906K (21906)
+             - ScanTime: 1.812ms
+               - __MAX_OF_ScanTime: 3.687ms
+               - __MIN_OF_ScanTime: 838.363us
+             - SubmitTaskCount: 64
+               - __MAX_OF_SubmitTaskCount: 4
+               - __MIN_OF_SubmitTaskCount: 4
+             - SubmitTaskTime: 1.333ms
+               - __MAX_OF_SubmitTaskTime: 3.054ms
+               - __MIN_OF_SubmitTaskTime: 136.780us
+             - TabletCount: 64
+             - UncompressedBytesRead: 0.000 B
+      Pipeline (id=1):
+         - LocalRfWaitingSet: 1
+         - IsGroupExecution: false
+         - ActiveTime: 73.087us
+           - __MAX_OF_ActiveTime: 456.062us
+           - __MIN_OF_ActiveTime: 24.070us
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 73.891ms
+           - __MAX_OF_DriverTotalTime: 74.146ms
+           - __MIN_OF_DriverTotalTime: 73.584ms
+         - PeakDriverQueueSize: 81
+           - __MAX_OF_PeakDriverQueueSize: 12
+           - __MIN_OF_PeakDriverQueueSize: 0
+         - PendingTime: 0ns
+           - PreconditionBlockTime: 73.562ms
+             - __MAX_OF_PreconditionBlockTime: 73.624ms
+             - __MIN_OF_PreconditionBlockTime: 73.462ms
+         - ScheduleCount: 16
+           - __MAX_OF_ScheduleCount: 1
+           - __MIN_OF_ScheduleCount: 1
+         - ScheduleTime: 73.818ms
+           - __MAX_OF_ScheduleTime: 74.093ms
+           - __MIN_OF_ScheduleTime: 73.531ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        NOOP_SINK (plan_node_id=21):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 362ns
+               - __MAX_OF_OperatorTotalTime: 535ns
+               - __MIN_OF_OperatorTotalTime: 298ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+        OLAP_SCAN_PREPARE (plan_node_id=21):
+          CommonMetrics:
+             - IsSubordinate
+             - RuntimeFilterDesc: <4: BloomFilter> 
+             - OperatorTotalTime: 75.069us
+               - __MAX_OF_OperatorTotalTime: 458.780us
+               - __MIN_OF_OperatorTotalTime: 25.484us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 67.048us
+               - __MAX_OF_PullTotalTime: 449.139us
+               - __MIN_OF_PullTotalTime: 20.754us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 1
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CaptureTabletRowsetsTime: 15.760us
+               - __MAX_OF_CaptureTabletRowsetsTime: 31.935us
+               - __MIN_OF_CaptureTabletRowsetsTime: 12.804us
+      Pipeline (id=0):
+         - IsGroupExecution: false
+         - ActiveTime: 9.246ms
+           - __MAX_OF_ActiveTime: 45.403ms
+           - __MIN_OF_ActiveTime: 5.650ms
+         - BlockByInputEmpty: 61
+           - __MAX_OF_BlockByInputEmpty: 4
+           - __MIN_OF_BlockByInputEmpty: 3
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 37.797ms
+           - __MAX_OF_DriverTotalTime: 73.917ms
+           - __MIN_OF_DriverTotalTime: 34.246ms
+         - PeakDriverQueueSize: 216
+           - __MAX_OF_PeakDriverQueueSize: 20
+           - __MIN_OF_PeakDriverQueueSize: 7
+         - PendingTime: 0ns
+           - InputEmptyTime: 27.109ms
+             - __MAX_OF_InputEmptyTime: 28.054ms
+             - __MIN_OF_InputEmptyTime: 26.182ms
+             - FirstInputEmptyTime: 18.944ms
+               - __MAX_OF_FirstInputEmptyTime: 19.108ms
+               - __MIN_OF_FirstInputEmptyTime: 18.655ms
+             - FollowupInputEmptyTime: 8.165ms
+               - __MAX_OF_FollowupInputEmptyTime: 9.220ms
+               - __MIN_OF_FollowupInputEmptyTime: 7.164ms
+         - ScheduleCount: 77
+           - __MAX_OF_ScheduleCount: 5
+           - __MIN_OF_ScheduleCount: 4
+         - ScheduleTime: 28.551ms
+           - __MAX_OF_ScheduleTime: 28.991ms
+           - __MIN_OF_ScheduleTime: 27.869ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        HASH_JOIN_BUILD (plan_node_id=25):
+          CommonMetrics:
+             - OperatorTotalTime: 8.652ms
+               - __MAX_OF_OperatorTotalTime: 44.835ms
+               - __MIN_OF_OperatorTotalTime: 5.102ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 1.024K (1024)
+               - __MAX_OF_PushChunkNum: 64
+               - __MIN_OF_PushChunkNum: 64
+             - PushRowNum: 3.609M (3608725)
+               - __MAX_OF_PushRowNum: 226.876K (226876)
+               - __MIN_OF_PushRowNum: 224.616K (224616)
+             - PushTotalTime: 1.821ms
+               - __MAX_OF_PushTotalTime: 2.151ms
+               - __MIN_OF_PushTotalTime: 1.541ms
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+             - SetFinishingTime: 6.820ms
+               - __MAX_OF_SetFinishingTime: 42.784ms
+               - __MIN_OF_SetFinishingTime: 3.452ms
+          UniqueMetrics:
+             - DistributionMode: LOCAL_HASH_BUCKET
+             - JoinPredicates: 47: c_custkey = 39: o_custkey
+             - JoinType: INNER_JOIN
+             - BuildBuckets: 8.389M (8388608)
+               - __MAX_OF_BuildBuckets: 524.288K (524288)
+               - __MIN_OF_BuildBuckets: 524.288K (524288)
+             - BuildConjunctEvaluateTime: 210.244us
+               - __MAX_OF_BuildConjunctEvaluateTime: 306.887us
+               - __MIN_OF_BuildConjunctEvaluateTime: 151.402us
+             - BuildHashTableTime: 4.510ms
+               - __MAX_OF_BuildHashTableTime: 6.105ms
+               - __MIN_OF_BuildHashTableTime: 3.435ms
+             - BuildKeysPerBucket%: 6.327K (6327)
+               - __MAX_OF_BuildKeysPerBucket%: 398
+               - __MIN_OF_BuildKeysPerBucket%: 394
+             - CopyRightTableChunkTime: 1.579ms
+               - __MAX_OF_CopyRightTableChunkTime: 1.846ms
+               - __MIN_OF_CopyRightTableChunkTime: 1.330ms
+             - HashTableMemoryUsage: 91.122 MB
+               - __MAX_OF_HashTableMemoryUsage: 6.689 MB
+               - __MIN_OF_HashTableMemoryUsage: 5.024 MB
+             - PartialRuntimeMembershipFilterBytes: 4.000 MB
+               - __MAX_OF_PartialRuntimeMembershipFilterBytes: 4.000 MB
+               - __MIN_OF_PartialRuntimeMembershipFilterBytes: 0.000 B
+             - PartitionNums: 16
+               - __MAX_OF_PartitionNums: 1
+               - __MIN_OF_PartitionNums: 1
+             - RuntimeFilterBuildTime: 2.285ms
+               - __MAX_OF_RuntimeFilterBuildTime: 36.393ms
+               - __MIN_OF_RuntimeFilterBuildTime: 8.013us
+             - RuntimeFilterNum: 0
+        EXCHANGE_SOURCE (plan_node_id=24):
+          CommonMetrics:
+             - ConjunctsInputRows: 3.609M (3608725)
+               - __MAX_OF_ConjunctsInputRows: 226.876K (226876)
+               - __MIN_OF_ConjunctsInputRows: 224.616K (224616)
+             - ConjunctsOutputRows: 3.609M (3608725)
+               - __MAX_OF_ConjunctsOutputRows: 226.876K (226876)
+               - __MIN_OF_ConjunctsOutputRows: 224.616K (224616)
+             - ConjunctsTime: 96.816us
+               - __MAX_OF_ConjunctsTime: 135.850us
+               - __MIN_OF_ConjunctsTime: 84.113us
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 291.093us
+               - __MAX_OF_OperatorTotalTime: 342.045us
+               - __MIN_OF_OperatorTotalTime: 258.812us
+             - OutputChunkBytes: 34.415 MB
+               - __MAX_OF_OutputChunkBytes: 2.164 MB
+               - __MIN_OF_OutputChunkBytes: 2.142 MB
+             - PullChunkNum: 1.024K (1024)
+               - __MAX_OF_PullChunkNum: 64
+               - __MIN_OF_PullChunkNum: 64
+             - PullRowNum: 3.609M (3608725)
+               - __MAX_OF_PullRowNum: 226.876K (226876)
+               - __MIN_OF_PullRowNum: 224.616K (224616)
+             - PullTotalTime: 276.561us
+               - __MAX_OF_PullTotalTime: 325.922us
+               - __MIN_OF_PullTotalTime: 249.869us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 48
+               - __MAX_OF_BufferUnplugCount: 3
+               - __MIN_OF_BufferUnplugCount: 3
+             - BytesPassThrough: 34.439 MB
+               - __MAX_OF_BytesPassThrough: 2.757 MB
+               - __MIN_OF_BytesPassThrough: 1.460 MB
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 0
+             - ClosureBlockTime: 0ns
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 11.931 MB
+               - __MAX_OF_PeakBufferMemoryBytes: 1.550 MB
+               - __MIN_OF_PeakBufferMemoryBytes: 221.127 KB
+             - ReceiverProcessTotalTime: 178.976us
+               - __MAX_OF_ReceiverProcessTotalTime: 248.035us
+               - __MIN_OF_ReceiverProcessTotalTime: 138.841us
+             - RequestReceived: 127
+               - __MAX_OF_RequestReceived: 8
+               - __MIN_OF_RequestReceived: 7
+             - WaitLockTime: 0ns
+    Fragment 10:
+       - BackendAddresses: 172.26.95.146:9060
+       - InstanceIds: b32190b0-8a0b-11f0-94e0-00163e341ba1
+       - EnableEventScheduler: true
+       - BackendNum: 1
+       - BackendProfileMergeTime: 4.744ms
+       - InitialProcessDriverCount: 761
+       - InitialProcessMem: 9.585 GB
+       - InstanceAllocatedMemoryUsage: 156.390 MB
+       - InstanceDeallocatedMemoryUsage: 137.409 MB
+       - InstanceNum: 1
+       - InstancePeakMemoryUsage: 48.682 MB
+       - JITCounter: 0
+       - JITTotalCostTime: 0ns
+       - QueryMemoryLimit: -1.000 B
+      Pipeline (id=1):
+         - IsGroupExecution: false
+         - ActiveTime: 14.882ms
+           - __MAX_OF_ActiveTime: 20.653ms
+           - __MIN_OF_ActiveTime: 11.112ms
+         - BlockByInputEmpty: 11
+           - __MAX_OF_BlockByInputEmpty: 1
+           - __MIN_OF_BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 24.813ms
+           - __MAX_OF_DriverTotalTime: 24.992ms
+           - __MIN_OF_DriverTotalTime: 24.656ms
+         - PeakDriverQueueSize: 108
+           - __MAX_OF_PeakDriverQueueSize: 20
+           - __MIN_OF_PeakDriverQueueSize: 1
+         - PendingTime: 0ns
+           - InputEmptyTime: 4.750ms
+             - __MAX_OF_InputEmptyTime: 9.567ms
+             - __MIN_OF_InputEmptyTime: 0ns
+             - FirstInputEmptyTime: 4.750ms
+               - __MAX_OF_FirstInputEmptyTime: 9.567ms
+               - __MIN_OF_FirstInputEmptyTime: 0ns
+           - PendingFinishTime: 4.830ms
+             - __MAX_OF_PendingFinishTime: 10.877ms
+             - __MIN_OF_PendingFinishTime: 1.745ms
+         - ScheduleCount: 27
+           - __MAX_OF_ScheduleCount: 2
+           - __MIN_OF_ScheduleCount: 1
+         - ScheduleTime: 9.931ms
+           - __MAX_OF_ScheduleTime: 13.543ms
+           - __MIN_OF_ScheduleTime: 4.223ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        EXCHANGE_SINK (plan_node_id=24):
+          CommonMetrics:
+             - OperatorTotalTime: 10.128ms
+               - __MAX_OF_OperatorTotalTime: 12.137ms
+               - __MIN_OF_OperatorTotalTime: 8.848ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 1.147K (1147)
+               - __MAX_OF_PushChunkNum: 72
+               - __MIN_OF_PushChunkNum: 70
+             - PushRowNum: 3.609M (3608725)
+               - __MAX_OF_PushRowNum: 226.307K (226307)
+               - __MIN_OF_PushRowNum: 224.633K (224633)
+             - PushTotalTime: 9.483ms
+               - __MAX_OF_PushTotalTime: 11.776ms
+               - __MIN_OF_PushTotalTime: 8.251ms
+          UniqueMetrics:
+             - ChannelNum: 64
+             - DestFragments: b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0, b32190b08a0b11f0-94e000163e341ba0
+             - DestID: 24
+             - PartType: BUCKET_SHUFFLE_HASH_PARTITIONED
+             - PipelineLevelShuffle: Yes
+             - ShuffleNumPerChannel: 1
+             - TotalShuffleNum: 64
+             - BytesPassThrough: 34.439 MB
+               - __MAX_OF_BytesPassThrough: 2.160 MB
+               - __MIN_OF_BytesPassThrough: 2.144 MB
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 18.932ms
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 17.397ms
+             - PassThroughBufferPeakMemoryUsage: 1.070 MB
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 359.197us
+             - RpcCount: 127
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 73.406K (73406)
+               - __MAX_OF_ShuffleChunkAppendCounter: 4.608K (4608)
+               - __MIN_OF_ShuffleChunkAppendCounter: 4.480K (4480)
+             - ShuffleChunkAppendTime: 3.097ms
+               - __MAX_OF_ShuffleChunkAppendTime: 4.294ms
+               - __MIN_OF_ShuffleChunkAppendTime: 2.725ms
+             - ShuffleHashTime: 3.766ms
+               - __MAX_OF_ShuffleHashTime: 4.105ms
+               - __MIN_OF_ShuffleHashTime: 3.321ms
+             - WaitTime: 2.434ms
+        PROJECT (plan_node_id=23):
+          CommonMetrics:
+             - OperatorTotalTime: 142.740us
+               - __MAX_OF_OperatorTotalTime: 154.264us
+               - __MIN_OF_OperatorTotalTime: 132.615us
+             - OutputChunkBytes: 34.415 MB
+               - __MAX_OF_OutputChunkBytes: 2.158 MB
+               - __MIN_OF_OutputChunkBytes: 2.142 MB
+             - PullChunkNum: 1.147K (1147)
+               - __MAX_OF_PullChunkNum: 72
+               - __MIN_OF_PullChunkNum: 70
+             - PullRowNum: 3.609M (3608725)
+               - __MAX_OF_PullRowNum: 226.307K (226307)
+               - __MIN_OF_PullRowNum: 224.633K (224633)
+             - PullTotalTime: 9.714us
+               - __MAX_OF_PullTotalTime: 14.388us
+               - __MIN_OF_PullTotalTime: 8.220us
+             - PushChunkNum: 1.147K (1147)
+               - __MAX_OF_PushChunkNum: 72
+               - __MIN_OF_PushChunkNum: 70
+             - PushRowNum: 3.609M (3608725)
+               - __MAX_OF_PushRowNum: 226.307K (226307)
+               - __MIN_OF_PushRowNum: 224.633K (224633)
+             - PushTotalTime: 125.841us
+               - __MAX_OF_PushTotalTime: 137.649us
+               - __MIN_OF_PushTotalTime: 117.023us
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CommonSubExprComputeTime: 3.458us
+               - __MAX_OF_CommonSubExprComputeTime: 4.217us
+               - __MIN_OF_CommonSubExprComputeTime: 2.940us
+             - ExprComputeTime: 55.683us
+               - __MAX_OF_ExprComputeTime: 60.249us
+               - __MIN_OF_ExprComputeTime: 49.752us
+        CHUNK_ACCUMULATE (plan_node_id=22):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 41.205us
+               - __MAX_OF_OperatorTotalTime: 45.661us
+               - __MIN_OF_OperatorTotalTime: 38.521us
+             - OutputChunkBytes: 34.415 MB
+               - __MAX_OF_OutputChunkBytes: 2.158 MB
+               - __MIN_OF_OutputChunkBytes: 2.142 MB
+             - PullChunkNum: 1.147K (1147)
+               - __MAX_OF_PullChunkNum: 72
+               - __MIN_OF_PullChunkNum: 70
+             - PullRowNum: 3.609M (3608725)
+               - __MAX_OF_PullRowNum: 226.307K (226307)
+               - __MIN_OF_PullRowNum: 224.633K (224633)
+             - PullTotalTime: 9.710us
+               - __MAX_OF_PullTotalTime: 15.038us
+               - __MIN_OF_PullTotalTime: 8.622us
+             - PushChunkNum: 1.152K (1152)
+               - __MAX_OF_PushChunkNum: 72
+               - __MIN_OF_PushChunkNum: 72
+             - PushRowNum: 3.609M (3608725)
+               - __MAX_OF_PushRowNum: 226.307K (226307)
+               - __MIN_OF_PushRowNum: 224.633K (224633)
+             - PushTotalTime: 30.744us
+               - __MAX_OF_PushTotalTime: 35.169us
+               - __MIN_OF_PushTotalTime: 25.616us
+          UniqueMetrics:
+        OLAP_SCAN (plan_node_id=22):
+          CommonMetrics:
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 4.673ms
+               - __MAX_OF_OperatorTotalTime: 10.294ms
+               - __MIN_OF_OperatorTotalTime: 1.625ms
+             - OutputChunkBytes: 34.415 MB
+               - __MAX_OF_OutputChunkBytes: 2.158 MB
+               - __MIN_OF_OutputChunkBytes: 2.142 MB
+             - PullChunkNum: 1.152K (1152)
+               - __MAX_OF_PullChunkNum: 72
+               - __MIN_OF_PullChunkNum: 72
+             - PullRowNum: 3.609M (3608725)
+               - __MAX_OF_PullRowNum: 226.307K (226307)
+               - __MIN_OF_PullRowNum: 224.633K (224633)
+             - PullTotalTime: 4.042ms
+               - __MAX_OF_PullTotalTime: 9.687ms
+               - __MIN_OF_PullTotalTime: 1.109ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - MorselQueueType: fixed_morsel_queue
+             - Predicates: 42: o_orderdate >= '1997-01-01', 40: o_orderstatus = 'O'
+             - Rollup: orders
+             - SharedScan: False
+             - Table: orders
+             - AccessPathHits: 0
+             - AccessPathUnhits: 0
+             - BytesRead: 208.390 MB
+               - __MAX_OF_BytesRead: 3.263 MB
+               - __MIN_OF_BytesRead: 3.251 MB
+             - CachedPagesNum: 3.904K (3904)
+               - __MAX_OF_CachedPagesNum: 61
+               - __MIN_OF_CachedPagesNum: 61
+             - ChunkBufferCapacity: 1.024K (1024)
+             - CompressedBytesRead: 0.000 B
+             - DefaultChunkBufferCapacity: 1.024K (1024)
+             - IOTaskExecTime: 3.831ms
+               - __MAX_OF_IOTaskExecTime: 5.993ms
+               - __MIN_OF_IOTaskExecTime: 2.658ms
+               - CreateSegmentIter: 141.932us
+                 - __MAX_OF_CreateSegmentIter: 6.966ms
+                 - __MIN_OF_CreateSegmentIter: 20.027us
+               - DictDecode: 4.178us
+                 - __MAX_OF_DictDecode: 6.134us
+                 - __MIN_OF_DictDecode: 2.114us
+               - GetDelVec: 0ns
+               - GetDeltaColumnGroup: 110.184us
+                 - __MAX_OF_GetDeltaColumnGroup: 6.921ms
+                 - __MIN_OF_GetDeltaColumnGroup: 955ns
+               - GetRowsets: 3.240us
+                 - __MAX_OF_GetRowsets: 8.241us
+                 - __MIN_OF_GetRowsets: 2.166us
+               - IOTime: 0ns
+               - LateMaterialize: 1.071ms
+                 - __MAX_OF_LateMaterialize: 1.374ms
+                 - __MIN_OF_LateMaterialize: 562.013us
+               - ReadPKIndex: 0ns
+               - SegmentInit: 129.686us
+                 - __MAX_OF_SegmentInit: 166.893us
+                 - __MIN_OF_SegmentInit: 88.604us
+                 - BitmapIndexFilter: 0ns
+                 - BitmapIndexFilterRows: 0
+                 - BitmapIndexIteratorInit: 4.464us
+                   - __MAX_OF_BitmapIndexIteratorInit: 6.511us
+                   - __MIN_OF_BitmapIndexIteratorInit: 3.350us
+                 - BloomFilterFilter: 550ns
+                   - __MAX_OF_BloomFilterFilter: 993ns
+                   - __MIN_OF_BloomFilterFilter: 364ns
+                 - BloomFilterFilterRows: 0
+                 - ColumnIteratorInit: 42.550us
+                   - __MAX_OF_ColumnIteratorInit: 63.366us
+                   - __MIN_OF_ColumnIteratorInit: 33.224us
+                 - GetVectorRowRangesTime: 0ns
+                 - GinFilter: 0ns
+                 - GinFilterRows: 0
+                 - ProcessVectorDistanceAndIdTime: 0ns
+                 - RemainingRowsAfterShortKeyFilter: 15.000M (15000000)
+                   - __MAX_OF_RemainingRowsAfterShortKeyFilter: 234.376K (234376)
+                   - __MIN_OF_RemainingRowsAfterShortKeyFilter: 234.374K (234374)
+                 - SegmentRuntimeZoneMapFilterRows: 0
+                 - SegmentZoneMapFilterRows: 0
+                 - ShortKeyFilter: 697ns
+                   - __MAX_OF_ShortKeyFilter: 1.038us
+                   - __MIN_OF_ShortKeyFilter: 464ns
+                 - ShortKeyFilterRows: 0
+                 - ShortKeyRangeNumber: 0
+                 - VectorIndexFilterRows: 0
+                 - VectorSearchTime: 0ns
+                 - ZoneMapIndexFilterRows: 0
+                 - ZoneMapIndexFiter: 26.222us
+                   - __MAX_OF_ZoneMapIndexFiter: 43.935us
+                   - __MIN_OF_ZoneMapIndexFiter: 16.155us
+               - SegmentRead: 2.262ms
+                 - __MAX_OF_SegmentRead: 4.103ms
+                 - __MIN_OF_SegmentRead: 1.651ms
+                 - BlockFetch: 1.215ms
+                   - __MAX_OF_BlockFetch: 1.692ms
+                   - __MIN_OF_BlockFetch: 917.657us
+                 - BlockFetchCount: 6.295K (6295)
+                   - __MAX_OF_BlockFetchCount: 101
+                   - __MIN_OF_BlockFetchCount: 96
+                 - BlockSeek: 10.039us
+                   - __MAX_OF_BlockSeek: 17.419us
+                   - __MIN_OF_BlockSeek: 7.003us
+                 - BlockSeekCount: 3.648K (3648)
+                   - __MAX_OF_BlockSeekCount: 57
+                   - __MIN_OF_BlockSeekCount: 57
+                 - ChunkCopy: 794.996us
+                   - __MAX_OF_ChunkCopy: 2.441ms
+                   - __MIN_OF_ChunkCopy: 552.287us
+                 - DecompressT: 0ns
+                 - DelVecFilterRows: 0
+                 - PredFilter: 167.301us
+                   - __MAX_OF_PredFilter: 216.532us
+                   - __MIN_OF_PredFilter: 107.517us
+                 - PredFilterRows: 11.391M (11391275)
+                   - __MAX_OF_PredFilterRows: 178.561K (178561)
+                   - __MIN_OF_PredFilterRows: 177.513K (177513)
+                 - RowsetsReadCount: 128
+                   - __MAX_OF_RowsetsReadCount: 2
+                   - __MIN_OF_RowsetsReadCount: 2
+                 - SegmentsReadCount: 64
+                   - __MAX_OF_SegmentsReadCount: 1
+                   - __MIN_OF_SegmentsReadCount: 1
+                 - TotalColumnsDataPageCount: 3.840K (3840)
+                   - __MAX_OF_TotalColumnsDataPageCount: 60
+                   - __MIN_OF_TotalColumnsDataPageCount: 60
+             - IOTaskWaitTime: 1.241ms
+               - __MAX_OF_IOTaskWaitTime: 8.676ms
+               - __MIN_OF_IOTaskWaitTime: 8.883us
+             - MorselsCount: 64
+               - __MAX_OF_MorselsCount: 4
+               - __MIN_OF_MorselsCount: 4
+             - PeakChunkBufferMemoryUsage: 32.463 MB
+             - PeakChunkBufferSize: 76
+             - PeakIOTasks: 3
+               - __MAX_OF_PeakIOTasks: 4
+               - __MIN_OF_PeakIOTasks: 2
+             - PeakScanTaskQueueSize: 183
+               - __MAX_OF_PeakScanTaskQueueSize: 17
+               - __MIN_OF_PeakScanTaskQueueSize: 0
+             - PrepareChunkSourceTime: 1.595ms
+               - __MAX_OF_PrepareChunkSourceTime: 7.760ms
+               - __MIN_OF_PrepareChunkSourceTime: 596.808us
+             - PushdownAccessPaths: 0
+             - PushdownPredicates: 2
+             - RawRowsRead: 15.000M (15000000)
+               - __MAX_OF_RawRowsRead: 234.376K (234376)
+               - __MIN_OF_RawRowsRead: 234.374K (234374)
+             - ReadPagesNum: 3.904K (3904)
+               - __MAX_OF_ReadPagesNum: 61
+               - __MIN_OF_ReadPagesNum: 61
+             - RowsRead: 3.609M (3608725)
+               - __MAX_OF_RowsRead: 56.862K (56862)
+               - __MIN_OF_RowsRead: 55.814K (55814)
+             - RuntimeFilterEvalTime: 0ns
+             - RuntimeFilterInputRows: 0
+             - RuntimeFilterOutputRows: 0
+             - ScanTime: 5.073ms
+               - __MAX_OF_ScanTime: 13.745ms
+               - __MIN_OF_ScanTime: 2.846ms
+             - SubmitTaskCount: 64
+               - __MAX_OF_SubmitTaskCount: 4
+               - __MIN_OF_SubmitTaskCount: 4
+             - SubmitTaskTime: 2.182ms
+               - __MAX_OF_SubmitTaskTime: 8.684ms
+               - __MIN_OF_SubmitTaskTime: 70.448us
+             - TabletCount: 64
+             - UncompressedBytesRead: 0.000 B
+      Pipeline (id=0):
+         - IsGroupExecution: false
+         - ActiveTime: 50.631us
+           - __MAX_OF_ActiveTime: 64.621us
+           - __MIN_OF_ActiveTime: 22.466us
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 136.149us
+           - __MAX_OF_DriverTotalTime: 282.638us
+           - __MIN_OF_DriverTotalTime: 71.818us
+         - PeakDriverQueueSize: 18
+           - __MAX_OF_PeakDriverQueueSize: 4
+           - __MIN_OF_PeakDriverQueueSize: 0
+         - ScheduleCount: 16
+           - __MAX_OF_ScheduleCount: 1
+           - __MIN_OF_ScheduleCount: 1
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        NOOP_SINK (plan_node_id=22):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 357ns
+               - __MAX_OF_OperatorTotalTime: 505ns
+               - __MIN_OF_OperatorTotalTime: 261ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+        OLAP_SCAN_PREPARE (plan_node_id=22):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 50.438us
+               - __MAX_OF_OperatorTotalTime: 63.874us
+               - __MIN_OF_OperatorTotalTime: 22.694us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 45.628us
+               - __MAX_OF_PullTotalTime: 59.565us
+               - __MIN_OF_PullTotalTime: 19.872us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CaptureTabletRowsetsTime: 11.653us
+               - __MAX_OF_CaptureTabletRowsetsTime: 32.351us
+               - __MIN_OF_CaptureTabletRowsetsTime: 9.112us
+    Fragment 11:
+       - BackendAddresses: 172.26.95.146:9060
+       - InstanceIds: b32190b0-8a0b-11f0-94e0-00163e341ba2
+       - EnableEventScheduler: true
+       - BackendNum: 1
+       - BackendProfileMergeTime: 5.060ms
+       - InitialProcessDriverCount: 552
+       - InitialProcessMem: 9.419 GB
+       - InstanceAllocatedMemoryUsage: 46.506 MB
+       - InstanceDeallocatedMemoryUsage: 43.488 MB
+       - InstanceNum: 1
+       - InstancePeakMemoryUsage: 7.652 MB
+       - JITCounter: 0
+       - JITTotalCostTime: 0ns
+       - QueryMemoryLimit: -1.000 B
+      Pipeline (id=3):
+         - LocalRfWaitingSet: 1
+         - IsGroupExecution: false
+         - ActiveTime: 3.220ms
+           - __MAX_OF_ActiveTime: 9.091ms
+           - __MIN_OF_ActiveTime: 1.497ms
+         - BlockByInputEmpty: 17
+           - __MAX_OF_BlockByInputEmpty: 2
+           - __MIN_OF_BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 49.737ms
+           - __MAX_OF_DriverTotalTime: 49.861ms
+           - __MIN_OF_DriverTotalTime: 49.596ms
+         - PeakDriverQueueSize: 108
+           - __MAX_OF_PeakDriverQueueSize: 19
+           - __MIN_OF_PeakDriverQueueSize: 2
+         - PendingTime: 0ns
+           - PendingFinishTime: 6.085ms
+             - __MAX_OF_PendingFinishTime: 7.934ms
+             - __MIN_OF_PendingFinishTime: 845.333us
+           - PreconditionBlockTime: 39.586ms
+             - __MAX_OF_PreconditionBlockTime: 39.737ms
+             - __MIN_OF_PreconditionBlockTime: 39.455ms
+         - ScheduleCount: 33
+           - __MAX_OF_ScheduleCount: 3
+           - __MIN_OF_ScheduleCount: 1
+         - ScheduleTime: 46.516ms
+           - __MAX_OF_ScheduleTime: 48.100ms
+           - __MIN_OF_ScheduleTime: 40.700ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        EXCHANGE_SINK (plan_node_id=17):
+          CommonMetrics:
+             - OperatorTotalTime: 152.829us
+               - __MAX_OF_OperatorTotalTime: 280.473us
+               - __MIN_OF_OperatorTotalTime: 73.124us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 32
+               - __MAX_OF_PushChunkNum: 2
+               - __MIN_OF_PushChunkNum: 2
+             - PushRowNum: 86.435K (86435)
+               - __MAX_OF_PushRowNum: 5.435K (5435)
+               - __MIN_OF_PushRowNum: 5.359K (5359)
+             - PushTotalTime: 81.416us
+               - __MAX_OF_PushTotalTime: 115.900us
+               - __MIN_OF_PushTotalTime: 58.686us
+          UniqueMetrics:
+             - ChannelNum: 1
+             - DestFragments: b32190b08a0b11f0-94e000163e341b9e
+             - DestID: 17
+             - PartType: UNPARTITIONED
+             - BytesPassThrough: 3.283 MB
+               - __MAX_OF_BytesPassThrough: 211.270 KB
+               - __MIN_OF_BytesPassThrough: 208.499 KB
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 4.181ms
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 7.781ms
+             - PassThroughBufferPeakMemoryUsage: 287.531 KB
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 245.954us
+             - RpcCount: 17
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 0
+             - ShuffleChunkAppendTime: 0ns
+             - ShuffleHashTime: 0ns
+             - WaitTime: 1.242ms
+        PROJECT (plan_node_id=16):
+          CommonMetrics:
+             - OperatorTotalTime: 8.378us
+               - __MAX_OF_OperatorTotalTime: 11.496us
+               - __MIN_OF_OperatorTotalTime: 6.488us
+             - OutputChunkBytes: 3.281 MB
+               - __MAX_OF_OutputChunkBytes: 211.176 KB
+               - __MIN_OF_OutputChunkBytes: 208.405 KB
+             - PullChunkNum: 32
+               - __MAX_OF_PullChunkNum: 2
+               - __MIN_OF_PullChunkNum: 2
+             - PullRowNum: 86.435K (86435)
+               - __MAX_OF_PullRowNum: 5.435K (5435)
+               - __MIN_OF_PullRowNum: 5.359K (5359)
+             - PullTotalTime: 238ns
+               - __MAX_OF_PullTotalTime: 327ns
+               - __MIN_OF_PullTotalTime: 162ns
+             - PushChunkNum: 32
+               - __MAX_OF_PushChunkNum: 2
+               - __MIN_OF_PushChunkNum: 2
+             - PushRowNum: 86.435K (86435)
+               - __MAX_OF_PushRowNum: 5.435K (5435)
+               - __MIN_OF_PushRowNum: 5.359K (5359)
+             - PushTotalTime: 4.767us
+               - __MAX_OF_PushTotalTime: 7.931us
+               - __MIN_OF_PushTotalTime: 2.829us
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CommonSubExprComputeTime: 134ns
+               - __MAX_OF_CommonSubExprComputeTime: 337ns
+               - __MIN_OF_CommonSubExprComputeTime: 73ns
+             - ExprComputeTime: 1.578us
+               - __MAX_OF_ExprComputeTime: 2.580us
+               - __MIN_OF_ExprComputeTime: 1.063us
+        CHUNK_ACCUMULATE (plan_node_id=15):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 123.615us
+               - __MAX_OF_OperatorTotalTime: 187.815us
+               - __MIN_OF_OperatorTotalTime: 94.912us
+             - OutputChunkBytes: 3.281 MB
+               - __MAX_OF_OutputChunkBytes: 211.176 KB
+               - __MIN_OF_OutputChunkBytes: 208.405 KB
+             - PullChunkNum: 32
+               - __MAX_OF_PullChunkNum: 2
+               - __MIN_OF_PullChunkNum: 2
+             - PullRowNum: 86.435K (86435)
+               - __MAX_OF_PullRowNum: 5.435K (5435)
+               - __MIN_OF_PullRowNum: 5.359K (5359)
+             - PullTotalTime: 291ns
+               - __MAX_OF_PullTotalTime: 474ns
+               - __MIN_OF_PullTotalTime: 178ns
+             - PushChunkNum: 64
+               - __MAX_OF_PushChunkNum: 4
+               - __MIN_OF_PushChunkNum: 4
+             - PushRowNum: 86.435K (86435)
+               - __MAX_OF_PushRowNum: 5.435K (5435)
+               - __MIN_OF_PushRowNum: 5.359K (5359)
+             - PushTotalTime: 122.955us
+               - __MAX_OF_PushTotalTime: 187.187us
+               - __MIN_OF_PushTotalTime: 94.203us
+          UniqueMetrics:
+        HASH_JOIN_PROBE (plan_node_id=15):
+          CommonMetrics:
+             - OperatorTotalTime: 304.281us
+               - __MAX_OF_OperatorTotalTime: 1.665ms
+               - __MIN_OF_OperatorTotalTime: 165.670us
+             - OutputChunkBytes: 3.281 MB
+               - __MAX_OF_OutputChunkBytes: 211.176 KB
+               - __MIN_OF_OutputChunkBytes: 208.405 KB
+             - PullChunkNum: 64
+               - __MAX_OF_PullChunkNum: 4
+               - __MIN_OF_PullChunkNum: 4
+             - PullRowNum: 86.435K (86435)
+               - __MAX_OF_PullRowNum: 5.435K (5435)
+               - __MIN_OF_PullRowNum: 5.359K (5359)
+             - PullTotalTime: 243.286us
+               - __MAX_OF_PullTotalTime: 1.591ms
+               - __MIN_OF_PullTotalTime: 107.762us
+             - PushChunkNum: 64
+               - __MAX_OF_PushChunkNum: 4
+               - __MIN_OF_PushChunkNum: 4
+             - PushRowNum: 86.435K (86435)
+               - __MAX_OF_PushRowNum: 5.435K (5435)
+               - __MIN_OF_PushRowNum: 5.359K (5359)
+             - PushTotalTime: 47.913us
+               - __MAX_OF_PushTotalTime: 73.039us
+               - __MIN_OF_PushTotalTime: 31.952us
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: BROADCAST
+             - JoinType: INNER_JOIN
+             - OtherJoinConjunctEvaluateTime: 0ns
+             - OutputBuildColumnTime: 175.711us
+               - __MAX_OF_OutputBuildColumnTime: 1.513ms
+               - __MIN_OF_OutputBuildColumnTime: 62.654us
+             - OutputProbeColumnTime: 4.206us
+               - __MAX_OF_OutputProbeColumnTime: 8.317us
+               - __MIN_OF_OutputProbeColumnTime: 2.708us
+             - PartitionProbeOverhead: 0ns
+             - ProbeConjunctEvaluateTime: 0ns
+             - SearchHashTableTime: 52.775us
+               - __MAX_OF_SearchHashTableTime: 77.579us
+               - __MIN_OF_SearchHashTableTime: 29.044us
+             - WhereConjunctEvaluateTime: 0ns
+             - probeCount: 0
+        PROJECT (plan_node_id=7):
+          CommonMetrics:
+             - OperatorTotalTime: 21.617us
+               - __MAX_OF_OperatorTotalTime: 35.104us
+               - __MIN_OF_OperatorTotalTime: 15.737us
+             - OutputChunkBytes: 2.720 MB
+               - __MAX_OF_OutputChunkBytes: 175.151 KB
+               - __MIN_OF_OutputChunkBytes: 172.702 KB
+             - PullChunkNum: 64
+               - __MAX_OF_PullChunkNum: 4
+               - __MIN_OF_PullChunkNum: 4
+             - PullRowNum: 86.435K (86435)
+               - __MAX_OF_PullRowNum: 5.435K (5435)
+               - __MIN_OF_PullRowNum: 5.359K (5359)
+             - PullTotalTime: 1.690us
+               - __MAX_OF_PullTotalTime: 11.996us
+               - __MIN_OF_PullTotalTime: 764ns
+             - PushChunkNum: 64
+               - __MAX_OF_PushChunkNum: 4
+               - __MIN_OF_PushChunkNum: 4
+             - PushRowNum: 86.435K (86435)
+               - __MAX_OF_PushRowNum: 5.435K (5435)
+               - __MIN_OF_PushRowNum: 5.359K (5359)
+             - PushTotalTime: 15.347us
+               - __MAX_OF_PushTotalTime: 28.988us
+               - __MIN_OF_PushTotalTime: 10.939us
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CommonSubExprComputeTime: 291ns
+               - __MAX_OF_CommonSubExprComputeTime: 482ns
+               - __MIN_OF_CommonSubExprComputeTime: 188ns
+             - ExprComputeTime: 6.226us
+               - __MAX_OF_ExprComputeTime: 19.555us
+               - __MIN_OF_ExprComputeTime: 3.631us
+        CHUNK_ACCUMULATE (plan_node_id=6):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 5.957us
+               - __MAX_OF_OperatorTotalTime: 11.240us
+               - __MIN_OF_OperatorTotalTime: 4.881us
+             - OutputChunkBytes: 2.720 MB
+               - __MAX_OF_OutputChunkBytes: 175.151 KB
+               - __MIN_OF_OutputChunkBytes: 172.702 KB
+             - PullChunkNum: 64
+               - __MAX_OF_PullChunkNum: 4
+               - __MIN_OF_PullChunkNum: 4
+             - PullRowNum: 86.435K (86435)
+               - __MAX_OF_PullRowNum: 5.435K (5435)
+               - __MIN_OF_PullRowNum: 5.359K (5359)
+             - PullTotalTime: 1.036us
+               - __MAX_OF_PullTotalTime: 1.574us
+               - __MIN_OF_PullTotalTime: 782ns
+             - PushChunkNum: 64
+               - __MAX_OF_PushChunkNum: 4
+               - __MIN_OF_PushChunkNum: 4
+             - PushRowNum: 86.435K (86435)
+               - __MAX_OF_PushRowNum: 5.435K (5435)
+               - __MIN_OF_PushRowNum: 5.359K (5359)
+             - PushTotalTime: 4.350us
+               - __MAX_OF_PushTotalTime: 9.597us
+               - __MIN_OF_PushTotalTime: 3.295us
+          UniqueMetrics:
+        OLAP_SCAN (plan_node_id=6):
+          CommonMetrics:
+             - RuntimeFilterDesc: <2: BitsetFilter> 
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 86.435K (86435)
+               - __MAX_OF_JoinRuntimeFilterInputRows: 5.435K (5435)
+               - __MIN_OF_JoinRuntimeFilterInputRows: 5.359K (5359)
+             - JoinRuntimeFilterOutputRows: 86.435K (86435)
+               - __MAX_OF_JoinRuntimeFilterOutputRows: 5.435K (5435)
+               - __MIN_OF_JoinRuntimeFilterOutputRows: 5.359K (5359)
+             - JoinRuntimeFilterTime: 1.743us
+               - __MAX_OF_JoinRuntimeFilterTime: 3.481us
+               - __MIN_OF_JoinRuntimeFilterTime: 1.187us
+             - OperatorTotalTime: 2.841ms
+               - __MAX_OF_OperatorTotalTime: 8.970ms
+               - __MIN_OF_OperatorTotalTime: 1.274ms
+             - OutputChunkBytes: 2.720 MB
+               - __MAX_OF_OutputChunkBytes: 175.151 KB
+               - __MIN_OF_OutputChunkBytes: 172.702 KB
+             - PullChunkNum: 64
+               - __MAX_OF_PullChunkNum: 4
+               - __MIN_OF_PullChunkNum: 4
+             - PullRowNum: 86.435K (86435)
+               - __MAX_OF_PullRowNum: 5.435K (5435)
+               - __MIN_OF_PullRowNum: 5.359K (5359)
+             - PullTotalTime: 2.408ms
+               - __MAX_OF_PullTotalTime: 8.501ms
+               - __MIN_OF_PullTotalTime: 928.368us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 1
+             - RuntimeInFilterNum: 1
+          UniqueMetrics:
+             - MorselQueueType: fixed_morsel_queue
+             - Predicates: 20: s_acctbal > 500
+             - Rollup: supplier
+             - SharedScan: False
+             - Table: supplier
+             - AccessPathHits: 0
+             - AccessPathUnhits: 0
+             - BytesRead: 3.643 MB
+               - __MAX_OF_BytesRead: 59.145 KB
+               - __MIN_OF_BytesRead: 57.381 KB
+             - CachedPagesNum: 512
+               - __MAX_OF_CachedPagesNum: 8
+               - __MIN_OF_CachedPagesNum: 8
+             - ChunkBufferCapacity: 1.024K (1024)
+             - CompressedBytesRead: 0.000 B
+             - DefaultChunkBufferCapacity: 1.024K (1024)
+             - IOTaskExecTime: 635.269us
+               - __MAX_OF_IOTaskExecTime: 4.123ms
+               - __MIN_OF_IOTaskExecTime: 413.757us
+               - CreateSegmentIter: 52.418us
+                 - __MAX_OF_CreateSegmentIter: 643.557us
+                 - __MIN_OF_CreateSegmentIter: 26.541us
+               - GetDelVec: 0ns
+               - GetDeltaColumnGroup: 1.829us
+                 - __MAX_OF_GetDeltaColumnGroup: 5.331us
+                 - __MIN_OF_GetDeltaColumnGroup: 739ns
+               - GetRowsets: 4.228us
+                 - __MAX_OF_GetRowsets: 11.497us
+                 - __MIN_OF_GetRowsets: 2.630us
+               - IOTime: 0ns
+               - LateMaterialize: 286.656us
+                 - __MAX_OF_LateMaterialize: 3.741ms
+                 - __MIN_OF_LateMaterialize: 127.835us
+               - ReadPKIndex: 0ns
+               - SegmentInit: 110.933us
+                 - __MAX_OF_SegmentInit: 189.303us
+                 - __MIN_OF_SegmentInit: 72.972us
+                 - BitmapIndexFilter: 0ns
+                 - BitmapIndexFilterRows: 0
+                 - BitmapIndexIteratorInit: 5.804us
+                   - __MAX_OF_BitmapIndexIteratorInit: 10.281us
+                   - __MIN_OF_BitmapIndexIteratorInit: 3.751us
+                 - BloomFilterFilter: 638ns
+                   - __MAX_OF_BloomFilterFilter: 1.677us
+                   - __MIN_OF_BloomFilterFilter: 322ns
+                 - BloomFilterFilterRows: 0
+                 - ColumnIteratorInit: 41.280us
+                   - __MAX_OF_ColumnIteratorInit: 74.492us
+                   - __MIN_OF_ColumnIteratorInit: 21.171us
+                 - GetVectorRowRangesTime: 0ns
+                 - GinFilter: 0ns
+                 - GinFilterRows: 0
+                 - ProcessVectorDistanceAndIdTime: 0ns
+                 - RemainingRowsAfterShortKeyFilter: 100.000K (100000)
+                   - __MAX_OF_RemainingRowsAfterShortKeyFilter: 1.563K (1563)
+                   - __MIN_OF_RemainingRowsAfterShortKeyFilter: 1.562K (1562)
+                 - SegmentRuntimeZoneMapFilterRows: 0
+                 - SegmentZoneMapFilterRows: 0
+                 - ShortKeyFilter: 834ns
+                   - __MAX_OF_ShortKeyFilter: 7.382us
+                   - __MIN_OF_ShortKeyFilter: 511ns
+                 - ShortKeyFilterRows: 0
+                 - ShortKeyRangeNumber: 0
+                 - VectorIndexFilterRows: 0
+                 - VectorSearchTime: 0ns
+                 - ZoneMapIndexFilterRows: 0
+                 - ZoneMapIndexFiter: 10.258us
+                   - __MAX_OF_ZoneMapIndexFiter: 20.423us
+                   - __MIN_OF_ZoneMapIndexFiter: 6.483us
+               - SegmentRead: 77.843us
+                 - __MAX_OF_SegmentRead: 147.223us
+                 - __MIN_OF_SegmentRead: 56.853us
+                 - BlockFetch: 11.557us
+                   - __MAX_OF_BlockFetch: 27.628us
+                   - __MIN_OF_BlockFetch: 7.421us
+                 - BlockFetchCount: 64
+                   - __MAX_OF_BlockFetchCount: 1
+                   - __MIN_OF_BlockFetchCount: 1
+                 - BlockSeek: 13.926us
+                   - __MAX_OF_BlockSeek: 56.297us
+                   - __MIN_OF_BlockSeek: 6.431us
+                 - BlockSeekCount: 64
+                   - __MAX_OF_BlockSeekCount: 1
+                   - __MIN_OF_BlockSeekCount: 1
+                 - ChunkCopy: 10.954us
+                   - __MAX_OF_ChunkCopy: 25.004us
+                   - __MIN_OF_ChunkCopy: 6.697us
+                 - DecompressT: 0ns
+                 - DelVecFilterRows: 0
+                 - PredFilter: 19.738us
+                   - __MAX_OF_PredFilter: 43.121us
+                   - __MIN_OF_PredFilter: 12.065us
+                 - PredFilterRows: 13.565K (13565)
+                   - __MAX_OF_PredFilterRows: 246
+                   - __MIN_OF_PredFilterRows: 180
+                 - RowsetsReadCount: 128
+                   - __MAX_OF_RowsetsReadCount: 2
+                   - __MIN_OF_RowsetsReadCount: 2
+                 - SegmentsReadCount: 64
+                   - __MAX_OF_SegmentsReadCount: 1
+                   - __MIN_OF_SegmentsReadCount: 1
+                 - TotalColumnsDataPageCount: 256
+                   - __MAX_OF_TotalColumnsDataPageCount: 4
+                   - __MIN_OF_TotalColumnsDataPageCount: 4
+             - IOTaskWaitTime: 430.727us
+               - __MAX_OF_IOTaskWaitTime: 6.301ms
+               - __MIN_OF_IOTaskWaitTime: 16.053us
+             - MorselsCount: 64
+               - __MAX_OF_MorselsCount: 4
+               - __MIN_OF_MorselsCount: 4
+             - PeakChunkBufferMemoryUsage: 2.723 MB
+             - PeakChunkBufferSize: 6
+             - PeakIOTasks: 2
+               - __MAX_OF_PeakIOTasks: 4
+               - __MIN_OF_PeakIOTasks: 1
+             - PeakScanTaskQueueSize: 108
+               - __MAX_OF_PeakScanTaskQueueSize: 9
+               - __MIN_OF_PeakScanTaskQueueSize: 0
+             - PrepareChunkSourceTime: 1.018ms
+               - __MAX_OF_PrepareChunkSourceTime: 2.034ms
+               - __MIN_OF_PrepareChunkSourceTime: 737.175us
+             - PushdownAccessPaths: 0
+             - PushdownPredicates: 4
+             - RawRowsRead: 100.000K (100000)
+               - __MAX_OF_RawRowsRead: 1.563K (1563)
+               - __MIN_OF_RawRowsRead: 1.562K (1562)
+             - ReadPagesNum: 512
+               - __MAX_OF_ReadPagesNum: 8
+               - __MIN_OF_ReadPagesNum: 8
+             - RowsRead: 86.435K (86435)
+               - __MAX_OF_RowsRead: 1.382K (1382)
+               - __MIN_OF_RowsRead: 1.317K (1317)
+             - RuntimeFilterEvalTime: 18.403us
+               - __MAX_OF_RuntimeFilterEvalTime: 37.576us
+               - __MIN_OF_RuntimeFilterEvalTime: 13.199us
+             - RuntimeFilterInputRows: 86.435K (86435)
+               - __MAX_OF_RuntimeFilterInputRows: 1.382K (1382)
+               - __MIN_OF_RuntimeFilterInputRows: 1.317K (1317)
+             - RuntimeFilterOutputRows: 86.435K (86435)
+               - __MAX_OF_RuntimeFilterOutputRows: 1.382K (1382)
+               - __MIN_OF_RuntimeFilterOutputRows: 1.317K (1317)
+             - ScanTime: 1.065ms
+               - __MAX_OF_ScanTime: 6.949ms
+               - __MIN_OF_ScanTime: 478.898us
+             - SubmitTaskCount: 64
+               - __MAX_OF_SubmitTaskCount: 4
+               - __MIN_OF_SubmitTaskCount: 4
+             - SubmitTaskTime: 1.202ms
+               - __MAX_OF_SubmitTaskTime: 6.319ms
+               - __MIN_OF_SubmitTaskTime: 57.698us
+             - TabletCount: 64
+             - UncompressedBytesRead: 0.000 B
+      Pipeline (id=2):
+         - LocalRfWaitingSet: 1
+         - IsGroupExecution: false
+         - ActiveTime: 45.673us
+           - __MAX_OF_ActiveTime: 71.662us
+           - __MIN_OF_ActiveTime: 26.048us
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 39.398ms
+           - __MAX_OF_DriverTotalTime: 39.541ms
+           - __MIN_OF_DriverTotalTime: 39.259ms
+         - PeakDriverQueueSize: 10
+           - __MAX_OF_PeakDriverQueueSize: 2
+           - __MIN_OF_PeakDriverQueueSize: 0
+         - PendingTime: 0ns
+           - PreconditionBlockTime: 39.300ms
+             - __MAX_OF_PreconditionBlockTime: 39.425ms
+             - __MIN_OF_PreconditionBlockTime: 39.168ms
+         - ScheduleCount: 16
+           - __MAX_OF_ScheduleCount: 1
+           - __MIN_OF_ScheduleCount: 1
+         - ScheduleTime: 39.352ms
+           - __MAX_OF_ScheduleTime: 39.496ms
+           - __MIN_OF_ScheduleTime: 39.187ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        NOOP_SINK (plan_node_id=6):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 316ns
+               - __MAX_OF_OperatorTotalTime: 404ns
+               - __MIN_OF_OperatorTotalTime: 257ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+        OLAP_SCAN_PREPARE (plan_node_id=6):
+          CommonMetrics:
+             - IsSubordinate
+             - RuntimeFilterDesc: <2: BitsetFilter> 
+             - OperatorTotalTime: 47.499us
+               - __MAX_OF_OperatorTotalTime: 74.476us
+               - __MIN_OF_OperatorTotalTime: 28.076us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 41.318us
+               - __MAX_OF_PullTotalTime: 66.862us
+               - __MIN_OF_PullTotalTime: 23.073us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 1
+             - RuntimeInFilterNum: 1
+          UniqueMetrics:
+             - CaptureTabletRowsetsTime: 11.171us
+               - __MAX_OF_CaptureTabletRowsetsTime: 15.180us
+               - __MIN_OF_CaptureTabletRowsetsTime: 9.102us
+      Pipeline (id=1):
+         - IsGroupExecution: false
+         - ActiveTime: 832.078us
+         - BlockByInputEmpty: 1
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 1
+         - DriverTotalTime: 39.870ms
+         - PeakDriverQueueSize: 2
+         - PendingTime: 0ns
+           - InputEmptyTime: 38.782ms
+             - FirstInputEmptyTime: 38.741ms
+         - ScheduleCount: 2
+         - ScheduleTime: 39.038ms
+         - TotalDegreeOfParallelism: 1
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        HASH_JOIN_BUILD (plan_node_id=15):
+          CommonMetrics:
+             - OperatorTotalTime: 807.434us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 4
+             - PushRowNum: 25
+             - PushTotalTime: 15.813us
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: BROADCAST
+             - JoinPredicates: 18: s_nationkey = 55: n_nationkey
+             - JoinType: INNER_JOIN
+             - BuildBuckets: 64
+             - BuildConjunctEvaluateTime: 4.576us
+             - BuildHashTableTime: 27.830us
+             - BuildKeysPerBucket%: 100
+             - CopyRightTableChunkTime: 8.365us
+             - HashTableMemoryUsage: 960.000 B
+             - PartialRuntimeMembershipFilterBytes: 20.000 B
+             - PartitionNums: 1
+             - RuntimeFilterBuildTime: 65.026us
+             - RuntimeFilterNum: 1
+        LOCAL_EXCHANGE_SOURCE (plan_node_id=15):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 13.038us
+             - OutputChunkBytes: 420.000 B
+             - PullChunkNum: 4
+             - PullRowNum: 25
+             - PullTotalTime: 5.572us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+      Pipeline (id=0):
+         - IsGroupExecution: false
+         - ActiveTime: 25.904us
+           - __MAX_OF_ActiveTime: 173.196us
+           - __MIN_OF_ActiveTime: 5.330us
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 38.982ms
+           - __MAX_OF_DriverTotalTime: 39.093ms
+           - __MIN_OF_DriverTotalTime: 38.929ms
+         - PeakDriverQueueSize: 105
+           - __MAX_OF_PeakDriverQueueSize: 14
+           - __MIN_OF_PeakDriverQueueSize: 0
+         - PendingTime: 0ns
+           - InputEmptyTime: 38.749ms
+             - __MAX_OF_InputEmptyTime: 38.760ms
+             - __MIN_OF_InputEmptyTime: 38.700ms
+             - FirstInputEmptyTime: 38.749ms
+               - __MAX_OF_FirstInputEmptyTime: 38.760ms
+               - __MIN_OF_FirstInputEmptyTime: 38.700ms
+         - ScheduleCount: 16
+           - __MAX_OF_ScheduleCount: 1
+           - __MIN_OF_ScheduleCount: 1
+         - ScheduleTime: 38.956ms
+           - __MAX_OF_ScheduleTime: 39.086ms
+           - __MIN_OF_ScheduleTime: 38.755ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        LOCAL_EXCHANGE_SINK (plan_node_id=15):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 14.657us
+               - __MAX_OF_OperatorTotalTime: 148.845us
+               - __MIN_OF_OperatorTotalTime: 335ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 4
+               - __MAX_OF_PushChunkNum: 3
+               - __MIN_OF_PushChunkNum: 0
+             - PushRowNum: 25
+               - __MAX_OF_PushRowNum: 20
+               - __MIN_OF_PushRowNum: 0
+             - PushTotalTime: 9.429us
+               - __MAX_OF_PushTotalTime: 147.861us
+               - __MIN_OF_PushTotalTime: 0ns
+          UniqueMetrics:
+             - ShuffleNum: 1
+             - Type: Passthrough
+             - LocalExchangePeakMemoryUsage: 444.000 B
+        EXCHANGE_SOURCE (plan_node_id=14):
+          CommonMetrics:
+             - ConjunctsInputRows: 25
+               - __MAX_OF_ConjunctsInputRows: 20
+               - __MIN_OF_ConjunctsInputRows: 5
+             - ConjunctsOutputRows: 25
+               - __MAX_OF_ConjunctsOutputRows: 20
+               - __MIN_OF_ConjunctsOutputRows: 5
+             - ConjunctsTime: 1.066us
+               - __MAX_OF_ConjunctsTime: 1.321us
+               - __MIN_OF_ConjunctsTime: 812ns
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 11.181us
+               - __MAX_OF_OperatorTotalTime: 31.630us
+               - __MIN_OF_OperatorTotalTime: 5.331us
+             - OutputChunkBytes: 420.000 B
+               - __MAX_OF_OutputChunkBytes: 315.000 B
+               - __MIN_OF_OutputChunkBytes: 0.000 B
+             - PullChunkNum: 4
+               - __MAX_OF_PullChunkNum: 3
+               - __MIN_OF_PullChunkNum: 0
+             - PullRowNum: 25
+               - __MAX_OF_PullRowNum: 20
+               - __MIN_OF_PullRowNum: 0
+             - PullTotalTime: 2.678us
+               - __MAX_OF_PullTotalTime: 28.280us
+               - __MIN_OF_PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 0
+             - BytesPassThrough: 548.000 B
+               - __MAX_OF_BytesPassThrough: 446.000 B
+               - __MIN_OF_BytesPassThrough: 0.000 B
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 0
+             - ClosureBlockTime: 0ns
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 548.000 B
+               - __MAX_OF_PeakBufferMemoryBytes: 446.000 B
+               - __MIN_OF_PeakBufferMemoryBytes: 0.000 B
+             - ReceiverProcessTotalTime: 1.185us
+               - __MAX_OF_ReceiverProcessTotalTime: 8.112us
+               - __MIN_OF_ReceiverProcessTotalTime: 0ns
+             - RequestReceived: 5
+               - __MAX_OF_RequestReceived: 1
+               - __MIN_OF_RequestReceived: 0
+             - WaitLockTime: 0ns
+    Fragment 12:
+       - BackendAddresses: 172.26.95.146:9060
+       - InstanceIds: b32190b0-8a0b-11f0-94e0-00163e341ba3
+       - EnableEventScheduler: true
+       - BackendNum: 1
+       - BackendProfileMergeTime: 3.482ms
+       - InitialProcessDriverCount: 681
+       - InitialProcessMem: 9.499 GB
+       - InstanceAllocatedMemoryUsage: 1.318 MB
+       - InstanceDeallocatedMemoryUsage: 1.120 MB
+       - InstanceNum: 1
+       - InstancePeakMemoryUsage: 675.453 KB
+       - JITCounter: 0
+       - JITTotalCostTime: 0ns
+       - QueryMemoryLimit: -1.000 B
+      Pipeline (id=1):
+         - IsGroupExecution: false
+         - ActiveTime: 94.492us
+           - __MAX_OF_ActiveTime: 348.677us
+           - __MIN_OF_ActiveTime: 5.037us
+         - BlockByInputEmpty: 3
+           - __MAX_OF_BlockByInputEmpty: 1
+           - __MIN_OF_BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 29.537ms
+           - __MAX_OF_DriverTotalTime: 29.559ms
+           - __MIN_OF_DriverTotalTime: 29.526ms
+         - PeakDriverQueueSize: 376
+           - __MAX_OF_PeakDriverQueueSize: 31
+           - __MIN_OF_PeakDriverQueueSize: 16
+         - PendingTime: 0ns
+           - InputEmptyTime: 8.793ms
+             - __MAX_OF_InputEmptyTime: 10.131ms
+             - __MIN_OF_InputEmptyTime: 8.074ms
+             - FirstInputEmptyTime: 8.782ms
+               - __MAX_OF_FirstInputEmptyTime: 10.131ms
+               - __MIN_OF_FirstInputEmptyTime: 8.074ms
+           - PreconditionBlockTime: 19.585ms
+             - __MAX_OF_PreconditionBlockTime: 20.333ms
+             - __MIN_OF_PreconditionBlockTime: 18.291ms
+         - ScheduleCount: 19
+           - __MAX_OF_ScheduleCount: 2
+           - __MIN_OF_ScheduleCount: 1
+         - ScheduleTime: 29.443ms
+           - __MAX_OF_ScheduleTime: 29.534ms
+           - __MIN_OF_ScheduleTime: 29.177ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        EXCHANGE_SINK (plan_node_id=14):
+          CommonMetrics:
+             - OperatorTotalTime: 59.872us
+               - __MAX_OF_OperatorTotalTime: 206.599us
+               - __MIN_OF_OperatorTotalTime: 1.944us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 4
+               - __MAX_OF_PushChunkNum: 1
+               - __MIN_OF_PushChunkNum: 0
+             - PushRowNum: 25
+               - __MAX_OF_PushRowNum: 10
+               - __MIN_OF_PushRowNum: 0
+             - PushTotalTime: 2.472us
+               - __MAX_OF_PushTotalTime: 10.963us
+               - __MIN_OF_PushTotalTime: 0ns
+          UniqueMetrics:
+             - ChannelNum: 1
+             - DestFragments: b32190b08a0b11f0-94e000163e341ba2
+             - DestID: 14
+             - PartType: UNPARTITIONED
+             - BytesPassThrough: 548.000 B
+               - __MAX_OF_BytesPassThrough: 197.000 B
+               - __MIN_OF_BytesPassThrough: 0.000 B
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 949.496us
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 877.854us
+             - PassThroughBufferPeakMemoryUsage: 0.000 B
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 189.899us
+             - RpcCount: 5
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 0
+             - ShuffleChunkAppendTime: 0ns
+             - ShuffleHashTime: 0ns
+             - WaitTime: 712.321us
+        PROJECT (plan_node_id=13):
+          CommonMetrics:
+             - OperatorTotalTime: 5.716us
+               - __MAX_OF_OperatorTotalTime: 9.020us
+               - __MIN_OF_OperatorTotalTime: 3.590us
+             - OutputChunkBytes: 420.000 B
+               - __MAX_OF_OutputChunkBytes: 165.000 B
+               - __MIN_OF_OutputChunkBytes: 0.000 B
+             - PullChunkNum: 4
+               - __MAX_OF_PullChunkNum: 1
+               - __MIN_OF_PullChunkNum: 0
+             - PullRowNum: 25
+               - __MAX_OF_PullRowNum: 10
+               - __MIN_OF_PullRowNum: 0
+             - PullTotalTime: 39ns
+               - __MAX_OF_PullTotalTime: 220ns
+               - __MIN_OF_PullTotalTime: 0ns
+             - PushChunkNum: 4
+               - __MAX_OF_PushChunkNum: 1
+               - __MIN_OF_PushChunkNum: 0
+             - PushRowNum: 25
+               - __MAX_OF_PushRowNum: 10
+               - __MIN_OF_PushRowNum: 0
+             - PushTotalTime: 863ns
+               - __MAX_OF_PushTotalTime: 4.045us
+               - __MIN_OF_PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CommonSubExprComputeTime: 62ns
+               - __MAX_OF_CommonSubExprComputeTime: 411ns
+               - __MIN_OF_CommonSubExprComputeTime: 0ns
+             - ExprComputeTime: 389ns
+               - __MAX_OF_ExprComputeTime: 2.068us
+               - __MIN_OF_ExprComputeTime: 0ns
+        CHUNK_ACCUMULATE (plan_node_id=12):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 2.054us
+               - __MAX_OF_OperatorTotalTime: 7.997us
+               - __MIN_OF_OperatorTotalTime: 361ns
+             - OutputChunkBytes: 420.000 B
+               - __MAX_OF_OutputChunkBytes: 165.000 B
+               - __MIN_OF_OutputChunkBytes: 0.000 B
+             - PullChunkNum: 4
+               - __MAX_OF_PullChunkNum: 1
+               - __MIN_OF_PullChunkNum: 0
+             - PullRowNum: 25
+               - __MAX_OF_PullRowNum: 10
+               - __MIN_OF_PullRowNum: 0
+             - PullTotalTime: 42ns
+               - __MAX_OF_PullTotalTime: 192ns
+               - __MIN_OF_PullTotalTime: 0ns
+             - PushChunkNum: 25
+               - __MAX_OF_PushChunkNum: 10
+               - __MIN_OF_PushChunkNum: 0
+             - PushRowNum: 25
+               - __MAX_OF_PushRowNum: 10
+               - __MIN_OF_PushRowNum: 0
+             - PushTotalTime: 1.464us
+               - __MAX_OF_PushTotalTime: 7.251us
+               - __MIN_OF_PushTotalTime: 0ns
+          UniqueMetrics:
+        HASH_JOIN_PROBE (plan_node_id=12):
+          CommonMetrics:
+             - OperatorTotalTime: 25.925us
+               - __MAX_OF_OperatorTotalTime: 73.684us
+               - __MIN_OF_OperatorTotalTime: 8.931us
+             - OutputChunkBytes: 420.000 B
+               - __MAX_OF_OutputChunkBytes: 165.000 B
+               - __MIN_OF_OutputChunkBytes: 0.000 B
+             - PullChunkNum: 25
+               - __MAX_OF_PullChunkNum: 10
+               - __MIN_OF_PullChunkNum: 0
+             - PullRowNum: 25
+               - __MAX_OF_PullRowNum: 10
+               - __MIN_OF_PullRowNum: 0
+             - PullTotalTime: 5.742us
+               - __MAX_OF_PullTotalTime: 27.124us
+               - __MIN_OF_PullTotalTime: 0ns
+             - PushChunkNum: 25
+               - __MAX_OF_PushChunkNum: 10
+               - __MIN_OF_PushChunkNum: 0
+             - PushRowNum: 25
+               - __MAX_OF_PushRowNum: 10
+               - __MIN_OF_PushRowNum: 0
+             - PushTotalTime: 2.020us
+               - __MAX_OF_PushTotalTime: 10.261us
+               - __MIN_OF_PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: PARTITIONED
+             - JoinType: INNER_JOIN
+             - OtherJoinConjunctEvaluateTime: 0ns
+             - OutputBuildColumnTime: 2.166us
+               - __MAX_OF_OutputBuildColumnTime: 9.870us
+               - __MIN_OF_OutputBuildColumnTime: 0ns
+             - OutputProbeColumnTime: 578ns
+               - __MAX_OF_OutputProbeColumnTime: 2.810us
+               - __MIN_OF_OutputProbeColumnTime: 0ns
+             - PartitionProbeOverhead: 0ns
+             - ProbeConjunctEvaluateTime: 1.194us
+               - __MAX_OF_ProbeConjunctEvaluateTime: 6.427us
+               - __MIN_OF_ProbeConjunctEvaluateTime: 0ns
+             - SearchHashTableTime: 1.030us
+               - __MAX_OF_SearchHashTableTime: 4.883us
+               - __MIN_OF_SearchHashTableTime: 0ns
+             - WhereConjunctEvaluateTime: 0ns
+             - probeCount: 0
+        EXCHANGE_SOURCE (plan_node_id=9):
+          CommonMetrics:
+             - ConjunctsInputRows: 25
+               - __MAX_OF_ConjunctsInputRows: 10
+               - __MIN_OF_ConjunctsInputRows: 5
+             - ConjunctsOutputRows: 25
+               - __MAX_OF_ConjunctsOutputRows: 10
+               - __MIN_OF_ConjunctsOutputRows: 5
+             - ConjunctsTime: 1.771us
+               - __MAX_OF_ConjunctsTime: 2.307us
+               - __MIN_OF_ConjunctsTime: 1.422us
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 22.462us
+               - __MAX_OF_OperatorTotalTime: 61.726us
+               - __MIN_OF_OperatorTotalTime: 9.379us
+             - OutputChunkBytes: 250.000 B
+               - __MAX_OF_OutputChunkBytes: 100.000 B
+               - __MIN_OF_OutputChunkBytes: 0.000 B
+             - PullChunkNum: 25
+               - __MAX_OF_PullChunkNum: 10
+               - __MIN_OF_PullChunkNum: 0
+             - PullRowNum: 25
+               - __MAX_OF_PullRowNum: 10
+               - __MIN_OF_PullRowNum: 0
+             - PullTotalTime: 8.108us
+               - __MAX_OF_PullTotalTime: 41.216us
+               - __MIN_OF_PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 0
+             - BytesPassThrough: 850.000 B
+               - __MAX_OF_BytesPassThrough: 850.000 B
+               - __MIN_OF_BytesPassThrough: 0.000 B
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 0
+             - ClosureBlockTime: 0ns
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 850.000 B
+               - __MAX_OF_PeakBufferMemoryBytes: 850.000 B
+               - __MIN_OF_PeakBufferMemoryBytes: 0.000 B
+             - ReceiverProcessTotalTime: 1.724us
+               - __MAX_OF_ReceiverProcessTotalTime: 27.598us
+               - __MIN_OF_ReceiverProcessTotalTime: 0ns
+             - RequestReceived: 1
+               - __MAX_OF_RequestReceived: 1
+               - __MIN_OF_RequestReceived: 0
+             - WaitLockTime: 0ns
+      Pipeline (id=0):
+         - IsGroupExecution: false
+         - ActiveTime: 143.177us
+           - __MAX_OF_ActiveTime: 595.731us
+           - __MIN_OF_ActiveTime: 59.066us
+         - BlockByInputEmpty: 3
+           - __MAX_OF_BlockByInputEmpty: 1
+           - __MIN_OF_BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 19.807ms
+           - __MAX_OF_DriverTotalTime: 20.375ms
+           - __MIN_OF_DriverTotalTime: 18.679ms
+         - PeakDriverQueueSize: 243
+           - __MAX_OF_PeakDriverQueueSize: 28
+           - __MIN_OF_PeakDriverQueueSize: 0
+         - PendingTime: 0ns
+           - InputEmptyTime: 17.908ms
+             - __MAX_OF_InputEmptyTime: 18.184ms
+             - __MIN_OF_InputEmptyTime: 16.832ms
+             - FirstInputEmptyTime: 17.885ms
+               - __MAX_OF_FirstInputEmptyTime: 18.184ms
+               - __MIN_OF_FirstInputEmptyTime: 16.729ms
+         - ScheduleCount: 19
+           - __MAX_OF_ScheduleCount: 2
+           - __MIN_OF_ScheduleCount: 1
+         - ScheduleTime: 19.664ms
+           - __MAX_OF_ScheduleTime: 20.226ms
+           - __MIN_OF_ScheduleTime: 18.524ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        HASH_JOIN_BUILD (plan_node_id=12):
+          CommonMetrics:
+             - OperatorTotalTime: 98.439us
+               - __MAX_OF_OperatorTotalTime: 131.271us
+               - __MIN_OF_OperatorTotalTime: 58.998us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 5
+               - __MAX_OF_PushChunkNum: 2
+               - __MIN_OF_PushChunkNum: 0
+             - PushRowNum: 5
+               - __MAX_OF_PushRowNum: 2
+               - __MIN_OF_PushRowNum: 0
+             - PushTotalTime: 4.913us
+               - __MAX_OF_PushTotalTime: 24.807us
+               - __MIN_OF_PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - DistributionMode: PARTITIONED
+             - JoinPredicates: 57: n_regionkey = 59: r_regionkey
+             - JoinType: INNER_JOIN
+             - BuildBuckets: 16
+               - __MAX_OF_BuildBuckets: 4
+               - __MIN_OF_BuildBuckets: 0
+             - BuildConjunctEvaluateTime: 201ns
+               - __MAX_OF_BuildConjunctEvaluateTime: 1.095us
+               - __MIN_OF_BuildConjunctEvaluateTime: 0ns
+             - BuildHashTableTime: 11.071us
+               - __MAX_OF_BuildHashTableTime: 45.911us
+               - __MIN_OF_BuildHashTableTime: 1.210us
+             - BuildKeysPerBucket%: 400
+               - __MAX_OF_BuildKeysPerBucket%: 100
+               - __MIN_OF_BuildKeysPerBucket%: 0
+             - CopyRightTableChunkTime: 1.436us
+               - __MAX_OF_CopyRightTableChunkTime: 8.356us
+               - __MIN_OF_CopyRightTableChunkTime: 0ns
+             - HashTableMemoryUsage: 452.000 B
+               - __MAX_OF_HashTableMemoryUsage: 77.000 B
+               - __MIN_OF_HashTableMemoryUsage: 16.000 B
+             - PartialRuntimeMembershipFilterBytes: 64.000 B
+               - __MAX_OF_PartialRuntimeMembershipFilterBytes: 64.000 B
+               - __MIN_OF_PartialRuntimeMembershipFilterBytes: 0.000 B
+             - PartitionNums: 256
+               - __MAX_OF_PartitionNums: 16
+               - __MIN_OF_PartitionNums: 16
+             - RuntimeFilterBuildTime: 6.313us
+               - __MAX_OF_RuntimeFilterBuildTime: 24.787us
+               - __MIN_OF_RuntimeFilterBuildTime: 1.884us
+             - RuntimeFilterNum: 0
+        EXCHANGE_SOURCE (plan_node_id=11):
+          CommonMetrics:
+             - ConjunctsInputRows: 5
+               - __MAX_OF_ConjunctsInputRows: 2
+               - __MIN_OF_ConjunctsInputRows: 1
+             - ConjunctsOutputRows: 5
+               - __MAX_OF_ConjunctsOutputRows: 2
+               - __MIN_OF_ConjunctsOutputRows: 1
+             - ConjunctsTime: 1.269us
+               - __MAX_OF_ConjunctsTime: 1.825us
+               - __MIN_OF_ConjunctsTime: 447ns
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 49.749us
+               - __MAX_OF_OperatorTotalTime: 464.117us
+               - __MIN_OF_OperatorTotalTime: 6.052us
+             - OutputChunkBytes: 84.000 B
+               - __MAX_OF_OutputChunkBytes: 33.000 B
+               - __MIN_OF_OutputChunkBytes: 0.000 B
+             - PullChunkNum: 5
+               - __MAX_OF_PullChunkNum: 2
+               - __MIN_OF_PullChunkNum: 0
+             - PullRowNum: 5
+               - __MAX_OF_PullRowNum: 2
+               - __MIN_OF_PullRowNum: 0
+             - PullTotalTime: 9.308us
+               - __MAX_OF_PullTotalTime: 43.327us
+               - __MIN_OF_PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - BufferUnplugCount: 0
+             - BytesPassThrough: 244.000 B
+               - __MAX_OF_BytesPassThrough: 244.000 B
+               - __MIN_OF_BytesPassThrough: 0.000 B
+             - BytesReceived: 0.000 B
+             - ClosureBlockCount: 0
+             - ClosureBlockTime: 0ns
+             - DecompressChunkTime: 0ns
+             - DeserializeChunkTime: 0ns
+             - PeakBufferMemoryBytes: 244.000 B
+               - __MAX_OF_PeakBufferMemoryBytes: 244.000 B
+               - __MIN_OF_PeakBufferMemoryBytes: 0.000 B
+             - ReceiverProcessTotalTime: 1.261us
+               - __MAX_OF_ReceiverProcessTotalTime: 20.182us
+               - __MIN_OF_ReceiverProcessTotalTime: 0ns
+             - RequestReceived: 1
+               - __MAX_OF_RequestReceived: 1
+               - __MIN_OF_RequestReceived: 0
+             - WaitLockTime: 0ns
+    Fragment 13:
+       - BackendAddresses: 172.26.95.146:9060
+       - InstanceIds: b32190b0-8a0b-11f0-94e0-00163e341ba4
+       - EnableEventScheduler: true
+       - BackendNum: 1
+       - BackendProfileMergeTime: 3.477ms
+       - InitialProcessDriverCount: 761
+       - InitialProcessMem: 9.585 GB
+       - InstanceAllocatedMemoryUsage: 7.735 MB
+       - InstanceDeallocatedMemoryUsage: 5.641 MB
+       - InstanceNum: 1
+       - InstancePeakMemoryUsage: 2.800 MB
+       - JITCounter: 0
+       - JITTotalCostTime: 0ns
+       - QueryMemoryLimit: -1.000 B
+      Pipeline (id=1):
+         - IsGroupExecution: false
+         - ActiveTime: 2.470ms
+           - __MAX_OF_ActiveTime: 7.952ms
+           - __MIN_OF_ActiveTime: 785.344us
+         - BlockByInputEmpty: 12
+           - __MAX_OF_BlockByInputEmpty: 1
+           - __MIN_OF_BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 12.862ms
+           - __MAX_OF_DriverTotalTime: 13.809ms
+           - __MIN_OF_DriverTotalTime: 12.391ms
+         - PeakDriverQueueSize: 187
+           - __MAX_OF_PeakDriverQueueSize: 22
+           - __MIN_OF_PeakDriverQueueSize: 4
+         - PendingTime: 0ns
+           - InputEmptyTime: 2.933ms
+             - __MAX_OF_InputEmptyTime: 8.401ms
+             - __MIN_OF_InputEmptyTime: 0ns
+             - FirstInputEmptyTime: 2.933ms
+               - __MAX_OF_FirstInputEmptyTime: 8.401ms
+               - __MIN_OF_FirstInputEmptyTime: 0ns
+           - PendingFinishTime: 4.743ms
+             - __MAX_OF_PendingFinishTime: 10.750ms
+             - __MIN_OF_PendingFinishTime: 1.613ms
+         - ScheduleCount: 28
+           - __MAX_OF_ScheduleCount: 2
+           - __MIN_OF_ScheduleCount: 1
+         - ScheduleTime: 10.391ms
+           - __MAX_OF_ScheduleTime: 11.914ms
+           - __MIN_OF_ScheduleTime: 5.856ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        EXCHANGE_SINK (plan_node_id=11):
+          CommonMetrics:
+             - OperatorTotalTime: 13.970us
+               - __MAX_OF_OperatorTotalTime: 45.272us
+               - __MIN_OF_OperatorTotalTime: 3.892us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 5
+               - __MAX_OF_PushChunkNum: 1
+               - __MIN_OF_PushChunkNum: 0
+             - PushRowNum: 5
+               - __MAX_OF_PushRowNum: 1
+               - __MIN_OF_PushRowNum: 0
+             - PushTotalTime: 3.128us
+               - __MAX_OF_PushTotalTime: 10.794us
+               - __MIN_OF_PushTotalTime: 0ns
+          UniqueMetrics:
+             - ChannelNum: 1
+             - DestFragments: b32190b08a0b11f0-94e000163e341ba3
+             - DestID: 11
+             - PartType: HASH_PARTITIONED
+             - PipelineLevelShuffle: Yes
+             - ShuffleNumPerChannel: 16
+             - TotalShuffleNum: 16
+             - BytesPassThrough: 244.000 B
+               - __MAX_OF_BytesPassThrough: 53.000 B
+               - __MIN_OF_BytesPassThrough: 0.000 B
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 313.094us
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 1.638ms
+             - PassThroughBufferPeakMemoryUsage: 0.000 B
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 313.094us
+             - RpcCount: 1
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 5
+               - __MAX_OF_ShuffleChunkAppendCounter: 1
+               - __MIN_OF_ShuffleChunkAppendCounter: 0
+             - ShuffleChunkAppendTime: 570ns
+               - __MAX_OF_ShuffleChunkAppendTime: 2.253us
+               - __MIN_OF_ShuffleChunkAppendTime: 0ns
+             - ShuffleHashTime: 863ns
+               - __MAX_OF_ShuffleHashTime: 2.970us
+               - __MIN_OF_ShuffleHashTime: 0ns
+             - WaitTime: 2.995ms
+        CHUNK_ACCUMULATE (plan_node_id=10):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 3.215us
+               - __MAX_OF_OperatorTotalTime: 4.071us
+               - __MIN_OF_OperatorTotalTime: 2.093us
+             - OutputChunkBytes: 84.000 B
+               - __MAX_OF_OutputChunkBytes: 21.000 B
+               - __MIN_OF_OutputChunkBytes: 0.000 B
+             - PullChunkNum: 5
+               - __MAX_OF_PullChunkNum: 1
+               - __MIN_OF_PullChunkNum: 0
+             - PullRowNum: 5
+               - __MAX_OF_PullRowNum: 1
+               - __MIN_OF_PullRowNum: 0
+             - PullTotalTime: 583ns
+               - __MAX_OF_PullTotalTime: 807ns
+               - __MIN_OF_PullTotalTime: 411ns
+             - PushChunkNum: 5
+               - __MAX_OF_PushChunkNum: 1
+               - __MIN_OF_PushChunkNum: 0
+             - PushRowNum: 5
+               - __MAX_OF_PushRowNum: 1
+               - __MIN_OF_PushRowNum: 0
+             - PushTotalTime: 2.060us
+               - __MAX_OF_PushTotalTime: 2.841us
+               - __MIN_OF_PushTotalTime: 1.133us
+          UniqueMetrics:
+        OLAP_SCAN (plan_node_id=10):
+          CommonMetrics:
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 2.939ms
+               - __MAX_OF_OperatorTotalTime: 8.272ms
+               - __MIN_OF_OperatorTotalTime: 1.342ms
+             - OutputChunkBytes: 84.000 B
+               - __MAX_OF_OutputChunkBytes: 21.000 B
+               - __MIN_OF_OutputChunkBytes: 0.000 B
+             - PullChunkNum: 5
+               - __MAX_OF_PullChunkNum: 1
+               - __MIN_OF_PullChunkNum: 0
+             - PullRowNum: 5
+               - __MAX_OF_PullRowNum: 1
+               - __MIN_OF_PullRowNum: 0
+             - PullTotalTime: 2.392ms
+               - __MAX_OF_PullTotalTime: 7.842ms
+               - __MIN_OF_PullTotalTime: 733.913us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - MorselQueueType: fixed_morsel_queue
+             - Predicates: 59: r_regionkey IS NOT NULL
+             - Rollup: region
+             - SharedScan: False
+             - Table: region
+             - AccessPathHits: 0
+             - AccessPathUnhits: 0
+             - BytesRead: 84.000 B
+               - __MAX_OF_BytesRead: 21.000 B
+               - __MIN_OF_BytesRead: 0.000 B
+             - CachedPagesNum: 25
+               - __MAX_OF_CachedPagesNum: 5
+               - __MIN_OF_CachedPagesNum: 0
+             - ChunkBufferCapacity: 1.024K (1024)
+             - CompressedBytesRead: 0.000 B
+             - DefaultChunkBufferCapacity: 1.024K (1024)
+             - IOTaskExecTime: 167.367us
+               - __MAX_OF_IOTaskExecTime: 8.387ms
+               - __MIN_OF_IOTaskExecTime: 10.838us
+               - CreateSegmentIter: 9.783us
+                 - __MAX_OF_CreateSegmentIter: 36.949us
+                 - __MIN_OF_CreateSegmentIter: 5.073us
+               - GetDelVec: 0ns
+               - GetDeltaColumnGroup: 188ns
+                 - __MAX_OF_GetDeltaColumnGroup: 3.781us
+                 - __MIN_OF_GetDeltaColumnGroup: 0ns
+               - GetRowsets: 3.197us
+                 - __MAX_OF_GetRowsets: 4.955us
+                 - __MIN_OF_GetRowsets: 2.094us
+               - IOTime: 0ns
+               - LateMaterialize: 9.250us
+                 - __MAX_OF_LateMaterialize: 12.885us
+                 - __MIN_OF_LateMaterialize: 7.531us
+               - ReadPKIndex: 0ns
+               - SegmentInit: 8.111us
+                 - __MAX_OF_SegmentInit: 134.304us
+                 - __MIN_OF_SegmentInit: 0ns
+                 - BitmapIndexFilter: 0ns
+                 - BitmapIndexFilterRows: 0
+                 - BitmapIndexIteratorInit: 286ns
+                   - __MAX_OF_BitmapIndexIteratorInit: 4.927us
+                   - __MIN_OF_BitmapIndexIteratorInit: 0ns
+                 - BloomFilterFilter: 44ns
+                   - __MAX_OF_BloomFilterFilter: 705ns
+                   - __MIN_OF_BloomFilterFilter: 0ns
+                 - BloomFilterFilterRows: 0
+                 - ColumnIteratorInit: 4.455us
+                   - __MAX_OF_ColumnIteratorInit: 81.751us
+                   - __MIN_OF_ColumnIteratorInit: 0ns
+                 - GetVectorRowRangesTime: 0ns
+                 - GinFilter: 0ns
+                 - GinFilterRows: 0
+                 - ProcessVectorDistanceAndIdTime: 0ns
+                 - RemainingRowsAfterShortKeyFilter: 5
+                   - __MAX_OF_RemainingRowsAfterShortKeyFilter: 1
+                   - __MIN_OF_RemainingRowsAfterShortKeyFilter: 0
+                 - SegmentRuntimeZoneMapFilterRows: 0
+                 - SegmentZoneMapFilterRows: 0
+                 - ShortKeyFilter: 65ns
+                   - __MAX_OF_ShortKeyFilter: 1.446us
+                   - __MIN_OF_ShortKeyFilter: 0ns
+                 - ShortKeyFilterRows: 0
+                 - ShortKeyRangeNumber: 0
+                 - VectorIndexFilterRows: 0
+                 - VectorSearchTime: 0ns
+                 - ZoneMapIndexFilterRows: 0
+                 - ZoneMapIndexFiter: 484ns
+                   - __MAX_OF_ZoneMapIndexFiter: 7.582us
+                   - __MIN_OF_ZoneMapIndexFiter: 0ns
+               - SegmentRead: 1.110us
+                 - __MAX_OF_SegmentRead: 15.857us
+                 - __MIN_OF_SegmentRead: 0ns
+                 - BlockFetch: 195ns
+                   - __MAX_OF_BlockFetch: 3.312us
+                   - __MIN_OF_BlockFetch: 0ns
+                 - BlockFetchCount: 5
+                   - __MAX_OF_BlockFetchCount: 1
+                   - __MIN_OF_BlockFetchCount: 0
+                 - BlockSeek: 478ns
+                   - __MAX_OF_BlockSeek: 7.947us
+                   - __MIN_OF_BlockSeek: 0ns
+                 - BlockSeekCount: 5
+                   - __MAX_OF_BlockSeekCount: 1
+                   - __MIN_OF_BlockSeekCount: 0
+                 - ChunkCopy: 4ns
+                   - __MAX_OF_ChunkCopy: 68ns
+                   - __MIN_OF_ChunkCopy: 0ns
+                 - DecompressT: 0ns
+                 - DelVecFilterRows: 0
+                 - PredFilter: 89ns
+                   - __MAX_OF_PredFilter: 1.337us
+                   - __MIN_OF_PredFilter: 0ns
+                 - PredFilterRows: 0
+                 - RowsetsReadCount: 128
+                   - __MAX_OF_RowsetsReadCount: 2
+                   - __MIN_OF_RowsetsReadCount: 2
+                 - SegmentsReadCount: 5
+                   - __MAX_OF_SegmentsReadCount: 1
+                   - __MIN_OF_SegmentsReadCount: 0
+                 - TotalColumnsDataPageCount: 10
+                   - __MAX_OF_TotalColumnsDataPageCount: 2
+                   - __MIN_OF_TotalColumnsDataPageCount: 0
+             - IOTaskWaitTime: 717.708us
+               - __MAX_OF_IOTaskWaitTime: 6.911ms
+               - __MIN_OF_IOTaskWaitTime: 16.400us
+             - MorselsCount: 64
+               - __MAX_OF_MorselsCount: 4
+               - __MIN_OF_MorselsCount: 4
+             - PeakChunkBufferMemoryUsage: 1.016 MB
+             - PeakChunkBufferSize: 2
+             - PeakIOTasks: 1
+               - __MAX_OF_PeakIOTasks: 2
+               - __MIN_OF_PeakIOTasks: 1
+             - PeakScanTaskQueueSize: 146
+               - __MAX_OF_PeakScanTaskQueueSize: 18
+               - __MIN_OF_PeakScanTaskQueueSize: 4
+             - PrepareChunkSourceTime: 546.278us
+               - __MAX_OF_PrepareChunkSourceTime: 823.272us
+               - __MIN_OF_PrepareChunkSourceTime: 454.664us
+             - PushdownAccessPaths: 0
+             - PushdownPredicates: 1
+             - RawRowsRead: 5
+               - __MAX_OF_RawRowsRead: 1
+               - __MIN_OF_RawRowsRead: 0
+             - ReadPagesNum: 25
+               - __MAX_OF_ReadPagesNum: 5
+               - __MIN_OF_ReadPagesNum: 0
+             - RowsRead: 5
+               - __MAX_OF_RowsRead: 1
+               - __MIN_OF_RowsRead: 0
+             - RuntimeFilterEvalTime: 0ns
+             - RuntimeFilterInputRows: 0
+             - RuntimeFilterOutputRows: 0
+             - ScanTime: 885.076us
+               - __MAX_OF_ScanTime: 8.469ms
+               - __MIN_OF_ScanTime: 27.238us
+             - SubmitTaskCount: 64
+               - __MAX_OF_SubmitTaskCount: 4
+               - __MIN_OF_SubmitTaskCount: 4
+             - SubmitTaskTime: 1.812ms
+               - __MAX_OF_SubmitTaskTime: 7.365ms
+               - __MIN_OF_SubmitTaskTime: 248.960us
+             - TabletCount: 64
+             - UncompressedBytesRead: 0.000 B
+      Pipeline (id=0):
+         - IsGroupExecution: false
+         - ActiveTime: 29.339us
+           - __MAX_OF_ActiveTime: 56.403us
+           - __MIN_OF_ActiveTime: 12.803us
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 106.974us
+           - __MAX_OF_DriverTotalTime: 260.361us
+           - __MIN_OF_DriverTotalTime: 46.294us
+         - PeakDriverQueueSize: 16
+           - __MAX_OF_PeakDriverQueueSize: 3
+           - __MIN_OF_PeakDriverQueueSize: 0
+         - ScheduleCount: 16
+           - __MAX_OF_ScheduleCount: 1
+           - __MIN_OF_ScheduleCount: 1
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        NOOP_SINK (plan_node_id=10):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 421ns
+               - __MAX_OF_OperatorTotalTime: 710ns
+               - __MIN_OF_OperatorTotalTime: 204ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+        OLAP_SCAN_PREPARE (plan_node_id=10):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 30.191us
+               - __MAX_OF_OperatorTotalTime: 58.650us
+               - __MIN_OF_OperatorTotalTime: 12.827us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 24.687us
+               - __MAX_OF_PullTotalTime: 50.699us
+               - __MIN_OF_PullTotalTime: 10.061us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CaptureTabletRowsetsTime: 12.682us
+               - __MAX_OF_CaptureTabletRowsetsTime: 25.080us
+               - __MIN_OF_CaptureTabletRowsetsTime: 9.468us
+    Fragment 14:
+       - BackendAddresses: 172.26.95.146:9060
+       - InstanceIds: b32190b0-8a0b-11f0-94e0-00163e341ba5
+       - EnableEventScheduler: true
+       - BackendNum: 1
+       - BackendProfileMergeTime: 3.072ms
+       - InitialProcessDriverCount: 761
+       - InitialProcessMem: 9.585 GB
+       - InstanceAllocatedMemoryUsage: 8.566 MB
+       - InstanceDeallocatedMemoryUsage: 6.424 MB
+       - InstanceNum: 1
+       - InstancePeakMemoryUsage: 2.142 MB
+       - JITCounter: 0
+       - JITTotalCostTime: 0ns
+       - QueryMemoryLimit: -1.000 B
+      Pipeline (id=1):
+         - IsGroupExecution: false
+         - ActiveTime: 1.408ms
+           - __MAX_OF_ActiveTime: 1.867ms
+           - __MIN_OF_ActiveTime: 874.325us
+         - BlockByInputEmpty: 8
+           - __MAX_OF_BlockByInputEmpty: 2
+           - __MIN_OF_BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 23.315ms
+           - __MAX_OF_DriverTotalTime: 23.531ms
+           - __MIN_OF_DriverTotalTime: 23.053ms
+         - PeakDriverQueueSize: 109
+           - __MAX_OF_PeakDriverQueueSize: 14
+           - __MIN_OF_PeakDriverQueueSize: 2
+         - PendingTime: 0ns
+           - PendingFinishTime: 1.127ms
+             - __MAX_OF_PendingFinishTime: 1.610ms
+             - __MIN_OF_PendingFinishTime: 508.476us
+           - PreconditionBlockTime: 20.559ms
+             - __MAX_OF_PreconditionBlockTime: 20.684ms
+             - __MIN_OF_PreconditionBlockTime: 20.277ms
+         - ScheduleCount: 24
+           - __MAX_OF_ScheduleCount: 3
+           - __MIN_OF_ScheduleCount: 1
+         - ScheduleTime: 21.906ms
+           - __MAX_OF_ScheduleTime: 22.449ms
+           - __MIN_OF_ScheduleTime: 21.465ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        EXCHANGE_SINK (plan_node_id=9):
+          CommonMetrics:
+             - OperatorTotalTime: 26.337us
+               - __MAX_OF_OperatorTotalTime: 67.558us
+               - __MIN_OF_OperatorTotalTime: 15.877us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 25
+               - __MAX_OF_PushChunkNum: 2
+               - __MIN_OF_PushChunkNum: 1
+             - PushRowNum: 25
+               - __MAX_OF_PushRowNum: 2
+               - __MIN_OF_PushRowNum: 1
+             - PushTotalTime: 10.579us
+               - __MAX_OF_PushTotalTime: 16.980us
+               - __MIN_OF_PushTotalTime: 5.562us
+          UniqueMetrics:
+             - ChannelNum: 1
+             - DestFragments: b32190b08a0b11f0-94e000163e341ba3
+             - DestID: 9
+             - PartType: HASH_PARTITIONED
+             - PipelineLevelShuffle: Yes
+             - ShuffleNumPerChannel: 16
+             - TotalShuffleNum: 16
+             - BytesPassThrough: 850.000 B
+               - __MAX_OF_BytesPassThrough: 68.000 B
+               - __MIN_OF_BytesPassThrough: 34.000 B
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 155.861us
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 276.451us
+             - PassThroughBufferPeakMemoryUsage: 5.344 KB
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 155.861us
+             - RpcCount: 1
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 25
+               - __MAX_OF_ShuffleChunkAppendCounter: 2
+               - __MIN_OF_ShuffleChunkAppendCounter: 1
+             - ShuffleChunkAppendTime: 1.376us
+               - __MAX_OF_ShuffleChunkAppendTime: 2.137us
+               - __MIN_OF_ShuffleChunkAppendTime: 738ns
+             - ShuffleHashTime: 3.449us
+               - __MAX_OF_ShuffleHashTime: 6.189us
+               - __MIN_OF_ShuffleHashTime: 1.676us
+             - WaitTime: 713.136us
+        CHUNK_ACCUMULATE (plan_node_id=8):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 3.649us
+               - __MAX_OF_OperatorTotalTime: 5.006us
+               - __MIN_OF_OperatorTotalTime: 2.970us
+             - OutputChunkBytes: 250.000 B
+               - __MAX_OF_OutputChunkBytes: 20.000 B
+               - __MIN_OF_OutputChunkBytes: 10.000 B
+             - PullChunkNum: 25
+               - __MAX_OF_PullChunkNum: 2
+               - __MIN_OF_PullChunkNum: 1
+             - PullRowNum: 25
+               - __MAX_OF_PullRowNum: 2
+               - __MIN_OF_PullRowNum: 1
+             - PullTotalTime: 752ns
+               - __MAX_OF_PullTotalTime: 1.076us
+               - __MIN_OF_PullTotalTime: 544ns
+             - PushChunkNum: 25
+               - __MAX_OF_PushChunkNum: 2
+               - __MIN_OF_PushChunkNum: 1
+             - PushRowNum: 25
+               - __MAX_OF_PushRowNum: 2
+               - __MIN_OF_PushRowNum: 1
+             - PushTotalTime: 2.384us
+               - __MAX_OF_PushTotalTime: 3.648us
+               - __MIN_OF_PushTotalTime: 1.766us
+          UniqueMetrics:
+        OLAP_SCAN (plan_node_id=8):
+          CommonMetrics:
+             - RuntimeFilterDesc: <1: BloomFilter> 
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 25
+               - __MAX_OF_JoinRuntimeFilterInputRows: 2
+               - __MIN_OF_JoinRuntimeFilterInputRows: 1
+             - JoinRuntimeFilterOutputRows: 25
+               - __MAX_OF_JoinRuntimeFilterOutputRows: 2
+               - __MIN_OF_JoinRuntimeFilterOutputRows: 1
+             - JoinRuntimeFilterTime: 681ns
+               - __MAX_OF_JoinRuntimeFilterTime: 1.583us
+               - __MIN_OF_JoinRuntimeFilterTime: 282ns
+             - OperatorTotalTime: 1.711ms
+               - __MAX_OF_OperatorTotalTime: 2.234ms
+               - __MIN_OF_OperatorTotalTime: 1.075ms
+             - OutputChunkBytes: 250.000 B
+               - __MAX_OF_OutputChunkBytes: 20.000 B
+               - __MIN_OF_OutputChunkBytes: 10.000 B
+             - PullChunkNum: 25
+               - __MAX_OF_PullChunkNum: 2
+               - __MIN_OF_PullChunkNum: 1
+             - PullRowNum: 25
+               - __MAX_OF_PullRowNum: 2
+               - __MIN_OF_PullRowNum: 1
+             - PullTotalTime: 1.300ms
+               - __MAX_OF_PullTotalTime: 1.743ms
+               - __MIN_OF_PullTotalTime: 702.181us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 1
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - MorselQueueType: fixed_morsel_queue
+             - Predicates: 55: n_nationkey IS NOT NULL
+             - Rollup: nation
+             - SharedScan: False
+             - Table: nation
+             - AccessPathHits: 0
+             - AccessPathUnhits: 0
+             - BytesRead: 250.000 B
+               - __MAX_OF_BytesRead: 10.000 B
+               - __MIN_OF_BytesRead: 0.000 B
+             - CachedPagesNum: 50
+               - __MAX_OF_CachedPagesNum: 2
+               - __MIN_OF_CachedPagesNum: 0
+             - ChunkBufferCapacity: 1.024K (1024)
+             - CompressedBytesRead: 0.000 B
+             - DefaultChunkBufferCapacity: 1.024K (1024)
+             - IOTaskExecTime: 80.867us
+               - __MAX_OF_IOTaskExecTime: 240.334us
+               - __MIN_OF_IOTaskExecTime: 12.876us
+               - CreateSegmentIter: 19.982us
+                 - __MAX_OF_CreateSegmentIter: 71.396us
+                 - __MIN_OF_CreateSegmentIter: 6.128us
+               - GetDelVec: 0ns
+               - GetDeltaColumnGroup: 1.068us
+                 - __MAX_OF_GetDeltaColumnGroup: 10.946us
+                 - __MIN_OF_GetDeltaColumnGroup: 0ns
+               - GetRowsets: 3.697us
+                 - __MAX_OF_GetRowsets: 6.593us
+                 - __MIN_OF_GetRowsets: 2.444us
+               - IOTime: 0ns
+               - ReadPKIndex: 0ns
+               - SegmentInit: 32.669us
+                 - __MAX_OF_SegmentInit: 174.668us
+                 - __MIN_OF_SegmentInit: 0ns
+                 - BitmapIndexFilter: 0ns
+                 - BitmapIndexFilterRows: 0
+                 - BitmapIndexIteratorInit: 1.853us
+                   - __MAX_OF_BitmapIndexIteratorInit: 7.939us
+                   - __MIN_OF_BitmapIndexIteratorInit: 0ns
+                 - BloomFilterFilter: 272ns
+                   - __MAX_OF_BloomFilterFilter: 1.156us
+                   - __MIN_OF_BloomFilterFilter: 0ns
+                 - BloomFilterFilterRows: 0
+                 - ColumnIteratorInit: 13.455us
+                   - __MAX_OF_ColumnIteratorInit: 56.812us
+                   - __MIN_OF_ColumnIteratorInit: 0ns
+                 - GetVectorRowRangesTime: 0ns
+                 - GinFilter: 0ns
+                 - GinFilterRows: 0
+                 - ProcessVectorDistanceAndIdTime: 0ns
+                 - RemainingRowsAfterShortKeyFilter: 25
+                   - __MAX_OF_RemainingRowsAfterShortKeyFilter: 1
+                   - __MIN_OF_RemainingRowsAfterShortKeyFilter: 0
+                 - SegmentRuntimeZoneMapFilterRows: 0
+                 - SegmentZoneMapFilterRows: 0
+                 - ShortKeyFilter: 368ns
+                   - __MAX_OF_ShortKeyFilter: 2.144us
+                   - __MIN_OF_ShortKeyFilter: 0ns
+                 - ShortKeyFilterRows: 0
+                 - ShortKeyRangeNumber: 0
+                 - VectorIndexFilterRows: 0
+                 - VectorSearchTime: 0ns
+                 - ZoneMapIndexFilterRows: 0
+                 - ZoneMapIndexFiter: 4.883us
+                   - __MAX_OF_ZoneMapIndexFiter: 123.285us
+                   - __MIN_OF_ZoneMapIndexFiter: 0ns
+               - SegmentRead: 7.664us
+                 - __MAX_OF_SegmentRead: 33.089us
+                 - __MIN_OF_SegmentRead: 0ns
+                 - BlockFetch: 793ns
+                   - __MAX_OF_BlockFetch: 3.857us
+                   - __MIN_OF_BlockFetch: 0ns
+                 - BlockFetchCount: 25
+                   - __MAX_OF_BlockFetchCount: 1
+                   - __MIN_OF_BlockFetchCount: 0
+                 - BlockSeek: 4.074us
+                   - __MAX_OF_BlockSeek: 17.111us
+                   - __MIN_OF_BlockSeek: 0ns
+                 - BlockSeekCount: 25
+                   - __MAX_OF_BlockSeekCount: 1
+                   - __MIN_OF_BlockSeekCount: 0
+                 - ChunkCopy: 22ns
+                   - __MAX_OF_ChunkCopy: 76ns
+                   - __MIN_OF_ChunkCopy: 0ns
+                 - DecompressT: 0ns
+                 - DelVecFilterRows: 0
+                 - PredFilter: 610ns
+                   - __MAX_OF_PredFilter: 2.918us
+                   - __MIN_OF_PredFilter: 0ns
+                 - PredFilterRows: 0
+                 - RowsetsReadCount: 128
+                   - __MAX_OF_RowsetsReadCount: 2
+                   - __MIN_OF_RowsetsReadCount: 2
+                 - SegmentsReadCount: 25
+                   - __MAX_OF_SegmentsReadCount: 1
+                   - __MIN_OF_SegmentsReadCount: 0
+                 - TotalColumnsDataPageCount: 50
+                   - __MAX_OF_TotalColumnsDataPageCount: 2
+                   - __MIN_OF_TotalColumnsDataPageCount: 0
+             - IOTaskWaitTime: 187.203us
+               - __MAX_OF_IOTaskWaitTime: 1.065ms
+               - __MIN_OF_IOTaskWaitTime: 24.350us
+             - MorselsCount: 64
+               - __MAX_OF_MorselsCount: 4
+               - __MIN_OF_MorselsCount: 4
+             - PeakChunkBufferMemoryUsage: 760.084 KB
+             - PeakChunkBufferSize: 4
+             - PeakIOTasks: 1
+               - __MAX_OF_PeakIOTasks: 2
+               - __MIN_OF_PeakIOTasks: 1
+             - PeakScanTaskQueueSize: 50
+               - __MAX_OF_PeakScanTaskQueueSize: 7
+               - __MIN_OF_PeakScanTaskQueueSize: 0
+             - PrepareChunkSourceTime: 656.939us
+               - __MAX_OF_PrepareChunkSourceTime: 910.133us
+               - __MIN_OF_PrepareChunkSourceTime: 505.373us
+             - PushdownAccessPaths: 0
+             - PushdownPredicates: 4
+             - RawRowsRead: 25
+               - __MAX_OF_RawRowsRead: 1
+               - __MIN_OF_RawRowsRead: 0
+             - ReadPagesNum: 50
+               - __MAX_OF_ReadPagesNum: 2
+               - __MIN_OF_ReadPagesNum: 0
+             - RowsRead: 25
+               - __MAX_OF_RowsRead: 1
+               - __MIN_OF_RowsRead: 0
+             - RuntimeFilterEvalTime: 1.264us
+               - __MAX_OF_RuntimeFilterEvalTime: 6.615us
+               - __MIN_OF_RuntimeFilterEvalTime: 0ns
+             - RuntimeFilterInputRows: 25
+               - __MAX_OF_RuntimeFilterInputRows: 1
+               - __MIN_OF_RuntimeFilterInputRows: 0
+             - RuntimeFilterOutputRows: 25
+               - __MAX_OF_RuntimeFilterOutputRows: 1
+               - __MIN_OF_RuntimeFilterOutputRows: 0
+             - ScanTime: 268.070us
+               - __MAX_OF_ScanTime: 1.084ms
+               - __MIN_OF_ScanTime: 40.798us
+             - SubmitTaskCount: 64
+               - __MAX_OF_SubmitTaskCount: 4
+               - __MIN_OF_SubmitTaskCount: 4
+             - SubmitTaskTime: 590.920us
+               - __MAX_OF_SubmitTaskTime: 1.178ms
+               - __MIN_OF_SubmitTaskTime: 96.146us
+             - TabletCount: 64
+             - UncompressedBytesRead: 0.000 B
+      Pipeline (id=0):
+         - IsGroupExecution: false
+         - ActiveTime: 56.412us
+           - __MAX_OF_ActiveTime: 116.426us
+           - __MIN_OF_ActiveTime: 26.681us
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 20.669ms
+           - __MAX_OF_DriverTotalTime: 21.007ms
+           - __MIN_OF_DriverTotalTime: 20.318ms
+         - PeakDriverQueueSize: 21
+           - __MAX_OF_PeakDriverQueueSize: 5
+           - __MIN_OF_PeakDriverQueueSize: 0
+         - PendingTime: 0ns
+           - PreconditionBlockTime: 20.493ms
+             - __MAX_OF_PreconditionBlockTime: 20.682ms
+             - __MIN_OF_PreconditionBlockTime: 20.107ms
+         - ScheduleCount: 16
+           - __MAX_OF_ScheduleCount: 1
+           - __MIN_OF_ScheduleCount: 1
+         - ScheduleTime: 20.613ms
+           - __MAX_OF_ScheduleTime: 20.956ms
+           - __MIN_OF_ScheduleTime: 20.203ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        NOOP_SINK (plan_node_id=8):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 386ns
+               - __MAX_OF_OperatorTotalTime: 664ns
+               - __MIN_OF_OperatorTotalTime: 275ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+        OLAP_SCAN_PREPARE (plan_node_id=8):
+          CommonMetrics:
+             - IsSubordinate
+             - RuntimeFilterDesc: <1: BloomFilter> 
+             - OperatorTotalTime: 60.955us
+               - __MAX_OF_OperatorTotalTime: 121.608us
+               - __MIN_OF_OperatorTotalTime: 30.036us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 49.814us
+               - __MAX_OF_PullTotalTime: 107.124us
+               - __MIN_OF_PullTotalTime: 22.255us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 1
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CaptureTabletRowsetsTime: 10.318us
+               - __MAX_OF_CaptureTabletRowsetsTime: 18.646us
+               - __MIN_OF_CaptureTabletRowsetsTime: 8.104us
+    Fragment 15:
+       - BackendAddresses: 172.26.95.146:9060
+       - InstanceIds: b32190b0-8a0b-11f0-94e0-00163e341ba6
+       - EnableEventScheduler: true
+       - BackendNum: 1
+       - BackendProfileMergeTime: 2.410ms
+       - InitialProcessDriverCount: 552
+       - InitialProcessMem: 9.419 GB
+       - InstanceAllocatedMemoryUsage: 466.508 MB
+       - InstanceDeallocatedMemoryUsage: 460.053 MB
+       - InstanceNum: 1
+       - InstancePeakMemoryUsage: 142.747 MB
+       - JITCounter: 0
+       - JITTotalCostTime: 0ns
+       - QueryMemoryLimit: -1.000 B
+      Pipeline (id=1):
+         - IsGroupExecution: false
+         - ActiveTime: 17.609ms
+           - __MAX_OF_ActiveTime: 23.971ms
+           - __MIN_OF_ActiveTime: 12.651ms
+         - BlockByInputEmpty: 14
+           - __MAX_OF_BlockByInputEmpty: 1
+           - __MIN_OF_BlockByInputEmpty: 0
+         - BlockByOutputFull: 45
+           - __MAX_OF_BlockByOutputFull: 3
+           - __MIN_OF_BlockByOutputFull: 1
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 881.080ms
+           - __MAX_OF_DriverTotalTime: 881.163ms
+           - __MIN_OF_DriverTotalTime: 880.966ms
+         - PeakDriverQueueSize: 149
+           - __MAX_OF_PeakDriverQueueSize: 15
+           - __MIN_OF_PeakDriverQueueSize: 5
+         - PendingTime: 0ns
+           - InputEmptyTime: 1.799ms
+             - __MAX_OF_InputEmptyTime: 3.281ms
+             - __MIN_OF_InputEmptyTime: 0ns
+             - FirstInputEmptyTime: 1.799ms
+               - __MAX_OF_FirstInputEmptyTime: 3.281ms
+               - __MIN_OF_FirstInputEmptyTime: 0ns
+           - OutputFullTime: 852.366ms
+             - __MAX_OF_OutputFullTime: 852.820ms
+             - __MIN_OF_OutputFullTime: 849.597ms
+           - PendingFinishTime: 6.049ms
+             - __MAX_OF_PendingFinishTime: 15.964ms
+             - __MIN_OF_PendingFinishTime: 2.834ms
+         - ScheduleCount: 75
+           - __MAX_OF_ScheduleCount: 5
+           - __MIN_OF_ScheduleCount: 3
+         - ScheduleTime: 863.471ms
+           - __MAX_OF_ScheduleTime: 868.474ms
+           - __MIN_OF_ScheduleTime: 857.073ms
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        EXCHANGE_SINK (plan_node_id=3):
+          CommonMetrics:
+             - OperatorTotalTime: 13.855ms
+               - __MAX_OF_OperatorTotalTime: 16.371ms
+               - __MIN_OF_OperatorTotalTime: 10.049ms
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 512
+               - __MAX_OF_PushChunkNum: 32
+               - __MIN_OF_PushChunkNum: 32
+             - PushRowNum: 1.601M (1600591)
+               - __MAX_OF_PushRowNum: 100.225K (100225)
+               - __MIN_OF_PushRowNum: 99.813K (99813)
+             - PushTotalTime: 13.200ms
+               - __MAX_OF_PushTotalTime: 16.282ms
+               - __MIN_OF_PushTotalTime: 9.517ms
+          UniqueMetrics:
+             - ChannelNum: 64
+             - DestFragments: b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e, b32190b08a0b11f0-94e000163e341b9e
+             - DestID: 3
+             - PartType: BUCKET_SHUFFLE_HASH_PARTITIONED
+             - PipelineLevelShuffle: Yes
+             - ShuffleNumPerChannel: 1
+             - TotalShuffleNum: 64
+             - BytesPassThrough: 93.523 MB
+               - __MAX_OF_BytesPassThrough: 5.858 MB
+               - __MIN_OF_BytesPassThrough: 5.832 MB
+             - BytesSent: 0.000 B
+             - BytesUnsent: 0.000 B
+             - CompressTime: 0ns
+             - CompressedBytes: 0.000 B
+             - NetworkBandwidth: 0.000 B/sec
+             - NetworkTime: 7.215ms
+             - OverallThroughput: 0.000 B/sec
+             - OverallTime: 876.673ms
+             - PassThroughBufferPeakMemoryUsage: 23.220 MB
+             - RawInputBytes: 0.000 B
+             - RequestSent: 0
+             - RequestUnsent: 0
+             - RpcAvgTime: 1.007ms
+             - RpcCount: 248
+             - SerializeChunkTime: 0ns
+             - SerializedBytes: 0.000 B
+             - ShuffleChunkAppendCounter: 512
+               - __MAX_OF_ShuffleChunkAppendCounter: 32
+               - __MIN_OF_ShuffleChunkAppendCounter: 32
+             - ShuffleChunkAppendTime: 3.596ms
+               - __MAX_OF_ShuffleChunkAppendTime: 3.975ms
+               - __MIN_OF_ShuffleChunkAppendTime: 3.239ms
+             - ShuffleHashTime: 1.956ms
+               - __MAX_OF_ShuffleHashTime: 2.336ms
+               - __MIN_OF_ShuffleHashTime: 1.696ms
+             - WaitTime: 856.077ms
+        PROJECT (plan_node_id=2):
+          CommonMetrics:
+             - OperatorTotalTime: 107.821us
+               - __MAX_OF_OperatorTotalTime: 130.032us
+               - __MIN_OF_OperatorTotalTime: 92.166us
+             - OutputChunkBytes: 93.499 MB
+               - __MAX_OF_OutputChunkBytes: 5.857 MB
+               - __MIN_OF_OutputChunkBytes: 5.831 MB
+             - PullChunkNum: 512
+               - __MAX_OF_PullChunkNum: 32
+               - __MIN_OF_PullChunkNum: 32
+             - PullRowNum: 1.601M (1600591)
+               - __MAX_OF_PullRowNum: 100.225K (100225)
+               - __MIN_OF_PullRowNum: 99.813K (99813)
+             - PullTotalTime: 5.754us
+               - __MAX_OF_PullTotalTime: 6.784us
+               - __MIN_OF_PullTotalTime: 4.904us
+             - PushChunkNum: 512
+               - __MAX_OF_PushChunkNum: 32
+               - __MIN_OF_PushChunkNum: 32
+             - PushRowNum: 1.601M (1600591)
+               - __MAX_OF_PushRowNum: 100.225K (100225)
+               - __MIN_OF_PushRowNum: 99.813K (99813)
+             - PushTotalTime: 97.173us
+               - __MAX_OF_PushTotalTime: 118.581us
+               - __MIN_OF_PushTotalTime: 82.384us
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CommonSubExprComputeTime: 2.555us
+               - __MAX_OF_CommonSubExprComputeTime: 3.259us
+               - __MIN_OF_CommonSubExprComputeTime: 1.737us
+             - ExprComputeTime: 36.367us
+               - __MAX_OF_ExprComputeTime: 44.630us
+               - __MIN_OF_ExprComputeTime: 31.942us
+        CHUNK_ACCUMULATE (plan_node_id=1):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 32.553us
+               - __MAX_OF_OperatorTotalTime: 46.389us
+               - __MIN_OF_OperatorTotalTime: 22.500us
+             - OutputChunkBytes: 93.499 MB
+               - __MAX_OF_OutputChunkBytes: 5.857 MB
+               - __MIN_OF_OutputChunkBytes: 5.831 MB
+             - PullChunkNum: 512
+               - __MAX_OF_PullChunkNum: 32
+               - __MIN_OF_PullChunkNum: 32
+             - PullRowNum: 1.601M (1600591)
+               - __MAX_OF_PullRowNum: 100.225K (100225)
+               - __MIN_OF_PullRowNum: 99.813K (99813)
+             - PullTotalTime: 5.155us
+               - __MAX_OF_PullTotalTime: 5.907us
+               - __MIN_OF_PullTotalTime: 4.409us
+             - PushChunkNum: 512
+               - __MAX_OF_PushChunkNum: 32
+               - __MIN_OF_PushChunkNum: 32
+             - PushRowNum: 1.601M (1600591)
+               - __MAX_OF_PushRowNum: 100.225K (100225)
+               - __MIN_OF_PushRowNum: 99.813K (99813)
+             - PushTotalTime: 26.622us
+               - __MAX_OF_PushTotalTime: 40.217us
+               - __MIN_OF_PushTotalTime: 17.284us
+          UniqueMetrics:
+        OLAP_SCAN (plan_node_id=1):
+          CommonMetrics:
+             - JoinRuntimeFilterEvaluate: 0
+             - JoinRuntimeFilterHashTime: 0ns
+             - JoinRuntimeFilterInputRows: 0
+             - JoinRuntimeFilterOutputRows: 0
+             - JoinRuntimeFilterTime: 0ns
+             - OperatorTotalTime: 3.388ms
+               - __MAX_OF_OperatorTotalTime: 8.870ms
+               - __MIN_OF_OperatorTotalTime: 1.664ms
+             - OutputChunkBytes: 93.499 MB
+               - __MAX_OF_OutputChunkBytes: 5.857 MB
+               - __MIN_OF_OutputChunkBytes: 5.831 MB
+             - PullChunkNum: 512
+               - __MAX_OF_PullChunkNum: 32
+               - __MIN_OF_PullChunkNum: 32
+             - PullRowNum: 1.601M (1600591)
+               - __MAX_OF_PullRowNum: 100.225K (100225)
+               - __MIN_OF_PullRowNum: 99.813K (99813)
+             - PullTotalTime: 2.855ms
+               - __MAX_OF_PullTotalTime: 8.406ms
+               - __MIN_OF_PullTotalTime: 1.109ms
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - MorselQueueType: fixed_morsel_queue
+             - Predicates: 6: p_size > 10
+             - Rollup: part
+             - SharedScan: False
+             - Table: part
+             - AccessPathHits: 0
+             - AccessPathUnhits: 0
+             - BytesRead: 123.278 MB
+               - __MAX_OF_BytesRead: 1.931 MB
+               - __MIN_OF_BytesRead: 1.922 MB
+             - CachedPagesNum: 1.984K (1984)
+               - __MAX_OF_CachedPagesNum: 31
+               - __MIN_OF_CachedPagesNum: 31
+             - ChunkBufferCapacity: 1.024K (1024)
+             - CompressedBytesRead: 0.000 B
+             - DefaultChunkBufferCapacity: 1.024K (1024)
+             - IOTaskExecTime: 3.409ms
+               - __MAX_OF_IOTaskExecTime: 4.881ms
+               - __MIN_OF_IOTaskExecTime: 2.416ms
+               - CreateSegmentIter: 65.683us
+                 - __MAX_OF_CreateSegmentIter: 1.472ms
+                 - __MIN_OF_CreateSegmentIter: 18.934us
+               - GetDelVec: 0ns
+               - GetDeltaColumnGroup: 2.960us
+                 - __MAX_OF_GetDeltaColumnGroup: 32.648us
+                 - __MIN_OF_GetDeltaColumnGroup: 931ns
+               - GetRowsets: 3.678us
+                 - __MAX_OF_GetRowsets: 10.602us
+                 - __MIN_OF_GetRowsets: 2.453us
+               - IOTime: 0ns
+               - LateMaterialize: 895.760us
+                 - __MAX_OF_LateMaterialize: 1.106ms
+                 - __MIN_OF_LateMaterialize: 546.420us
+               - ReadPKIndex: 0ns
+               - SegmentInit: 97.130us
+                 - __MAX_OF_SegmentInit: 173.098us
+                 - __MIN_OF_SegmentInit: 67.996us
+                 - BitmapIndexFilter: 0ns
+                 - BitmapIndexFilterRows: 0
+                 - BitmapIndexIteratorInit: 4.521us
+                   - __MAX_OF_BitmapIndexIteratorInit: 8.639us
+                   - __MIN_OF_BitmapIndexIteratorInit: 2.798us
+                 - BloomFilterFilter: 510ns
+                   - __MAX_OF_BloomFilterFilter: 1.304us
+                   - __MIN_OF_BloomFilterFilter: 237ns
+                 - BloomFilterFilterRows: 0
+                 - ColumnIteratorInit: 40.249us
+                   - __MAX_OF_ColumnIteratorInit: 72.113us
+                   - __MIN_OF_ColumnIteratorInit: 23.265us
+                 - GetVectorRowRangesTime: 0ns
+                 - GinFilter: 0ns
+                 - GinFilterRows: 0
+                 - ProcessVectorDistanceAndIdTime: 0ns
+                 - RemainingRowsAfterShortKeyFilter: 2.000M (2000000)
+                   - __MAX_OF_RemainingRowsAfterShortKeyFilter: 31.251K (31251)
+                   - __MIN_OF_RemainingRowsAfterShortKeyFilter: 31.249K (31249)
+                 - SegmentRuntimeZoneMapFilterRows: 0
+                 - SegmentZoneMapFilterRows: 0
+                 - ShortKeyFilter: 830ns
+                   - __MAX_OF_ShortKeyFilter: 2.072us
+                   - __MIN_OF_ShortKeyFilter: 476ns
+                 - ShortKeyFilterRows: 0
+                 - ShortKeyRangeNumber: 0
+                 - VectorIndexFilterRows: 0
+                 - VectorSearchTime: 0ns
+                 - ZoneMapIndexFilterRows: 0
+                 - ZoneMapIndexFiter: 6.959us
+                   - __MAX_OF_ZoneMapIndexFiter: 14.672us
+                   - __MIN_OF_ZoneMapIndexFiter: 4.452us
+               - SegmentRead: 2.092ms
+                 - __MAX_OF_SegmentRead: 3.751ms
+                 - __MIN_OF_SegmentRead: 1.429ms
+                 - BlockFetch: 1.259ms
+                   - __MAX_OF_BlockFetch: 3.044ms
+                   - __MIN_OF_BlockFetch: 826.444us
+                 - BlockFetchCount: 512
+                   - __MAX_OF_BlockFetchCount: 8
+                   - __MIN_OF_BlockFetchCount: 8
+                 - BlockSeek: 7.743us
+                   - __MAX_OF_BlockSeek: 17.313us
+                   - __MIN_OF_BlockSeek: 4.269us
+                 - BlockSeekCount: 1.600K (1600)
+                   - __MAX_OF_BlockSeekCount: 25
+                   - __MIN_OF_BlockSeekCount: 25
+                 - ChunkCopy: 781.616us
+                   - __MAX_OF_ChunkCopy: 888.982us
+                   - __MIN_OF_ChunkCopy: 565.589us
+                 - DecompressT: 0ns
+                 - DelVecFilterRows: 0
+                 - PredFilter: 22.491us
+                   - __MAX_OF_PredFilter: 42.439us
+                   - __MIN_OF_PredFilter: 12.562us
+                 - PredFilterRows: 399.409K (399409)
+                   - __MAX_OF_PredFilterRows: 6.388K (6388)
+                   - __MIN_OF_PredFilterRows: 6.124K (6124)
+                 - RowsetsReadCount: 128
+                   - __MAX_OF_RowsetsReadCount: 2
+                   - __MIN_OF_RowsetsReadCount: 2
+                 - SegmentsReadCount: 64
+                   - __MAX_OF_SegmentsReadCount: 1
+                   - __MIN_OF_SegmentsReadCount: 1
+                 - TotalColumnsDataPageCount: 1.984K (1984)
+                   - __MAX_OF_TotalColumnsDataPageCount: 31
+                   - __MIN_OF_TotalColumnsDataPageCount: 31
+             - IOTaskWaitTime: 1.503ms
+               - __MAX_OF_IOTaskWaitTime: 6.974ms
+               - __MIN_OF_IOTaskWaitTime: 25.562us
+             - MorselsCount: 64
+               - __MAX_OF_MorselsCount: 4
+               - __MIN_OF_MorselsCount: 4
+             - PeakChunkBufferMemoryUsage: 115.913 MB
+             - PeakChunkBufferSize: 19
+             - PeakIOTasks: 3
+               - __MAX_OF_PeakIOTasks: 4
+               - __MIN_OF_PeakIOTasks: 3
+             - PeakScanTaskQueueSize: 258
+               - __MAX_OF_PeakScanTaskQueueSize: 27
+               - __MIN_OF_PeakScanTaskQueueSize: 2
+             - PrepareChunkSourceTime: 1.226ms
+               - __MAX_OF_PrepareChunkSourceTime: 4.149ms
+               - __MIN_OF_PrepareChunkSourceTime: 623.169us
+             - PushdownAccessPaths: 0
+             - PushdownPredicates: 1
+             - RawRowsRead: 2.000M (2000000)
+               - __MAX_OF_RawRowsRead: 31.251K (31251)
+               - __MIN_OF_RawRowsRead: 31.249K (31249)
+             - ReadPagesNum: 1.984K (1984)
+               - __MAX_OF_ReadPagesNum: 31
+               - __MIN_OF_ReadPagesNum: 31
+             - RowsRead: 1.601M (1600591)
+               - __MAX_OF_RowsRead: 25.126K (25126)
+               - __MIN_OF_RowsRead: 24.862K (24862)
+             - RuntimeFilterEvalTime: 0ns
+             - RuntimeFilterInputRows: 0
+             - RuntimeFilterOutputRows: 0
+             - ScanTime: 4.912ms
+               - __MAX_OF_ScanTime: 9.483ms
+               - __MIN_OF_ScanTime: 2.453ms
+             - SubmitTaskCount: 64
+               - __MAX_OF_SubmitTaskCount: 4
+               - __MIN_OF_SubmitTaskCount: 4
+             - SubmitTaskTime: 1.201ms
+               - __MAX_OF_SubmitTaskTime: 6.983ms
+               - __MIN_OF_SubmitTaskTime: 80.443us
+             - TabletCount: 64
+             - UncompressedBytesRead: 0.000 B
+      Pipeline (id=0):
+         - IsGroupExecution: false
+         - ActiveTime: 45.393us
+           - __MAX_OF_ActiveTime: 79.232us
+           - __MIN_OF_ActiveTime: 22.222us
+         - BlockByInputEmpty: 0
+         - BlockByOutputFull: 0
+         - BlockByPrecondition: 0
+         - DegreeOfParallelism: 16
+         - DriverTotalTime: 244.830us
+           - __MAX_OF_DriverTotalTime: 451.571us
+           - __MIN_OF_DriverTotalTime: 93.542us
+         - PeakDriverQueueSize: 32
+           - __MAX_OF_PeakDriverQueueSize: 4
+           - __MIN_OF_PeakDriverQueueSize: 0
+         - ScheduleCount: 16
+           - __MAX_OF_ScheduleCount: 1
+           - __MIN_OF_ScheduleCount: 1
+         - TotalDegreeOfParallelism: 16
+         - YieldByLocalWait: 0
+         - YieldByPreempt: 0
+         - YieldByTimeLimit: 0
+        NOOP_SINK (plan_node_id=1):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 377ns
+               - __MAX_OF_OperatorTotalTime: 657ns
+               - __MIN_OF_OperatorTotalTime: 228ns
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 0ns
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+          UniqueMetrics:
+        OLAP_SCAN_PREPARE (plan_node_id=1):
+          CommonMetrics:
+             - IsSubordinate
+             - OperatorTotalTime: 45.325us
+               - __MAX_OF_OperatorTotalTime: 77.441us
+               - __MIN_OF_OperatorTotalTime: 22.230us
+             - OutputChunkBytes: 0.000 B
+             - PullChunkNum: 0
+             - PullRowNum: 0
+             - PullTotalTime: 40.249us
+               - __MAX_OF_PullTotalTime: 71.855us
+               - __MIN_OF_PullTotalTime: 19.206us
+             - PushChunkNum: 0
+             - PushRowNum: 0
+             - PushTotalTime: 0ns
+             - RuntimeFilterNum: 0
+             - RuntimeInFilterNum: 0
+          UniqueMetrics:
+             - CaptureTabletRowsetsTime: 11.155us
+               - __MAX_OF_CaptureTabletRowsetsTime: 16.861us
+               - __MIN_OF_CaptureTabletRowsetsTime: 9.253us

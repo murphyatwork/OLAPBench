@@ -1,0 +1,71 @@
+[
+  {
+    "Operator": "HASH_JOIN_PROBE",
+    "PlanNodeId": 26,
+    "OperatorTotalTime": "218.234 ms",
+    "OperatorTotalTimeMs": 218.234,
+    "TimePercent": 0.3,
+    "TopMetrics": [
+      {
+        "metric": "OutputBuildColumnTime",
+        "value": "116.553ms",
+        "ms": 116.553,
+        "TimePercent": 0.16
+      },
+      {
+        "metric": "SearchHashTableTime",
+        "value": "88.695ms",
+        "ms": 88.695,
+        "TimePercent": 0.122
+      }
+    ]
+  },
+  {
+    "Operator": "HASH_JOIN_BUILD",
+    "PlanNodeId": 26,
+    "OperatorTotalTime": "63.790 ms",
+    "OperatorTotalTimeMs": 63.79,
+    "TimePercent": 0.088,
+    "TopMetrics": [
+      {
+        "metric": "CopyRightTableChunkTime",
+        "value": "24.196ms",
+        "ms": 24.196,
+        "TimePercent": 0.033
+      },
+      {
+        "metric": "RuntimeFilterBuildTime",
+        "value": "22.650ms",
+        "ms": 22.65,
+        "TimePercent": 0.031
+      },
+      {
+        "metric": "BuildHashTableTime",
+        "value": "13.659ms",
+        "ms": 13.659,
+        "TimePercent": 0.019
+      }
+    ]
+  },
+  {
+    "Operator": "EXCHANGE_SINK",
+    "PlanNodeId": 6,
+    "OperatorTotalTime": "61.650 ms",
+    "OperatorTotalTimeMs": 61.65,
+    "TimePercent": 0.085,
+    "TopMetrics": [
+      {
+        "metric": "OverallTime",
+        "value": "501.454ms",
+        "ms": 501.454,
+        "TimePercent": 0.69
+      },
+      {
+        "metric": "WaitTime",
+        "value": "362.215ms",
+        "ms": 362.215,
+        "TimePercent": 0.499
+      }
+    ]
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "Operator": "AGGREGATE_STREAMING_SINK",
+    "PlanNodeId": 30,
+    "OperatorTotalTime": "111.134 ms",
+    "OperatorTotalTimeMs": 111.134,
+    "TimePercent": 0.162,
+    "TopMetrics": [
+      {
+        "metric": "AggComputeTime",
+        "value": "109.928ms",
+        "ms": 109.928,
+        "TimePercent": 0.161
+      },
+      {
+        "metric": "AggFuncComputeTime",
+        "value": "97.892ms",
+        "ms": 97.892,
+        "TimePercent": 0.143
+      }
+    ]
+  },
+  {
+    "Operator": "NESTLOOP_JOIN_PROBE",
+    "PlanNodeId": 29,
+    "OperatorTotalTime": "78.971 ms",
+    "OperatorTotalTimeMs": 78.971,
+    "TimePercent": 0.115,
+    "TopMetrics": []
+  },
+  {
+    "Operator": "AGGREGATE_BLOCKING_SINK",
+    "PlanNodeId": 6,
+    "OperatorTotalTime": "59.242 ms",
+    "OperatorTotalTimeMs": 59.242,
+    "TimePercent": 0.087,
+    "TopMetrics": [
+      {
+        "metric": "AggComputeTime",
+        "value": "57.219ms",
+        "ms": 57.219,
+        "TimePercent": 0.084
+      },
+      {
+        "metric": "GetResultsTime",
+        "value": "8.401ms",
+        "ms": 8.401,
+        "TimePercent": 0.012
+      }
+    ]
+  }
+]

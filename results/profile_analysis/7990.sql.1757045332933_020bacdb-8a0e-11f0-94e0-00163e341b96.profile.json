@@ -1,0 +1,59 @@
+[
+  {
+    "Operator": "EXCHANGE_SINK",
+    "PlanNodeId": 27,
+    "OperatorTotalTime": "1698.000 ms",
+    "OperatorTotalTimeMs": 1698.0,
+    "TimePercent": 0.168,
+    "TopMetrics": [
+      {
+        "metric": "OverallTime",
+        "value": "6s947ms",
+        "ms": 6947.0,
+        "TimePercent": 0.686
+      },
+      {
+        "metric": "WaitTime",
+        "value": "3s445ms",
+        "ms": 3445.0,
+        "TimePercent": 0.34
+      }
+    ]
+  },
+  {
+    "Operator": "LOCAL_SORT_SINK",
+    "PlanNodeId": 26,
+    "OperatorTotalTime": "1565.000 ms",
+    "OperatorTotalTimeMs": 1565.0,
+    "TimePercent": 0.155,
+    "TopMetrics": [
+      {
+        "metric": "SortingTime",
+        "value": "621.440ms",
+        "ms": 621.44,
+        "TimePercent": 0.061
+      },
+      {
+        "metric": "MergingTime",
+        "value": "601.002ms",
+        "ms": 601.002,
+        "TimePercent": 0.059
+      }
+    ]
+  },
+  {
+    "Operator": "LOCAL_PARALLEL_MERGE_SOURCE",
+    "PlanNodeId": 26,
+    "OperatorTotalTime": "1348.000 ms",
+    "OperatorTotalTimeMs": 1348.0,
+    "TimePercent": 0.133,
+    "TopMetrics": [
+      {
+        "metric": "OverallStageTime",
+        "value": "1s288ms",
+        "ms": 1288.0,
+        "TimePercent": 0.127
+      }
+    ]
+  }
+]

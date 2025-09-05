@@ -1,0 +1,59 @@
+[
+  {
+    "Operator": "AGGREGATE_STREAMING_SINK",
+    "PlanNodeId": 22,
+    "OperatorTotalTime": "72.296 ms",
+    "OperatorTotalTimeMs": 72.296,
+    "TimePercent": 0.259,
+    "TopMetrics": [
+      {
+        "metric": "AggComputeTime",
+        "value": "70.577ms",
+        "ms": 70.577,
+        "TimePercent": 0.253
+      },
+      {
+        "metric": "AggFuncComputeTime",
+        "value": "66.132ms",
+        "ms": 66.132,
+        "TimePercent": 0.237
+      }
+    ]
+  },
+  {
+    "Operator": "LOCAL_SORT_SINK",
+    "PlanNodeId": 3,
+    "OperatorTotalTime": "56.030 ms",
+    "OperatorTotalTimeMs": 56.03,
+    "TimePercent": 0.201,
+    "TopMetrics": [
+      {
+        "metric": "SortingTime",
+        "value": "53.417ms",
+        "ms": 53.417,
+        "TimePercent": 0.192
+      }
+    ]
+  },
+  {
+    "Operator": "ANALYTIC_SINK",
+    "PlanNodeId": 4,
+    "OperatorTotalTime": "51.933 ms",
+    "OperatorTotalTimeMs": 51.933,
+    "TimePercent": 0.186,
+    "TopMetrics": [
+      {
+        "metric": "PartitionSearchTime",
+        "value": "9.111ms",
+        "ms": 9.111,
+        "TimePercent": 0.033
+      },
+      {
+        "metric": "ColumnResizeTime",
+        "value": "3.440ms",
+        "ms": 3.44,
+        "TimePercent": 0.012
+      }
+    ]
+  }
+]

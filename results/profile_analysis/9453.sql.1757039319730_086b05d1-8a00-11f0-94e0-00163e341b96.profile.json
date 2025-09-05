@@ -1,0 +1,77 @@
+[
+  {
+    "Operator": "OLAP_SCAN",
+    "PlanNodeId": 0,
+    "OperatorTotalTime": "4.983 ms",
+    "OperatorTotalTimeMs": 4.983,
+    "TimePercent": 0.045,
+    "TopMetrics": [
+      {
+        "metric": "ScanTime",
+        "value": "6.306ms",
+        "ms": 6.306,
+        "TimePercent": 0.056
+      },
+      {
+        "metric": "IOTaskExecTime",
+        "value": "4.259ms",
+        "ms": 4.259,
+        "TimePercent": 0.038
+      },
+      {
+        "metric": "SubmitTaskTime",
+        "value": "2.194ms",
+        "ms": 2.194,
+        "TimePercent": 0.02
+      },
+      {
+        "metric": "IOTaskWaitTime",
+        "value": "2.046ms",
+        "ms": 2.046,
+        "TimePercent": 0.018
+      }
+    ]
+  },
+  {
+    "Operator": "AGGREGATE_STREAMING_SINK",
+    "PlanNodeId": 31,
+    "OperatorTotalTime": "4.510 ms",
+    "OperatorTotalTimeMs": 4.51,
+    "TimePercent": 0.04,
+    "TopMetrics": [
+      {
+        "metric": "AggComputeTime",
+        "value": "4.380ms",
+        "ms": 4.38,
+        "TimePercent": 0.039
+      },
+      {
+        "metric": "AggFuncComputeTime",
+        "value": "1.760ms",
+        "ms": 1.76,
+        "TimePercent": 0.016
+      }
+    ]
+  },
+  {
+    "Operator": "HASH_JOIN_BUILD",
+    "PlanNodeId": 3,
+    "OperatorTotalTime": "4.187 ms",
+    "OperatorTotalTimeMs": 4.187,
+    "TimePercent": 0.037,
+    "TopMetrics": [
+      {
+        "metric": "BuildHashTableTime",
+        "value": "2.148ms",
+        "ms": 2.148,
+        "TimePercent": 0.019
+      },
+      {
+        "metric": "RuntimeFilterBuildTime",
+        "value": "1.528ms",
+        "ms": 1.528,
+        "TimePercent": 0.014
+      }
+    ]
+  }
+]

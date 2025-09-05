@@ -1,0 +1,58 @@
+[
+  {
+    "Operator": "BUCKET_PROCESS_SINK",
+    "PlanNodeId": 2,
+    "OperatorTotalTime": "18.600 ms",
+    "OperatorTotalTimeMs": 18.6,
+    "TimePercent": 0.074,
+    "TopMetrics": []
+  },
+  {
+    "Operator": "EXCHANGE_SINK",
+    "PlanNodeId": 11,
+    "OperatorTotalTime": "7.643 ms",
+    "OperatorTotalTimeMs": 7.643,
+    "TimePercent": 0.03,
+    "TopMetrics": [
+      {
+        "metric": "OverallTime",
+        "value": "9.144ms",
+        "ms": 9.144,
+        "TimePercent": 0.036
+      },
+      {
+        "metric": "WaitTime",
+        "value": "4.202ms",
+        "ms": 4.202,
+        "TimePercent": 0.017
+      },
+      {
+        "metric": "NetworkTime",
+        "value": "4.013ms",
+        "ms": 4.013,
+        "TimePercent": 0.016
+      },
+      {
+        "metric": "ShuffleChunkAppendTime",
+        "value": "3.026ms",
+        "ms": 3.026,
+        "TimePercent": 0.012
+      }
+    ]
+  },
+  {
+    "Operator": "HASH_JOIN_PROBE",
+    "PlanNodeId": 9,
+    "OperatorTotalTime": "6.392 ms",
+    "OperatorTotalTimeMs": 6.392,
+    "TimePercent": 0.025,
+    "TopMetrics": [
+      {
+        "metric": "SearchHashTableTime",
+        "value": "5.425ms",
+        "ms": 5.425,
+        "TimePercent": 0.021
+      }
+    ]
+  }
+]

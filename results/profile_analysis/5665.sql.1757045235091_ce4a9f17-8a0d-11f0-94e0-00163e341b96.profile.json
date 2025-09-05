@@ -1,0 +1,58 @@
+[
+  {
+    "Operator": "LOCAL_PARTITION_TOPN_SINK",
+    "PlanNodeId": 7,
+    "OperatorTotalTime": "12.882 ms",
+    "OperatorTotalTimeMs": 12.882,
+    "TimePercent": 0.129,
+    "TopMetrics": []
+  },
+  {
+    "Operator": "OLAP_SCAN",
+    "PlanNodeId": 0,
+    "OperatorTotalTime": "9.610 ms",
+    "OperatorTotalTimeMs": 9.61,
+    "TimePercent": 0.096,
+    "TopMetrics": [
+      {
+        "metric": "SubmitTaskTime",
+        "value": "7.252ms",
+        "ms": 7.252,
+        "TimePercent": 0.072
+      },
+      {
+        "metric": "ScanTime",
+        "value": "7.034ms",
+        "ms": 7.034,
+        "TimePercent": 0.07
+      },
+      {
+        "metric": "IOTaskExecTime",
+        "value": "5.027ms",
+        "ms": 5.027,
+        "TimePercent": 0.05
+      }
+    ]
+  },
+  {
+    "Operator": "EXCHANGE_SINK",
+    "PlanNodeId": 2,
+    "OperatorTotalTime": "9.070 ms",
+    "OperatorTotalTimeMs": 9.07,
+    "TimePercent": 0.091,
+    "TopMetrics": [
+      {
+        "metric": "OverallTime",
+        "value": "48.095ms",
+        "ms": 48.095,
+        "TimePercent": 0.48
+      },
+      {
+        "metric": "WaitTime",
+        "value": "33.264ms",
+        "ms": 33.264,
+        "TimePercent": 0.332
+      }
+    ]
+  }
+]

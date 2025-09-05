@@ -1,0 +1,40 @@
+[
+  {
+    "Operator": "NESTLOOP_JOIN_PROBE",
+    "PlanNodeId": 36,
+    "OperatorTotalTime": "7120.000 ms",
+    "OperatorTotalTimeMs": 7120.0,
+    "TimePercent": 0.711,
+    "TopMetrics": []
+  },
+  {
+    "Operator": "LOCAL_SORT_SINK",
+    "PlanNodeId": 37,
+    "OperatorTotalTime": "2304.000 ms",
+    "OperatorTotalTimeMs": 2304.0,
+    "TimePercent": 0.23,
+    "TopMetrics": [
+      {
+        "metric": "BuildingTime",
+        "value": "2s199ms",
+        "ms": 2199.0,
+        "TimePercent": 0.22
+      }
+    ]
+  },
+  {
+    "Operator": "AGGREGATE_BLOCKING_SINK",
+    "PlanNodeId": 7,
+    "OperatorTotalTime": "103.320 ms",
+    "OperatorTotalTimeMs": 103.32,
+    "TimePercent": 0.01,
+    "TopMetrics": [
+      {
+        "metric": "AggComputeTime",
+        "value": "101.589ms",
+        "ms": 101.589,
+        "TimePercent": 0.01
+      }
+    ]
+  }
+]

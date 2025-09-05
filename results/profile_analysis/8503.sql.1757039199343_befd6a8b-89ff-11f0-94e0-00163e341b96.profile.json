@@ -1,0 +1,53 @@
+[
+  {
+    "Operator": "HASH_JOIN_PROBE",
+    "PlanNodeId": 20,
+    "OperatorTotalTime": "1598.000 ms",
+    "OperatorTotalTimeMs": 1598.0,
+    "TimePercent": 0.542,
+    "TopMetrics": [
+      {
+        "metric": "OutputBuildColumnTime",
+        "value": "841.114ms",
+        "ms": 841.114,
+        "TimePercent": 0.285
+      },
+      {
+        "metric": "SearchHashTableTime",
+        "value": "658.540ms",
+        "ms": 658.54,
+        "TimePercent": 0.223
+      }
+    ]
+  },
+  {
+    "Operator": "AGGREGATE_STREAMING_SINK",
+    "PlanNodeId": 22,
+    "OperatorTotalTime": "446.771 ms",
+    "OperatorTotalTimeMs": 446.771,
+    "TimePercent": 0.151,
+    "TopMetrics": [
+      {
+        "metric": "AggComputeTime",
+        "value": "421.724ms",
+        "ms": 421.724,
+        "TimePercent": 0.143
+      }
+    ]
+  },
+  {
+    "Operator": "HASH_JOIN_PROBE",
+    "PlanNodeId": 3,
+    "OperatorTotalTime": "181.224 ms",
+    "OperatorTotalTimeMs": 181.224,
+    "TimePercent": 0.061,
+    "TopMetrics": [
+      {
+        "metric": "SearchHashTableTime",
+        "value": "171.448ms",
+        "ms": 171.448,
+        "TimePercent": 0.058
+      }
+    ]
+  }
+]

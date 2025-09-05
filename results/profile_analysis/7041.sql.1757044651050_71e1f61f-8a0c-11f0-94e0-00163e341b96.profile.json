@@ -1,0 +1,59 @@
+[
+  {
+    "Operator": "AGGREGATE_BLOCKING_SINK",
+    "PlanNodeId": 6,
+    "OperatorTotalTime": "200.361 ms",
+    "OperatorTotalTimeMs": 200.361,
+    "TimePercent": 0.347,
+    "TopMetrics": [
+      {
+        "metric": "AggComputeTime",
+        "value": "197.229ms",
+        "ms": 197.229,
+        "TimePercent": 0.342
+      }
+    ]
+  },
+  {
+    "Operator": "HASH_JOIN_PROBE",
+    "PlanNodeId": 4,
+    "OperatorTotalTime": "192.185 ms",
+    "OperatorTotalTimeMs": 192.185,
+    "TimePercent": 0.333,
+    "TopMetrics": [
+      {
+        "metric": "SearchHashTableTime",
+        "value": "97.323ms",
+        "ms": 97.323,
+        "TimePercent": 0.169
+      },
+      {
+        "metric": "OutputBuildColumnTime",
+        "value": "91.712ms",
+        "ms": 91.712,
+        "TimePercent": 0.159
+      }
+    ]
+  },
+  {
+    "Operator": "EXCHANGE_SINK",
+    "PlanNodeId": 27,
+    "OperatorTotalTime": "76.316 ms",
+    "OperatorTotalTimeMs": 76.316,
+    "TimePercent": 0.132,
+    "TopMetrics": [
+      {
+        "metric": "OverallTime",
+        "value": "175.903ms",
+        "ms": 175.903,
+        "TimePercent": 0.305
+      },
+      {
+        "metric": "ShuffleChunkAppendTime",
+        "value": "25.520ms",
+        "ms": 25.52,
+        "TimePercent": 0.044
+      }
+    ]
+  }
+]

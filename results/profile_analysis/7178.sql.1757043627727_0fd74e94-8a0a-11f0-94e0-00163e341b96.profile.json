@@ -1,0 +1,52 @@
+[
+  {
+    "Operator": "BUCKET_PROCESS_SINK",
+    "PlanNodeId": 14,
+    "OperatorTotalTime": "385.433 ms",
+    "OperatorTotalTimeMs": 385.433,
+    "TimePercent": 0.516,
+    "TopMetrics": []
+  },
+  {
+    "Operator": "AGGREGATE_BLOCKING_SINK",
+    "PlanNodeId": 10,
+    "OperatorTotalTime": "277.722 ms",
+    "OperatorTotalTimeMs": 277.722,
+    "TimePercent": 0.372,
+    "TopMetrics": [
+      {
+        "metric": "AggComputeTime",
+        "value": "275.086ms",
+        "ms": 275.086,
+        "TimePercent": 0.368
+      },
+      {
+        "metric": "AggFuncComputeTime",
+        "value": "179.257ms",
+        "ms": 179.257,
+        "TimePercent": 0.24
+      }
+    ]
+  },
+  {
+    "Operator": "AGGREGATE_BLOCKING_SINK",
+    "PlanNodeId": 17,
+    "OperatorTotalTime": "115.578 ms",
+    "OperatorTotalTimeMs": 115.578,
+    "TimePercent": 0.155,
+    "TopMetrics": [
+      {
+        "metric": "AggComputeTime",
+        "value": "111.897ms",
+        "ms": 111.897,
+        "TimePercent": 0.15
+      },
+      {
+        "metric": "AggFuncComputeTime",
+        "value": "64.423ms",
+        "ms": 64.423,
+        "TimePercent": 0.086
+      }
+    ]
+  }
+]

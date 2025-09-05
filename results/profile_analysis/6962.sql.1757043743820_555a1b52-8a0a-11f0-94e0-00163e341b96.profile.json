@@ -1,0 +1,53 @@
+[
+  {
+    "Operator": "HASH_JOIN_PROBE",
+    "PlanNodeId": 14,
+    "OperatorTotalTime": "29.094 ms",
+    "OperatorTotalTimeMs": 29.094,
+    "TimePercent": 0.135,
+    "TopMetrics": [
+      {
+        "metric": "SearchHashTableTime",
+        "value": "15.878ms",
+        "ms": 15.878,
+        "TimePercent": 0.074
+      },
+      {
+        "metric": "OutputBuildColumnTime",
+        "value": "12.260ms",
+        "ms": 12.26,
+        "TimePercent": 0.057
+      }
+    ]
+  },
+  {
+    "Operator": "AGGREGATE_STREAMING_SINK",
+    "PlanNodeId": 16,
+    "OperatorTotalTime": "22.607 ms",
+    "OperatorTotalTimeMs": 22.607,
+    "TimePercent": 0.105,
+    "TopMetrics": [
+      {
+        "metric": "AggComputeTime",
+        "value": "20.752ms",
+        "ms": 20.752,
+        "TimePercent": 0.096
+      }
+    ]
+  },
+  {
+    "Operator": "PROJECT",
+    "PlanNodeId": 15,
+    "OperatorTotalTime": "22.015 ms",
+    "OperatorTotalTimeMs": 22.015,
+    "TimePercent": 0.102,
+    "TopMetrics": [
+      {
+        "metric": "ExprComputeTime",
+        "value": "21.780ms",
+        "ms": 21.78,
+        "TimePercent": 0.101
+      }
+    ]
+  }
+]

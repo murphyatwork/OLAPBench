@@ -1,0 +1,53 @@
+[
+  {
+    "Operator": "AGGREGATE_BLOCKING_SINK",
+    "PlanNodeId": 6,
+    "OperatorTotalTime": "219.000 ms",
+    "OperatorTotalTimeMs": 219.0,
+    "TimePercent": 0.429,
+    "TopMetrics": [
+      {
+        "metric": "AggComputeTime",
+        "value": "217.315ms",
+        "ms": 217.315,
+        "TimePercent": 0.426
+      },
+      {
+        "metric": "AggFuncComputeTime",
+        "value": "152.095ms",
+        "ms": 152.095,
+        "TimePercent": 0.298
+      }
+    ]
+  },
+  {
+    "Operator": "LOCAL_SORT_SINK",
+    "PlanNodeId": 25,
+    "OperatorTotalTime": "84.645 ms",
+    "OperatorTotalTimeMs": 84.645,
+    "TimePercent": 0.166,
+    "TopMetrics": [
+      {
+        "metric": "SortingTime",
+        "value": "80.199ms",
+        "ms": 80.199,
+        "TimePercent": 0.157
+      }
+    ]
+  },
+  {
+    "Operator": "LOCAL_SORT_SINK",
+    "PlanNodeId": 14,
+    "OperatorTotalTime": "82.486 ms",
+    "OperatorTotalTimeMs": 82.486,
+    "TimePercent": 0.162,
+    "TopMetrics": [
+      {
+        "metric": "SortingTime",
+        "value": "78.460ms",
+        "ms": 78.46,
+        "TimePercent": 0.154
+      }
+    ]
+  }
+]

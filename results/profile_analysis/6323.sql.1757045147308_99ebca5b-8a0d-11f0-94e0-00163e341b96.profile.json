@@ -1,0 +1,52 @@
+[
+  {
+    "Operator": "LOCAL_PARTITION_TOPN_SINK",
+    "PlanNodeId": 12,
+    "OperatorTotalTime": "23.657 ms",
+    "OperatorTotalTimeMs": 23.657,
+    "TimePercent": 0.135,
+    "TopMetrics": []
+  },
+  {
+    "Operator": "EXCHANGE_SINK",
+    "PlanNodeId": 7,
+    "OperatorTotalTime": "18.770 ms",
+    "OperatorTotalTimeMs": 18.77,
+    "TimePercent": 0.107,
+    "TopMetrics": [
+      {
+        "metric": "OverallTime",
+        "value": "80.467ms",
+        "ms": 80.467,
+        "TimePercent": 0.458
+      },
+      {
+        "metric": "WaitTime",
+        "value": "50.772ms",
+        "ms": 50.772,
+        "TimePercent": 0.289
+      }
+    ]
+  },
+  {
+    "Operator": "HASH_JOIN_PROBE",
+    "PlanNodeId": 10,
+    "OperatorTotalTime": "17.468 ms",
+    "OperatorTotalTimeMs": 17.468,
+    "TimePercent": 0.099,
+    "TopMetrics": [
+      {
+        "metric": "SearchHashTableTime",
+        "value": "10.227ms",
+        "ms": 10.227,
+        "TimePercent": 0.058
+      },
+      {
+        "metric": "OutputBuildColumnTime",
+        "value": "6.856ms",
+        "ms": 6.856,
+        "TimePercent": 0.039
+      }
+    ]
+  }
+]

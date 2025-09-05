@@ -1,0 +1,33 @@
+[
+  {
+    "Operator": "NESTLOOP_JOIN_PROBE",
+    "PlanNodeId": 43,
+    "OperatorTotalTime": "9271.000 ms",
+    "OperatorTotalTimeMs": 9271.0,
+    "TimePercent": 0.922,
+    "TopMetrics": []
+  },
+  {
+    "Operator": "BUCKET_PROCESS_SINK",
+    "PlanNodeId": 32,
+    "OperatorTotalTime": "97.465 ms",
+    "OperatorTotalTimeMs": 97.465,
+    "TimePercent": 0.01,
+    "TopMetrics": []
+  },
+  {
+    "Operator": "AGGREGATE_BLOCKING_SINK",
+    "PlanNodeId": 24,
+    "OperatorTotalTime": "87.949 ms",
+    "OperatorTotalTimeMs": 87.949,
+    "TimePercent": 0.009,
+    "TopMetrics": [
+      {
+        "metric": "AggComputeTime",
+        "value": "84.704ms",
+        "ms": 84.704,
+        "TimePercent": 0.008
+      }
+    ]
+  }
+]

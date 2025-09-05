@@ -1,0 +1,53 @@
+[
+  {
+    "Operator": "EXCHANGE_SINK",
+    "PlanNodeId": 31,
+    "OperatorTotalTime": "1392.000 ms",
+    "OperatorTotalTimeMs": 1392.0,
+    "TimePercent": 0.138,
+    "TopMetrics": [
+      {
+        "metric": "OverallTime",
+        "value": "2s522ms",
+        "ms": 2522.0,
+        "TimePercent": 0.251
+      },
+      {
+        "metric": "SerializeChunkTime",
+        "value": "749.188ms",
+        "ms": 749.188,
+        "TimePercent": 0.074
+      }
+    ]
+  },
+  {
+    "Operator": "LOCAL_SORT_SINK",
+    "PlanNodeId": 30,
+    "OperatorTotalTime": "1148.000 ms",
+    "OperatorTotalTimeMs": 1148.0,
+    "TimePercent": 0.114,
+    "TopMetrics": [
+      {
+        "metric": "SortingTime",
+        "value": "981.007ms",
+        "ms": 981.007,
+        "TimePercent": 0.098
+      }
+    ]
+  },
+  {
+    "Operator": "RESULT_SINK",
+    "PlanNodeId": -1,
+    "OperatorTotalTime": "936.616 ms",
+    "OperatorTotalTimeMs": 936.616,
+    "TimePercent": 0.093,
+    "TopMetrics": [
+      {
+        "metric": "AppendChunkTime",
+        "value": "831.487ms",
+        "ms": 831.487,
+        "TimePercent": 0.083
+      }
+    ]
+  }
+]

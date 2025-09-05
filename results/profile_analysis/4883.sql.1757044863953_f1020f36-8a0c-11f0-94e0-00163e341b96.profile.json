@@ -1,0 +1,77 @@
+[
+  {
+    "Operator": "HASH_JOIN_BUILD",
+    "PlanNodeId": 5,
+    "OperatorTotalTime": "18.880 ms",
+    "OperatorTotalTimeMs": 18.88,
+    "TimePercent": 0.089,
+    "TopMetrics": [
+      {
+        "metric": "BuildHashTableTime",
+        "value": "11.245ms",
+        "ms": 11.245,
+        "TimePercent": 0.053
+      },
+      {
+        "metric": "RuntimeFilterBuildTime",
+        "value": "5.794ms",
+        "ms": 5.794,
+        "TimePercent": 0.027
+      }
+    ]
+  },
+  {
+    "Operator": "EXCHANGE_SINK",
+    "PlanNodeId": 4,
+    "OperatorTotalTime": "12.749 ms",
+    "OperatorTotalTimeMs": 12.749,
+    "TimePercent": 0.06,
+    "TopMetrics": [
+      {
+        "metric": "NetworkTime",
+        "value": "18.956ms",
+        "ms": 18.956,
+        "TimePercent": 0.09
+      },
+      {
+        "metric": "OverallTime",
+        "value": "18.038ms",
+        "ms": 18.038,
+        "TimePercent": 0.085
+      },
+      {
+        "metric": "ShuffleHashTime",
+        "value": "8.933ms",
+        "ms": 8.933,
+        "TimePercent": 0.042
+      }
+    ]
+  },
+  {
+    "Operator": "OLAP_SCAN",
+    "PlanNodeId": 0,
+    "OperatorTotalTime": "3.808 ms",
+    "OperatorTotalTimeMs": 3.808,
+    "TimePercent": 0.018,
+    "TopMetrics": [
+      {
+        "metric": "ScanTime",
+        "value": "30.522ms",
+        "ms": 30.522,
+        "TimePercent": 0.144
+      },
+      {
+        "metric": "IOTaskExecTime",
+        "value": "20.654ms",
+        "ms": 20.654,
+        "TimePercent": 0.098
+      },
+      {
+        "metric": "RuntimeFilterEvalTime",
+        "value": "13.820ms",
+        "ms": 13.82,
+        "TimePercent": 0.065
+      }
+    ]
+  }
+]

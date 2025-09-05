@@ -1,0 +1,77 @@
+[
+  {
+    "Operator": "HASH_JOIN_BUILD",
+    "PlanNodeId": 27,
+    "OperatorTotalTime": "4.962 ms",
+    "OperatorTotalTimeMs": 4.962,
+    "TimePercent": 0.049,
+    "TopMetrics": [
+      {
+        "metric": "CopyRightTableChunkTime",
+        "value": "1.777ms",
+        "ms": 1.777,
+        "TimePercent": 0.018
+      },
+      {
+        "metric": "BuildHashTableTime",
+        "value": "426.743us",
+        "ms": 0.427,
+        "TimePercent": 0.004
+      }
+    ]
+  },
+  {
+    "Operator": "EXCHANGE_SINK",
+    "PlanNodeId": 2,
+    "OperatorTotalTime": "2.859 ms",
+    "OperatorTotalTimeMs": 2.859,
+    "TimePercent": 0.028,
+    "TopMetrics": [
+      {
+        "metric": "NetworkTime",
+        "value": "4.048ms",
+        "ms": 4.048,
+        "TimePercent": 0.04
+      },
+      {
+        "metric": "OverallTime",
+        "value": "2.699ms",
+        "ms": 2.699,
+        "TimePercent": 0.027
+      },
+      {
+        "metric": "ShuffleHashTime",
+        "value": "2.141ms",
+        "ms": 2.141,
+        "TimePercent": 0.021
+      }
+    ]
+  },
+  {
+    "Operator": "OLAP_SCAN",
+    "PlanNodeId": 19,
+    "OperatorTotalTime": "1.768 ms",
+    "OperatorTotalTimeMs": 1.768,
+    "TimePercent": 0.018,
+    "TopMetrics": [
+      {
+        "metric": "SubmitTaskTime",
+        "value": "895.469us",
+        "ms": 0.895,
+        "TimePercent": 0.009
+      },
+      {
+        "metric": "PrepareChunkSourceTime",
+        "value": "459.078us",
+        "ms": 0.459,
+        "TimePercent": 0.005
+      },
+      {
+        "metric": "ScanTime",
+        "value": "280.616us",
+        "ms": 0.281,
+        "TimePercent": 0.003
+      }
+    ]
+  }
+]
